@@ -12,10 +12,13 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  createdAt DateTime @default(now())
+model Pengguna {
+  id           String   @id @default(uuid())
+  nama         String
+  email        String   @unique
+  kataSandi    String   @map("kata_sandi")
+  waktuDibuat  DateTime @default(now()) @map("waktu_dibuat")
+  waktuDiubah  DateTime @updatedAt @map("waktu_diubah")
+
+  @@map("pengguna") // Nama tabel di PostgreSQL
 }
