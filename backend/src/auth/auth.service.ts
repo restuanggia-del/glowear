@@ -62,4 +62,17 @@ export class AuthService {
       user,
     };
   }
+
+  // ambil data pengguna
+  async getProfile(userId: string) {
+  const user = await this.prisma.pengguna.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new BadRequestException('User tidak ditemukan');
+  }
+
+  return user;
+}
 }
