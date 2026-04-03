@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
+  // tambah user / registrasi
   async register(data: RegisterDto) {
     const existingUser = await this.prisma.pengguna.findFirst({
       where: {
@@ -40,6 +41,7 @@ export class AuthService {
     };
   }
 
+  // login session
   async login(data: LoginDto) {
     const user = await this.prisma.pengguna.findUnique({
       where: { email: data.email },
@@ -83,5 +85,18 @@ export class AuthService {
       where: { id: userId },
       data,
     });
+  }
+
+  // helper
+  async validateUser(userId: string) {
+    const user = await this.prisma.pengguna.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Unauthorized');
+    }
+
+    return user;
   }
 }
