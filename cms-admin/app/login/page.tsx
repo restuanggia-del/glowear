@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { api } from "@/services/api";
+import { api } from "../services/api";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
