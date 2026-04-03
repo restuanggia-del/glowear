@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -65,14 +66,22 @@ export class AuthService {
 
   // ambil data pengguna
   async getProfile(userId: string) {
-  const user = await this.prisma.pengguna.findUnique({
-    where: { id: userId },
-  });
+    const user = await this.prisma.pengguna.findUnique({
+      where: { id: userId },
+    });
 
-  if (!user) {
-    throw new BadRequestException('User tidak ditemukan');
+    if (!user) {
+      throw new BadRequestException('User tidak ditemukan');
+    }
+
+    return user;
   }
 
-  return user;
-}
+  //update data user
+  async updateProfile(userId: string, data: UpdateUserDto) {
+    return this.prisma.pengguna.update({
+      where: { id: userId },
+      data,
+    });
+  }
 }
