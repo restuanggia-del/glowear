@@ -13,12 +13,19 @@ datasource db {
 }
 
 model Pengguna {
-  id           String   @id @default(uuid())
-  nama         String
-  email        String   @unique
-  kataSandi    String   @map("kata_sandi")
-  waktuDibuat  DateTime @default(now()) @map("waktu_dibuat")
-  waktuDiubah  DateTime @updatedAt @map("waktu_diubah")
+  id          String   @id @default(uuid())
+  nama        String
+  username    String   @unique
+  email       String   @unique
+  kataSandi   String   @map("kata_sandi")
+  role        Role     @default(PELANGGAN)
+  waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
+  waktuDiubah DateTime @updatedAt @map("waktu_diubah")
 
-  @@map("pengguna") // Nama tabel di PostgreSQL
+  @@map("pengguna")
+}
+
+enum Role {
+  ADMIN
+  PELANGGAN
 }
