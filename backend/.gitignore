@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# Editor directories and files
+.vscode/
+
 # Logs
 logs
 *.log
