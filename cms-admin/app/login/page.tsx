@@ -1,4 +1,4 @@
-dren"use client";
+"use client";
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,12 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    defaultValues: {
+      email: '',
+      kataSandi: ''
+    }
+  });
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
