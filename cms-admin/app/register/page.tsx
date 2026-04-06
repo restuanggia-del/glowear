@@ -1,19 +1,32 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { api } from "../services/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../lib/auth-context";
+import { useState } from "react";
+
+interface RegisterFormData {
+  nama: string;
+  username: string;
+  email: string;
+  kataSandi: string;
+}
 
 export default function RegisterPage() {
-  const { register, handleSubmit } = useForm();
+  const { register } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { register: reg, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: RegisterFormData) => {
+    setLoading(true);
     try {
-      const res = await api.post("/auth/register", data);
-      console.log(res.data);
-
-      alert("Register berhasil!");
+      await register(data);
+      router.push("/dashboard");
     } catch (err: any) {
-      alert(err.response?.data?.message || "Error");
+      alert(err.response?.data?.message || "Register gagal");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,34 +40,40 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input
             placeholder="Nama"
-            {...register("nama")}
+            {...reg("nama", { required: "Nama wajib" })}
             className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.nama && <p className="text-red-400 text-sm">{errors.nama.message}</p>}
 
           <input
             placeholder="Username"
-            {...register("username")}
+            {...reg("username", { required: "Username wajib" })}
             className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.username && <p className="text-red-400 text-sm">{errors.username.message}</p>}
 
           <input
+            type="email"
             placeholder="Email"
-            {...register("email")}
+            {...reg("email", { required: "Email wajib" })}
             className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.email && <p className="text-red-400 text-sm">{errors.email.message}</p>}
 
           <input
             type="password"
             placeholder="Password"
-            {...register("kataSandi")}
+            {...reg("kataSandi", { required: "Password wajib", minLength: { value: 6, message: "Min 6 karakter" } })}
             className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.kataSandi && <p className="text-red-400 text-sm">{errors.kataSandi.message}</p>}
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 transition p-2 rounded text-white font-semibold cursor-pointer"
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-700 transition p-2 rounded text-white font-semibold cursor-pointer"
           >
-            Register
+            {loading ? "Loading..." : "Register"}
           </button>
         </form>
 
@@ -68,3 +87,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+
