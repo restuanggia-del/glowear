@@ -25,13 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const initUser = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      return JSON.parse(storedUser) as User;
     }
-    setLoading(false);
-  }, []);
+    return null;
+  };
+
+  const [user, setUser] = useState<User | null>(initUser());
+  const [loading, setLoading] = useState(false);
 
   const login = async (email: string, kataSandi: string) => {
     const res = await api.post('/auth/login', { email, kataSandi });
