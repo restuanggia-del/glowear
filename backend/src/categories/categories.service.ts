@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service'; // Sesuaikan path jika perlu
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    // Cek apakah nama kategori sudah ada (karena di schema kita set @unique)
+    const existingCategory = await this.prisma.category.findUnique({
+      where: { namaKategori: createCategoryDto.namaKategori },
+    });
+
+    if (existingCategory) {
+      throw new ConflictException('Nama kategori sudah digunakan');
+    }
+
+    return this.prisma.category.create({
+      data: createCategoryDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll() {
+    return this.prisma.category.findMany({
+      orderBy: { waktuDibuat: 'desc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      include: { products: true }, // Opsional: tampilkan produk apa saja di kategori ini
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Kategori dengan ID ${id} tidak ditemukan`);
+    }
+
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    await this.findOne(id); // Pastikan kategori ada
+
+    return this.prisma.category.update({
+      where: { id },
+      data: updateCategoryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    await this.findOne(id); // Pastikan kategori ada
+
+    // Catatan: Karena kita pakai onDelete: Restrict di Prisma Schema, 
+    // Prisma akan otomatis menolak jika kategori ini masih punya produk.
+    return this.prisma.category.delete({
+      where: { id },
+    });
   }
 }
