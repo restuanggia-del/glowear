@@ -30,3 +30,16 @@ enum Role {
   ADMIN
   PELANGGAN
 }
+
+model Product {
+  id            String   @id @default(uuid())
+  namaProduk    String
+  deskripsi     String   @db.Text
+  harga         Int      
+  stok          Int      @default(0)
+  gambar        String?  
+  waktuDibuat   DateTime @default(now())
+  waktuDiupdate DateTime @updatedAt
+
+  @@map("products")
+}
