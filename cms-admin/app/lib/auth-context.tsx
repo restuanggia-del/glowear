@@ -8,6 +8,8 @@ import {
   useContext,
 } from "react";
 
+import { loginUser, registerUser, validateDashboardAccess, type RegisterData } from "../services/api";
+
 type User = {
   id: string;
   email: string;
@@ -17,13 +19,19 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
-  setUser: (user: User | null) => void;
+  login: (email: string, kataSandi: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => void;
+  validate: () => Promise<boolean>;
   isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  setUser: () => {},
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  validate: async () => {},
   isLoading: true,
 });
 
@@ -37,14 +45,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
     }
 
     setIsLoading(false);
   }, []);
 
+  const login = async (email: string, kataSandi: string) => {
+    try {
+      const data = await loginUser({email, kataSandi});
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+    } catch (error) {
+      console.error("Login failed", error);
+      throw error;
+    }
+  };
+
+  const register = async (data: RegisterData) => {
+    const result = await registerUser(data);
+    // User can login after register
+    console.log("Register success", result);
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
+  const validate = async (): Promise<boolean> => {
+    if (!user?.id) {
+      return false;
+    }
+    try {
+      const result = await validateDashboardAccess(user.id);
+      return result.valid;
+    } catch (error) {
+      logout();
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, validate, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

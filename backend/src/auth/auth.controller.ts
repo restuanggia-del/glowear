@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Put } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Put, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -29,5 +29,18 @@ export class AuthController {
     @Body() dto: UpdateUserDto,
     ) {
       return this.authService.updateProfile(userId, dto);
+  }
+
+  @Post('validate')
+  async validate(@Body() body: { id: string }) {
+    const user = await this.authService.validateUser(body.id);
+    if (user.role !== 'ADMIN') {
+      throw new BadRequestException('Access denied for dashboard');
+    }
+    return {
+      valid: true,
+      role: user.role,
+      nama: user.nama
+    };
   }
 }

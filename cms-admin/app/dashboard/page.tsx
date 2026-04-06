@@ -1,26 +1,37 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../lib/auth-context";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, logout, validate } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    const checkAccess = async () => {
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+      try {
+        const valid = await validate();
+        if (!valid) {
+          setAccessDenied(true);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        setAccessDenied(true);
+      }
+    };
 
-    if (user.role !== "ADMIN") {
-      router.push("/unauthorized");
-      return;
-    }
-  }, [user]);
+    checkAccess();
+  }, [user, validate, router]);
 
-  if (!user) {
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-white bg-black">
         Loading...
@@ -28,28 +39,24 @@ export default function DashboardPage() {
     );
   }
 
-  if (user.role !== "ADMIN") {
+  if (accessDenied || user?.role !== "ADMIN") {
+    router.replace("/unauthorized");
     return null;
   }
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  };
-
   return (
     <div className="p-6 text-white bg-black min-h-screen">
-      <h1 className="text-2xl font-bold">
+      <h1 className="text-2xl font-bold mb-4">
         Dashboard Admin Glowear
       </h1>
 
-      <p className="mt-2 text-zinc-400">
+      <p className="mb-6 text-zinc-400">
         Selamat datang, {user.nama}
       </p>
 
       <button
         onClick={logout}
-        className="mt-6 bg-red-500 px-4 py-2 rounded"
+        className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded font-medium transition-colors"
       >
         Logout
       </button>
