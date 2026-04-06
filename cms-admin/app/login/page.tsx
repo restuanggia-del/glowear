@@ -18,30 +18,42 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="p-6 border rounded w-80 space-y-4"
-      >
-        <h1 className="text-xl font-bold">Login Glowear</h1>
+    <div className="flex h-screen items-center justify-center bg-black">
+      <div className="bg-zinc-900 p-8 rounded-2xl shadow-lg w-80 border border-zinc-700">
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+          Login Glowear
+        </h1>
 
-        <input
-          placeholder="Email"
-          {...register("email")}
-          className="w-full border p-2"
-        />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            {...register("email")}
+            className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          {...register("kataSandi")}
-          className="w-full border p-2"
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            {...register("kataSandi")}
+            className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <button className="w-full bg-blue-500 text-white p-2">
-          Login
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 transition p-2 rounded text-white font-semibold cursor-pointer"
+          >
+            Login
+          </button>
+        </form>
+
+        <p className="text-sm text-zinc-400 mt-4 text-center">
+          Belum punya akun?{" "}
+          <a href="/register" className="text-blue-400 hover:underline">
+            Register
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
