@@ -62,7 +62,12 @@ export class AuthService {
 
     return {
       message: 'Login berhasil',
-      user,
+      user: {
+        id: user.id,
+        nama: user.nama,
+        email: user.email,
+        role: user.role,
+      },
     };
   }
 

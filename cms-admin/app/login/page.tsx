@@ -1,87 +1,32 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
-import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-interface LoginFormData {
-  email: string;
-  kataSandi: string;
-}
-
-export default function LoginPage() {
-  const { login, user } = useAuth();
+export default function DashboardPage() {
+  const { user, isLoading } = useAuth();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>();
-
-  // ✅ FIX: pakai useEffect
   useEffect(() => {
-    if (user) {
-      router.push("/dashboard");
+    if (isLoading) return;
+
+    console.log("USER:", user); // 🔥 DEBUG
+
+    if (!user) {
+      router.push("/login");
+      return;
     }
-  }, [user]);
 
-  const onSubmit = async (data: LoginFormData) => {
-    setLoading(true);
-
-    try {
-      await login(data.email, data.kataSandi);
-
-      router.push("/dashboard");
-
-    } catch (err: any) {
-      alert(err?.response?.data?.message || "Login gagal");
-    } finally {
-      setLoading(false);
+    if (user.role?.toUpperCase() !== "ADMIN") {
+      router.push("/unauthorized");
+      return;
     }
-  };
+  }, [user, isLoading]);
 
-  return (
-    <div className="flex h-screen items-center justify-center bg-black">
-      <div className="bg-zinc-900 p-8 rounded-2xl shadow-lg w-80 border border-zinc-700">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
-          Login Glowear
-        </h1>
+  if (isLoading) return <div>Loading...</div>;
+  if (!user) return null;
+  if (user.role?.toUpperCase() !== "ADMIN") return null;
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            {...register("email", { required: "Email wajib" })}
-            className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white"
-          />
-          {errors.email && (
-            <p className="text-red-400 text-sm">{errors.email.message}</p>
-          )}
-
-          <input
-            type="password"
-            placeholder="Password"
-            {...register("kataSandi", { required: "Password wajib" })}
-            className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 text-white"
-          />
-          {errors.kataSandi && (
-            <p className="text-red-400 text-sm">
-              {errors.kataSandi.message}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 p-2 rounded text-white"
-          >
-            {loading ? "Loading..." : "Login"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+  return <div>Dashboard Admin</div>;
 }

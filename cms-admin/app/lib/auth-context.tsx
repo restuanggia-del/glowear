@@ -1,8 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { api } from '../services/api';
-import { nullable } from 'zod';
 
 interface User {
   id: string;
@@ -14,6 +13,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   login: (email: string, kataSandi: string) => Promise<void>;
   register: (data: { nama: string; username: string; email: string; kataSandi: string }) => Promise<void>;
   logout: () => void;
@@ -23,16 +23,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+  const initUser = () => {
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      return JSON.parse(storedUser) as User;
     }
-  }, []);
+    return null;
+  };
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(initUser());
   const [loading, setLoading] = useState(false);
+  const isAdmin = !!user && user.role === 'ADMIN';
 
   const login = async (email: string, kataSandi: string) => {
     const res = await api.post('/auth/login', { email, kataSandi });
@@ -54,7 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAdmin,
+      login, 
+      register, 
+      logout, 
+      loading 
+    }}>
       {children}
     </AuthContext.Provider>
   );
