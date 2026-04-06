@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { api } from '../services/api';
 
 interface User {
@@ -36,17 +36,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAdmin = !!user && user.role === 'ADMIN';
 
   const login = async (email: string, kataSandi: string) => {
-    const res = await api.post('/auth/login', { email, kataSandi });
-    const userData = res.data.user;
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/login', { email, kataSandi });
+      const userData = res.data.user;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (data: { nama: string; username: string; email: string; kataSandi: string }) => {
-    const res = await api.post('/auth/register', data);
-    const userData = res.data.user;
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/register', data);
+      const userData = res.data.user;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
