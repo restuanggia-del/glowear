@@ -1,38 +1,58 @@
 "use client";
 
-import { useAuth } from "../lib/auth-context";
-import { redirect } from "next/navigation";
 import { useEffect } from "react";
+import { useAuth } from "../lib/auth-context";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) {
-      redirect("/login");
+      router.push("/login");
+      return;
+    }
+
+    if (user.role !== "ADMIN") {
+      router.push("/unauthorized");
+      return;
     }
   }, [user]);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center text-white bg-black">
+        Loading...
+      </div>
+    );
   }
 
+  if (user.role !== "ADMIN") {
+    return null;
+  }
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
   return (
-    <div className="flex h-screen items-center justify-center bg-black">
-      <div className="bg-zinc-900 p-8 rounded-2xl shadow-lg w-96 border border-zinc-700 text-white">
-        <h1 className="text-2xl font-bold mb-6 text-center">Dashboard</h1>
-        <p>Selamat datang, <strong>{user.nama}</strong>!</p>
-        <p>Email: {user.email}</p>
-        <p>Username: {user.username}</p>
-        <p>Role: {user.role}</p>
-        <button
-          onClick={logout}
-          className="mt-6 w-full bg-red-500 hover:bg-red-600 transition p-2 rounded text-white font-semibold"
-        >
-          Logout
-        </button>
-      </div>
+    <div className="p-6 text-white bg-black min-h-screen">
+      <h1 className="text-2xl font-bold">
+        Dashboard Admin Glowear
+      </h1>
+
+      <p className="mt-2 text-zinc-400">
+        Selamat datang, {user.nama}
+      </p>
+
+      <button
+        onClick={logout}
+        className="mt-6 bg-red-500 px-4 py-2 rounded"
+      >
+        Logout
+      </button>
     </div>
   );
 }
-
