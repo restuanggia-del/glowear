@@ -1,88 +1,51 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { api } from '../services/api';
+import {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
 
-interface User {
+type User = {
   id: string;
-  nama: string;
-  username: string;
   email: string;
+  nama: string;
   role: string;
-}
+};
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
-  isAdmin: boolean;
-  login: (email: string, kataSandi: string) => Promise<void>;
-  register: (data: { nama: string; username: string; email: string; kataSandi: string }) => Promise<void>;
-  logout: () => void;
-  loading: boolean;
-}
+  setUser: (user: User | null) => void;
+  isLoading: boolean;
+};
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  setUser: () => {},
+  isLoading: true,
+});
+
+export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const initUser = () => {
-    const storedUser = localStorage.getItem('user');
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
-      return JSON.parse(storedUser) as User;
+      setUser(JSON.parse(storedUser));
     }
-    return null;
-  };
 
-  const [user, setUser] = useState<User | null>(initUser());
-  const [loading, setLoading] = useState(false);
-  const isAdmin = !!user && user.role === 'ADMIN';
-
-  const login = async (email: string, kataSandi: string) => {
-    setLoading(true);
-    try {
-      const res = await api.post('/auth/login', { email, kataSandi });
-      const userData = res.data.user;
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (data: { nama: string; username: string; email: string; kataSandi: string }) => {
-    setLoading(true);
-    try {
-      const res = await api.post('/auth/register', data);
-      const userData = res.data.user;
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-  };
+    setIsLoading(false);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAdmin,
-      login, 
-      register, 
-      logout, 
-      loading 
-    }}>
+    <AuthContext.Provider value={{ user, setUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-}
-
