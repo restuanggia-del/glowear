@@ -49,6 +49,8 @@ model Product {
   harga         Int      
   stok          Int      @default(0)
   gambar        String?  
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   waktuDibuat   DateTime @default(now())
   waktuDiupdate DateTime @updatedAt
 
