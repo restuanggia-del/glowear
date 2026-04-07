@@ -6,8 +6,31 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  // Tambahkan fungsi ini di bawah constructor
+  async create(createOrderDto: any) {
+    // Hitung total harga otomatis berdasarkan item yang dibeli
+    const totalHarga = createOrderDto.items.reduce(
+      (sum: number, item: any) => sum + (item.jumlah * item.hargaSatuan), 
+      0
+    );
+
+    return this.prisma.order.create({
+      data: {
+        userId: createOrderDto.userId, // Untuk sementara kita pakai ID dummy
+        alamatPengiriman: createOrderDto.alamatPengiriman,
+        totalHarga: totalHarga,
+        catatanCustom: createOrderDto.catatanCustom,
+        items: {
+          create: createOrderDto.items.map((item: any) => ({
+            productId: item.productId,
+            jumlah: item.jumlah,
+            hargaSatuan: item.hargaSatuan,
+            jenisSablon: item.jenisSablon,
+            deskripsiDesain: item.deskripsiDesain,
+          })),
+        },
+      },
+    });
   }
 
   async findAll() {
