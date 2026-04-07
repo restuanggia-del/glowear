@@ -73,39 +73,6 @@ export default function ProductsPage() {
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const submitData = new FormData();
-    submitData.append("namaProduk", editFormData.namaProduk);
-    submitData.append("deskripsi", editFormData.deskripsi);
-    submitData.append("harga", editFormData.harga.toString());
-    submitData.append("stok", editFormData.stok.toString());
-    submitData.append("categoryId", editFormData.categoryId);
-    
-    if (editSelectedFile) {
-      submitData.append("image", editSelectedFile);
-    }
-
-    try {
-      const res = await fetch(`http://localhost:3001/products/${editFormData.id}`, {
-        method: "PUT",
-        body: submitData, // Tanpa Content-Type header
-      });
-
-      if (res.ok) {
-        setIsEditModalOpen(false);
-        fetchProducts();
-        alert("Produk berhasil diupdate!");
-        setEditSelectedFile(null); // Reset file
-      } else {
-        alert("Gagal mengupdate produk.");
-      }
-    } catch (error) {
-      alert("Terjadi kesalahan sistem");
-    }
-  };
-
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -153,22 +120,29 @@ export default function ProductsPage() {
   // 2. Fungsi Edit Produk (Sementara tanpa ganti gambar)
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const submitData = new FormData();
+    submitData.append("namaProduk", editFormData.namaProduk);
+    submitData.append("deskripsi", editFormData.deskripsi);
+    submitData.append("harga", editFormData.harga.toString());
+    submitData.append("stok", editFormData.stok.toString());
+    submitData.append("categoryId", editFormData.categoryId);
+    
+    if (editSelectedFile) {
+      submitData.append("image", editSelectedFile);
+    }
+
     try {
       const res = await fetch(`http://localhost:3001/products/${editFormData.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          namaProduk: editFormData.namaProduk,
-          deskripsi: editFormData.deskripsi,
-          harga: Number(editFormData.harga),
-          stok: Number(editFormData.stok),
-          categoryId: editFormData.categoryId
-        }),
+        body: submitData, // Tanpa Content-Type header
       });
+
       if (res.ok) {
         setIsEditModalOpen(false);
         fetchProducts();
         alert("Produk berhasil diupdate!");
+        setEditSelectedFile(null); // Reset file
       } else {
         alert("Gagal mengupdate produk.");
       }
