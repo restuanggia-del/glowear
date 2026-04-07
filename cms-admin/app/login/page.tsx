@@ -17,8 +17,28 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await login(data.email, data.kataSandi);
-      router.push("/dashboard");
+      // Eksekusi fungsi login (biasanya mengembalikan data user atau menyimpannya ke storage)
+      const userResponse = await login(data.email, data.kataSandi);
+      
+      // Ambil role: Cek dari response login TERLEBIH DAHULU. 
+      // Jika tidak ada, coba ambil dari localStorage (sesuaikan key "user" dengan milik Anda)
+      let role = userResponse?.role;
+      
+      if (!role && typeof window !== "undefined") {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          role = parsedUser.role;
+        }
+      }
+
+      // Validasi Role
+      if (role === "ADMIN") {
+        router.push("/dashboard"); // Admin masuk ke Dapur
+      } else {
+        router.push("/unauthorized"); // Pelanggan dilempar ke halaman penolakan
+      }
+
     } catch (err: any) {
       alert(err.response?.data?.message || "Login gagal");
     } finally {
@@ -30,7 +50,7 @@ export default function LoginPage() {
     <div className="flex h-screen items-center justify-center bg-black">
       <div className="bg-zinc-900 p-8 rounded-2xl shadow-lg w-80 border border-zinc-700">
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
-          Login Glowear
+          Login Glowear Admin
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
