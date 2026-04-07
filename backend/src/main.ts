@@ -7,7 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // 2. Terapkan global pipes setelah 'app' terbuat
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ 
+    whitelist: true,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true }
+  }));
 
   // 3. Konfigurasi CORS
   app.enableCors({

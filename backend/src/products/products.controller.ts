@@ -11,14 +11,23 @@ export class ProductsController {
 
   @Post()
   @UseInterceptors(FileInterceptor('image', multerOptions))
-  async create(@UploadedFile() file: Express.Multer.File, @Body() createProductDto: CreateProductDto) {
+  async create(
+    @UploadedFile() file: Express.Multer.File, 
+    @Body() createProductDto: any // Ubah sementara ke any untuk manual parsing
+  ) {
     if (!file) {
       throw new BadRequestException('Silakan unggah file gambar');
     }
-    // createProductDto.harga = Number(createProductDto.harga); // Pastikan ini number jika DTO-nya number
-    // createProductDto.stok = Number(createProductDto.stok); // Pastikan ini number jika DTO-nya number
-    // Kirim filename ke service untuk disimpan di DB
-    return this.productsService.create(createProductDto, file.filename);
+
+    // KONVERSI MANUAL: Karena FormData mengirimkan string
+    const data = {
+      ...createProductDto,
+      harga: parseInt(createProductDto.harga),
+      stok: parseInt(createProductDto.stok),
+    };
+
+    // Kirim data yang sudah dikonversi ke service
+    return this.productsService.create(data, file.filename);
   }
 
   @Get()
