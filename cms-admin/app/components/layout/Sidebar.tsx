@@ -8,8 +8,8 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
-    { name: 'Produk', icon: Package, path: '/products' },
+    { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+    { name: 'Produk', icon: Package, path: '/dashboard/products' },
   ];
 
   return (
