@@ -13,7 +13,8 @@ import {
   FolderTree,
   Shirt,
   BanknoteArrowUp,
-  Users
+  Users,
+  HandCoins
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState } from 'react';
@@ -56,6 +57,16 @@ export default function Sidebar() {
         >
           <Shirt size={20} />
           <span className="font-medium">Custom Design</span>
+        </Link>
+
+        <Link
+          href="/dashboard/payments"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            pathname === '/dashboard/payments' ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
+          }`}
+        >
+          <HandCoins size={20} />
+          <span className="font-medium">Verifikasi Pembayaran</span>
         </Link>
 
         <Link

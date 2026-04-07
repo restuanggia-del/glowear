@@ -34,6 +34,11 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
+  @Get('pending-verification')
+  findPendingVerification() {
+    return this.ordersService.findPendingVerification();
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
