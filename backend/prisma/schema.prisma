@@ -22,6 +22,7 @@ model Pengguna {
   role        Role     @default(PELANGGAN)
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")
+  orders Order[]
 
   @@map("pengguna")
 }
