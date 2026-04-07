@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Edit, Truck, Package, CheckCircle, Clock, Banknote } from "lucide-react";
+import { Search, Edit, Truck, Package, CheckCircle, Clock, Banknote, Eye, X, MapPin, FileText, CalendarDays } from "lucide-react";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // State Modal
+  // State Modal Edit
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [updateForm, setUpdateForm] = useState({
     status: "",
@@ -62,6 +64,11 @@ export default function OrdersPage() {
       dpAmount: order.dpAmount
     });
     setIsModalOpen(true);
+  };
+
+  const openDetailModal = (order: any) => {
+    setSelectedOrder(order);
+    setIsDetailModalOpen(true);
   };
 
   const formatRupiah = (angka: number) => {
@@ -144,9 +151,23 @@ export default function OrdersPage() {
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <button onClick={() => openUpdateModal(order)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors bg-blue-50/50">
-                      <Edit size={18} />
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      {/* 👇 Tombol Detail Baru 👇 */}
+                      <button 
+                        onClick={() => openDetailModal(order)} 
+                        className="p-2 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors bg-slate-100"
+                        title="Lihat Detail"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button 
+                        onClick={() => openUpdateModal(order)} 
+                        className="p-2 text-blue-600 hover:bg-blue-200 rounded-lg transition-colors bg-blue-100"
+                        title="Update Status"
+                      >
+                        <Edit size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -155,7 +176,118 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Modal Update Status */}
+      {/* =========================================
+          MODAL DETAIL PESANAN
+      ========================================= */}
+      {isDetailModalOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl relative overflow-hidden flex flex-col max-h-[90vh]">
+            
+            {/* Header */}
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-shrink-0">
+              <div>
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <Package className="text-blue-600"/> Detail Pesanan 
+                  <span className="font-mono text-gray-500 font-normal">ORD-{selectedOrder.id.substring(0, 8).toUpperCase()}</span>
+                </h2>
+                <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
+                  <CalendarDays size={14}/> Dibuat pada {formatDate(selectedOrder.waktuDibuat)}
+                </p>
+              </div>
+              <button onClick={() => setIsDetailModalOpen(false)} className="p-2 rounded-full hover:bg-gray-200 text-gray-500 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Content (Bisa di-scroll) */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Kolom Kiri */}
+                <div className="space-y-6">
+                  {/* Alamat Pengiriman */}
+                  <section>
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Alamat Pengiriman</h3>
+                    <div className="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100 text-black">
+                      <MapPin size={18} className="text-red-500 mt-0.5 shrink-0"/>
+                      <p className="text-sm leading-relaxed">{selectedOrder.alamatPengiriman || "Alamat tidak tersedia"}</p>
+                    </div>
+                  </section>
+                  
+                  {/* Catatan Custom */}
+                  <section>
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <FileText size={14}/> Catatan Custom Pelanggan
+                    </h3>
+                    <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-sm text-orange-900 italic">
+                      {selectedOrder.catatanCustom ? `"${selectedOrder.catatanCustom}"` : 'Tidak ada catatan tambahan dari pelanggan.'}
+                    </div>
+                  </section>
+                </div>
+
+                {/* Kolom Kanan: Keuangan */}
+                <div className="space-y-6">
+                  <section>
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Ringkasan Pembayaran</h3>
+                    <div className="bg-white p-5 rounded-xl border border-gray-200 space-y-3 text-sm text-black shadow-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Total Tagihan</span>
+                        <span className="font-bold text-lg">{formatRupiah(selectedOrder.totalHarga)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-blue-700">
+                        <span>DP Dibayar</span>
+                        <span className="font-semibold">{formatRupiah(selectedOrder.dpAmount)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-red-600 border-t border-gray-100 pt-2">
+                        <span>Sisa Pelunasan</span>
+                        <span className="font-bold">{formatRupiah(selectedOrder.sisaPembayaran)}</span>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              {/* Rincian Item (Bawah) */}
+              <section>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 pb-2">
+                  Daftar Barang ({selectedOrder.items?.length || 0})
+                </h3>
+                <div className="space-y-3">
+                  {selectedOrder.items?.map((item: any, idx: number) => (
+                    <div key={idx} className="flex flex-col sm:flex-row justify-between p-4 bg-white border border-gray-200 rounded-xl gap-4">
+                      <div>
+                        <p className="font-semibold text-black text-sm">{item.product?.namaProduk || "Produk Tidak Diketahui"}</p>
+                        <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                          {item.jenisSablon && <p>Jenis Sablon: <span className="font-medium text-blue-600">{item.jenisSablon}</span></p>}
+                          {item.deskripsiDesain && <p>Desain: {item.deskripsiDesain}</p>}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-black">{item.jumlah} Pcs</p>
+                        <p className="text-xs text-gray-500">{formatRupiah(item.hargaSatuan)} / pcs</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+            
+            {/* Footer Modal */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end flex-shrink-0">
+              <button 
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm hover:bg-gray-300 transition-colors"
+              >
+                Tutup Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================
+          MODAL UPDATE STATUS (Asli punya Anda)
+      ========================================= */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
