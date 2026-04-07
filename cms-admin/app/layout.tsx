@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Poppins } from 'next/font/google'
+
+const poppins = Poppins({ 
+  subsets: ['latin'],
+  // Pilih ketebalan (weight) yang sering dipakai: Light, Reguler, Medium, SemiBold, Bold
+  weight: ['300', '400', '500', '600', '700'], 
+  // Variabel CSS agar mudah diintegrasikan dengan Tailwind
+  variable: '--font-poppins',
+})
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,10 +35,10 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className=" ${poppins.className} min-h-full flex flex-col">
         <AuthProvider>
           {children}
         </AuthProvider>
