@@ -24,6 +24,49 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [formData, setFormData] = useState({
+    namaProduk: "",
+    deskripsi: "",
+    harga: 0,
+    stok: 0,
+    gambar: "",
+    categoryId: ""
+    });
+
+    // Fetch kategori untuk dropdown
+    useEffect(() => {
+    const fetchCats = async () => {
+        const res = await fetch("http://localhost:3001/categories");
+        const data = await res.json();
+        setCategories(data);
+    };
+    fetchCats();
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+        const res = await fetch("http://localhost:3001/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            ...formData,
+            harga: Number(formData.harga),
+            stok: Number(formData.stok)
+        }),
+        });
+        if (res.ok) {
+        setIsModalOpen(false);
+        fetchProducts(); // Refresh tabel
+        alert("Produk berhasil ditambah!");
+        }
+    } catch (error) {
+        alert("Terjadi kesalahan");
+    }
+    };
+
   // Fungsi untuk mengambil data dari Backend NestJS
   const fetchProducts = async () => {
     try {
@@ -168,5 +211,49 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+    {isModalOpen && (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h3 className="text-xl font-bold text-gray-800">Tambah Produk Baru</h3>
+            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 text-black">
+                <label className="block text-sm font-medium mb-1">Nama Produk</label>
+                <input type="text" required className="w-full border rounded-lg p-2" onChange={(e) => setFormData({...formData, namaProduk: e.target.value})} />
+            </div>
+            <div className="col-span-2 text-black">
+                <label className="block text-sm font-medium mb-1 ">Kategori</label>
+                <select required className="w-full border rounded-lg p-2" onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
+                <option value="">Pilih Kategori</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.namaKategori}</option>)}
+                </select>
+            </div>
+            <div className="text-black">
+                <label className="block text-sm font-medium mb-1">Harga (Rp)</label>
+                <input type="number" required className="w-full border rounded-lg p-2" onChange={(e) => setFormData({...formData, harga: Number(e.target.value)})} />
+            </div>
+            <div className="text-black">
+                <label className="block text-sm font-medium mb-1">Stok</label>
+                <input type="number" required className="w-full border rounded-lg p-2" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
+            </div>
+            </div>
+            <div className="text-black">
+            <label className="block text-sm font-medium mb-1 text-black">Deskripsi</label>
+            <textarea className="w-full border rounded-lg p-2" rows={3} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}></textarea>
+            </div>
+            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Simpan Produk</button>
+        </form>
+        </div>
+    </div>
+    )}
+    <button 
+  onClick={() => setIsModalOpen(true)}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium shadow-sm"
+    >
+    <Plus size={20} /> Tambah Produk
+    </button>
   );
 }

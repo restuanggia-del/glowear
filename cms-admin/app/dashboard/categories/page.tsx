@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Tag } from "lucide-react";
+import { Plus, Trash2, Tag, Edit, X } from "lucide-react";
 
 interface Category {
   id: string;
@@ -13,6 +13,8 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [newCat, setNewCat] = useState({ namaKategori: "", deskripsi: "" });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -54,82 +56,183 @@ export default function CategoriesPage() {
     }
   };
 
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory) return;
+
+    try {
+      const res = await fetch(`http://localhost:3001/categories/${editingCategory.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          namaKategori: editingCategory.namaKategori,
+          deskripsi: editingCategory.deskripsi,
+        }),
+      });
+
+      if (res.ok) {
+        setIsEditModalOpen(false);
+        setEditingCategory(null);
+        fetchCategories(); // Refresh tabel
+        alert("Kategori berhasil diupdate!");
+      } else {
+        alert("Gagal mengupdate kategori");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat update");
+    }
+  };
+
   useEffect(() => { fetchCategories(); }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Form Tambah Kategori */}
-      <div className="lg:col-span-1">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-8">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Tambah Kategori</h2>
-          <form onSubmit={handleAddCategory} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
-              <input
-                type="text"
-                required
-                value={newCat.namaKategori}
-                onChange={(e) => setNewCat({ ...newCat, namaKategori: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
-                placeholder="Contoh: Kaos Polos"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-              <textarea
-                value={newCat.deskripsi}
-                onChange={(e) => setNewCat({ ...newCat, deskripsi: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
-                rows={3}
-                placeholder="Opsional..."
-              />
-            </div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-              <Plus size={18} /> Simpan Kategori
-            </button>
-          </form>
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Form Tambah Kategori */}
+        <div className="lg:col-span-1">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-8">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">Tambah Kategori</h2>
+            <form onSubmit={handleAddCategory} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
+                <input
+                  type="text"
+                  required
+                  value={newCat.namaKategori}
+                  onChange={(e) => setNewCat({ ...newCat, namaKategori: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                  placeholder="Contoh: Kaos Polos"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                <textarea
+                  value={newCat.deskripsi}
+                  onChange={(e) => setNewCat({ ...newCat, deskripsi: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                  rows={3}
+                  placeholder="Opsional..."
+                />
+              </div>
+              <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                <Plus size={18} /> Simpan Kategori
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Daftar Kategori */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-600">Kategori</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-gray-600 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {loading ? (
+                  <tr><td colSpan={2} className="p-10 text-center text-gray-400 text-sm italic">Memuat...</td></tr>
+                ) : categories.length === 0 ? (
+                  <tr><td colSpan={2} className="p-10 text-center text-gray-400 text-sm">Belum ada kategori.</td></tr>
+                ) : (
+                  categories.map((cat) => (
+                    <tr key={cat.id} className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Tag size={18} /></div>
+                          <div>
+                            <p className="font-medium text-gray-800">{cat.namaKategori}</p>
+                            <p className="text-xs text-gray-500">{cat.deskripsi || "-"}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => {
+                              setEditingCategory(cat);
+                              setIsEditModalOpen(true);
+                            }} 
+                            className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit size={18} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(cat.id)} 
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Daftar Kategori */}
-      <div className="lg:col-span-2">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600">Kategori</th>
-                <th className="px-6 py-4 text-sm font-semibold text-gray-600 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                <tr><td colSpan={2} className="p-10 text-center text-gray-400 text-sm italic">Memuat...</td></tr>
-              ) : categories.length === 0 ? (
-                <tr><td colSpan={2} className="p-10 text-center text-gray-400 text-sm">Belum ada kategori.</td></tr>
-              ) : (
-                categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-gray-50/50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Tag size={18} /></div>
-                        <div>
-                          <p className="font-medium text-gray-800">{cat.namaKategori}</p>
-                          <p className="text-xs text-gray-500">{cat.deskripsi || "-"}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button onClick={() => handleDelete(cat.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Modal Edit diletakkan di dalam Fragment agar valid */}
+      {isEditModalOpen && editingCategory && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">Edit Kategori</h3>
+              <button 
+                onClick={() => setIsEditModalOpen(false)} 
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kategori</label>
+                <input
+                  type="text"
+                  required
+                  value={editingCategory.namaKategori}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, namaKategori: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                <textarea
+                  value={editingCategory.deskripsi || ""}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, deskripsi: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-black"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4 mt-2 border-t border-gray-50">
+                <button 
+                  type="button" 
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex justify-center items-center gap-2"
+                >
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
