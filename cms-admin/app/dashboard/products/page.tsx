@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, Image as ImageIcon, X } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Image as ImageIcon, X, Upload } from "lucide-react";
 
 interface Category {
   id: string;
@@ -24,18 +24,18 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // State untuk Modal Tambah
+  // State Modal Tambah
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // State khusus file
   const [formData, setFormData] = useState({
     namaProduk: "",
     deskripsi: "",
     harga: 0,
     stok: 0,
-    gambar: "",
     categoryId: ""
   });
 
-  // State untuk Modal Edit
+  // State Modal Edit (Sementara gambar edit tidak diubah dulu sampai backend PUT diupdate)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     id: "",
@@ -43,11 +43,9 @@ export default function ProductsPage() {
     deskripsi: "",
     harga: 0,
     stok: 0,
-    gambar: "",
     categoryId: ""
   });
 
-  // Fetch Kategori
   useEffect(() => {
     const fetchCats = async () => {
       try {
@@ -61,7 +59,6 @@ export default function ProductsPage() {
     fetchCats();
   }, []);
 
-  // Fetch Produk
   const fetchProducts = async () => {
     try {
       const response = await fetch("http://localhost:3001/products");
@@ -79,24 +76,38 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  // 1. Fungsi Tambah Produk (POST)
+  // 1. Fungsi Tambah Produk dengan Upload File
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Gunakan FormData untuk mengirim file + text
+    const submitData = new FormData();
+    submitData.append("namaProduk", formData.namaProduk);
+    submitData.append("deskripsi", formData.deskripsi);
+    submitData.append("harga", formData.harga.toString());
+    submitData.append("stok", formData.stok.toString());
+    submitData.append("categoryId", formData.categoryId);
+    
+    if (selectedFile) {
+      submitData.append("image", selectedFile); // 'image' harus sama dengan nama di backend
+    } else {
+      alert("Silakan pilih gambar produk terlebih dahulu!");
+      return;
+    }
+
     try {
       const res = await fetch("http://localhost:3001/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          harga: Number(formData.harga),
-          stok: Number(formData.stok)
-        }),
+        // PENTING: Jangan set Content-Type header saat pakai FormData agar browser otomatis mengatur 'boundary'
+        body: submitData,
       });
+
       if (res.ok) {
         setIsModalOpen(false);
         fetchProducts();
         alert("Produk berhasil ditambah!");
-        setFormData({ namaProduk: "", deskripsi: "", harga: 0, stok: 0, gambar: "", categoryId: "" });
+        setFormData({ namaProduk: "", deskripsi: "", harga: 0, stok: 0, categoryId: "" });
+        setSelectedFile(null);
       } else {
         alert("Gagal menambahkan produk.");
       }
@@ -105,7 +116,7 @@ export default function ProductsPage() {
     }
   };
 
-  // 2. Fungsi Edit Produk (PUT)
+  // 2. Fungsi Edit Produk (Sementara tanpa ganti gambar)
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -117,7 +128,6 @@ export default function ProductsPage() {
           deskripsi: editFormData.deskripsi,
           harga: Number(editFormData.harga),
           stok: Number(editFormData.stok),
-          gambar: editFormData.gambar,
           categoryId: editFormData.categoryId
         }),
       });
@@ -133,23 +143,16 @@ export default function ProductsPage() {
     }
   };
 
-  // 3. Fungsi Hapus Produk (DELETE)
   const handleDelete = async (id: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) return;
     try {
       const res = await fetch(`http://localhost:3001/products/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        fetchProducts();
-      } else {
-        alert("Gagal menghapus produk");
-      }
+      if (res.ok) fetchProducts();
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan sistem");
     }
   };
 
-  // Persiapan data untuk modal Edit
   const openEditModal = (product: Product) => {
     setEditFormData({
       id: product.id,
@@ -157,7 +160,6 @@ export default function ProductsPage() {
       deskripsi: product.deskripsi,
       harga: product.harga,
       stok: product.stok,
-      gambar: product.gambar || "",
       categoryId: product.category?.id || ""
     });
     setIsEditModalOpen(true);
@@ -167,9 +169,14 @@ export default function ProductsPage() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka);
   };
 
-  // Format ID produk menjadi kode pendek (misal: PRD-1a2b3c)
-  const formatIdProduk = (id: string) => {
-    return `PRD-${id.substring(0, 6).toUpperCase()}`;
+  const formatIdProduk = (id: string) => `PRD-${id.substring(0, 6).toUpperCase()}`;
+
+  // Fungsi helper untuk mendapatkan URL gambar
+  const getImageUrl = (path: string | null) => {
+    if (!path) return null;
+    // Jika data lama pakai URL http, langsung render. Jika data baru (file), tambah path uploads.
+    if (path.startsWith("http")) return path; 
+    return `http://localhost:3001/uploads/${path}`;
   };
 
   const filteredProducts = products.filter((product) =>
@@ -179,7 +186,7 @@ export default function ProductsPage() {
   return (
     <>
       <div className="space-y-6">
-        {/* Header */}
+        {/* Header & Search Toolbar (Sama seperti sebelumnya) */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Manajemen Produk</h1>
@@ -193,8 +200,8 @@ export default function ProductsPage() {
           </button>
         </div>
 
-        {/* Card & Tabel */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* ... (Search Bar tidak berubah) ... */}
           <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
             <div className="relative w-full max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -230,15 +237,14 @@ export default function ProductsPage() {
                 ) : (
                   filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50/50 transition-colors group">
-                      {/* Kolom ID Produk */}
                       <td className="py-4 px-6 font-mono text-sm text-gray-600">
                         {formatIdProduk(product.id)}
                       </td>
-                      {/* Kolom Info */}
                       <td className="py-4 px-6 flex items-center gap-4">
                         <div className="h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+                          {/* Menggunakan getImageUrl untuk merender gambar */}
                           {product.gambar ? (
-                            <img src={product.gambar} alt={product.namaProduk} className="h-full w-full object-cover" />
+                            <img src={getImageUrl(product.gambar)!} alt={product.namaProduk} className="h-full w-full object-cover" />
                           ) : (
                             <ImageIcon size={20} className="text-gray-400" />
                           )}
@@ -278,7 +284,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Modal Tambah Produk */}
+      {/* Modal Tambah Produk (Dengan Input File) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
@@ -287,6 +293,32 @@ export default function ProductsPage() {
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
             </div>
             <form onSubmit={handleAddSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Box Upload Custom */}
+              <div className="col-span-2 text-black mb-4">
+                <label className="block text-sm font-medium mb-2">Foto Produk</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer relative">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    required
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {selectedFile ? (
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-blue-600">{selectedFile.name}</p>
+                      <p className="text-xs text-gray-500 mt-1">Klik untuk mengganti gambar</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-gray-500">
+                      <Upload size={28} className="mb-2 text-gray-400" />
+                      <p className="text-sm font-medium">Klik atau seret gambar ke sini</p>
+                      <p className="text-xs mt-1">Format: JPG, PNG (Max. 2MB)</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 text-black">
                   <label className="block text-sm font-medium mb-1">Nama Produk</label>
@@ -307,11 +339,6 @@ export default function ProductsPage() {
                   <label className="block text-sm font-medium mb-1">Stok</label>
                   <input type="number" required value={formData.stok || ""} className="w-full border rounded-lg p-2.5 text-sm" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
                 </div>
-                {/* Input URL Gambar */}
-                <div className="col-span-2 text-black">
-                  <label className="block text-sm font-medium mb-1">URL Gambar (Opsional)</label>
-                  <input type="text" value={formData.gambar} placeholder="https://link-gambar.com/baju.jpg" className="w-full border rounded-lg p-2.5 text-sm" onChange={(e) => setFormData({...formData, gambar: e.target.value})} />
-                </div>
               </div>
               <div className="text-black">
                 <label className="block text-sm font-medium mb-1">Deskripsi</label>
@@ -326,7 +353,7 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {/* Modal Edit Produk */}
+      {/* Modal Edit Produk (Tanpa Edit Gambar Dulu) */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
@@ -354,10 +381,6 @@ export default function ProductsPage() {
                 <div className="text-black">
                   <label className="block text-sm font-medium mb-1">Stok</label>
                   <input type="number" required value={editFormData.stok} className="w-full border rounded-lg p-2.5 text-sm" onChange={(e) => setEditFormData({...editFormData, stok: Number(e.target.value)})} />
-                </div>
-                <div className="col-span-2 text-black">
-                  <label className="block text-sm font-medium mb-1">URL Gambar (Opsional)</label>
-                  <input type="text" value={editFormData.gambar} placeholder="https://link-gambar.com/baju.jpg" className="w-full border rounded-lg p-2.5 text-sm" onChange={(e) => setEditFormData({...editFormData, gambar: e.target.value})} />
                 </div>
               </div>
               <div className="text-black">
