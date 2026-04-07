@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { api } from "./services/api";
+import { router } from "expo-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -56,7 +57,10 @@ export default function Login() {
       </View>
 
       <Text style={styles.footer}>
-        Belum punya akun? <Text style={styles.link}>Daftar</Text>
+        Belum punya akun?{" "}
+        <Text style={styles.link} onPress={() => router.push("/register")}>
+          Daftar
+        </Text>
       </Text>
     </View>
   );
