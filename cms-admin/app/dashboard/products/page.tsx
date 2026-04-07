@@ -361,7 +361,7 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {/* Modal Edit Produk (Tanpa Edit Gambar Dulu) */}
+      {/* Modal Edit Produk */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
@@ -370,6 +370,31 @@ export default function ProductsPage() {
               <button onClick={() => setIsEditModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
             </div>
             <form onSubmit={handleEditSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              
+              {/* Box Upload Gambar Edit */}
+              <div className="col-span-2 text-black mb-4">
+                <label className="block text-sm font-medium mb-2">Foto Produk (Biarkan kosong jika tidak ingin ganti)</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer relative">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => setEditSelectedFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {editSelectedFile ? (
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-blue-600">{editSelectedFile.name}</p>
+                      <p className="text-xs text-gray-500 mt-1">Klik untuk mengganti gambar</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-gray-500">
+                      <Upload size={28} className="mb-2 text-gray-400" />
+                      <p className="text-sm font-medium">Klik untuk ganti gambar baru</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 text-black">
                   <label className="block text-sm font-medium mb-1">Nama Produk</label>
@@ -396,7 +421,7 @@ export default function ProductsPage() {
                 <textarea required value={editFormData.deskripsi} className="w-full border rounded-lg p-2.5 text-sm" rows={3} onChange={(e) => setEditFormData({...editFormData, deskripsi: e.target.value})}></textarea>
               </div>
               <div className="flex gap-3 pt-4 border-t border-gray-50">
-                <button type="button" onClick={() => setIsEditModalOpen(false)} className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium">Batal</button>
+                <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFile(null); }} className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium">Batal</button>
                 <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700">Simpan Perubahan</button>
               </div>
             </form>
