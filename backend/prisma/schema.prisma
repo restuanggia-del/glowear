@@ -90,6 +90,7 @@ enum JenisSablon {
 model Order {
   id     String @id @default(uuid())
   userId String
+  pengguna         Pengguna      @relation(fields: [userId], references: [id])
 
   // Sistem Pembayaran & DP
   totalHarga       Int

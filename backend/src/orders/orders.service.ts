@@ -76,6 +76,23 @@ export class OrdersService {
     });
   }
 
+  async findPendingVerification() {
+    return this.prisma.order.findMany({
+      where: {
+        buktiPembayaran: { not: null }, // Sudah upload bukti
+        statusPembayaran: { not: 'LUNAS' } // Tapi belum lunas (atau masih DP)
+      },
+      include: {
+        // Kita asumsikan relasi ke model Pengguna bernama 'user'
+        // Jika di schema Anda namanya 'pengguna', ganti jadi pengguna: true
+        pengguna: {
+          select: { nama: true, email: true }
+        }
+      },
+      orderBy: { waktuDiupdate: 'asc' } // Yang duluan upload tampil di atas
+    });
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} order`;
   }
