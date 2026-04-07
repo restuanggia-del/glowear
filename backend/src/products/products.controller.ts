@@ -42,8 +42,21 @@ export class ProductsController {
 
   // Menggunakan PUT sesuai permintaan Anda
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  @UseInterceptors(FileInterceptor('image', multerOptions)) // Tambahkan interceptor
+  async update(
+    @Param('id') id: string, 
+    @Body() updateProductDto: any,
+    @UploadedFile() file?: Express.Multer.File // File bersifat opsional saat edit
+  ) {
+    // Konversi string dari FormData menjadi number
+    const data = {
+      ...updateProductDto,
+      harga: parseInt(updateProductDto.harga),
+      stok: parseInt(updateProductDto.stok),
+    };
+
+    // Kirim data dan filename (jika ada) ke service
+    return this.productsService.update(id, data, file?.filename);
   }
 
   @Delete(':id')

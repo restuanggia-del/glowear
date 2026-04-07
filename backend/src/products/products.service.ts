@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import * as fs from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class ProductsService {
@@ -39,13 +41,29 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
-    // Cek apakah produk ada sebelum update
-    await this.findOne(id);
+  async update(id: string, updateProductDto: any, imageFilename?: string) {
+    // 1. Cari produk lama untuk mengecek apakah dia punya gambar
+    const existingProduct = await this.findOne(id);
+
+    // 2. Siapkan data yang akan diupdate
+    const dataToUpdate: any = { ...updateProductDto };
+
+    // 3. Jika user mengunggah gambar baru
+    if (imageFilename) {
+      dataToUpdate.gambar = imageFilename; // Update nama file di DB
+
+      // 4. Hapus gambar lama dari folder uploads (jika ada)
+      if (existingProduct.gambar) {
+        const oldImagePath = join(process.cwd(), 'uploads', existingProduct.gambar);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath); // Hapus file fisik
+        }
+      }
+    }
 
     return this.prisma.product.update({
       where: { id },
-      data: updateProductDto,
+      data: dataToUpdate,
     });
   }
 
