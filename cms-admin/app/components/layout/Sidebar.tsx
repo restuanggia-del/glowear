@@ -12,7 +12,8 @@ import {
   ShoppingBag,
   FolderTree,
   Shirt,
-  BanknoteArrowUp
+  BanknoteArrowUp,
+  Users
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState } from 'react';
@@ -108,15 +109,15 @@ export default function Sidebar() {
         </div>
 
         {/* Menu Pesanan (Persiapan untuk nanti) */}
-        {/* <Link
-          href="/dashboard/orders"
+        <Link
+          href="/dashboard/users"
           className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-            pathname.includes('/dashboard/orders') ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
+            pathname.includes('/dashboard/users') ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
           }`}
         >
-          <ShoppingBag size={20} />
-          <span className="font-medium">Pesanan Masuk</span>
-        </Link> */}
+          <Users size={20} />
+          <span className="font-medium">Pengguna</span>
+        </Link>
       </nav>
 
       {/* Tombol Logout */}
