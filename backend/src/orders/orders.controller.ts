@@ -12,6 +12,11 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
+  @Get('pending-verification')
+  findPendingVerification() {
+    return this.ordersService.findPendingVerification();
+  }
+
   @Put(':id/status')
   updateStatus(
     @Param('id') id: string,
@@ -32,11 +37,6 @@ export class OrdersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(+id);
-  }
-
-  @Get('pending-verification')
-  findPendingVerification() {
-    return this.ordersService.findPendingVerification();
   }
 
   @Patch(':id')
