@@ -103,6 +103,10 @@ model Order {
   waktuDibuat      DateTime @default(now())
   waktuDiupdate    DateTime @updatedAt
 
+  //verifikasi pembayaran
+  buktiPembayaran  String?
+  tanggalBayar     DateTime?
+
   items OrderItem[]
 
   @@map("orders")
