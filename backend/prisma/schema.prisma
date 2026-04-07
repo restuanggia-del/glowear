@@ -43,16 +43,88 @@ model Category {
 }
 
 model Product {
-  id            String   @id @default(uuid())
+  id            String      @id @default(uuid())
   namaProduk    String
-  deskripsi     String   @db.Text
-  harga         Int      
-  stok          Int      @default(0)
-  gambar        String?  
+  deskripsi     String      @db.Text
+  harga         Int
+  stok          Int         @default(0)
+  gambar        String?
   categoryId    String
-  category      Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  waktuDibuat   DateTime @default(now())
-  waktuDiupdate DateTime @updatedAt
+  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  waktuDibuat   DateTime    @default(now())
+  waktuDiupdate DateTime    @updatedAt
+  OrderItem     OrderItem[]
 
   @@map("products")
+}
+
+enum OrderStatus {
+  PENDING
+  DIPROSES
+  DIKIRIM
+  SELESAI
+  DIBATALKAN
+}
+
+enum DesignStatus {
+  MENUNGGU
+  DISETUJUI
+  DITOLAK
+}
+
+enum PaymentStatus {
+  BELUM_BAYAR
+  DP
+  LUNAS
+}
+
+enum JenisSablon {
+  PLASTISOL
+  RUBBER
+  DISCHARGE
+  DTF
+  DTG
+}
+
+// --- UPDATE TABEL ORDER ---
+model Order {
+  id     String @id @default(uuid())
+  userId String
+
+  // Sistem Pembayaran & DP
+  totalHarga       Int
+  dpAmount         Int           @default(0)
+  sisaPembayaran   Int           @default(0)
+  statusPembayaran PaymentStatus @default(BELUM_BAYAR)
+  status           OrderStatus   @default(PENDING)
+
+  alamatPengiriman String   @db.Text
+  waktuDibuat      DateTime @default(now())
+  waktuDiupdate    DateTime @updatedAt
+
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+// --- UPDATE TABEL ORDER ITEM ---
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  jumlah      Int
+  hargaSatuan Int
+
+  // desain costum
+  jenisSablon     JenisSablon?
+  gambarDesain    String?
+  deskripsiDesain String?      @db.Text
+  statusDesain    DesignStatus @default(MENUNGGU)
+  catatanAdmin    String?      @db.Text
+
+  @@map("order_items")
 }
