@@ -10,7 +10,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   ShoppingBag,
-  FolderTree
+  FolderTree,
+  Shirt
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState } from 'react';
@@ -43,6 +44,16 @@ export default function Sidebar() {
         >
           <LayoutDashboard size={20} />
           <span className="font-medium">Dashboard</span>
+        </Link>
+
+        <Link
+          href="/dashboard/custom-designs"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            pathname === '/dashboard/custom-designs' ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
+          }`}
+        >
+          <Shirt size={20} />
+          <span className="font-medium">Custom Design</span>
         </Link>
 
         {/* Dropdown Menu Katalog */}
