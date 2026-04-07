@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Inbox } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+    { name: "Kategori", icon: Inbox, path: "/dashboard/categories" },
     { name: 'Produk', icon: Package, path: '/dashboard/products' },
   ];
 
