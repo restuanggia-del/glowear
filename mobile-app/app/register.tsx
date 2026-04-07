@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { api } from "./services/api";
+import { router } from "expo-router";
 
 export default function Register() {
   const [nama, setNama] = useState("");
@@ -75,7 +76,10 @@ export default function Register() {
       </View>
 
       <Text style={styles.footer}>
-        Sudah punya akun? <Text style={styles.link}>Login</Text>
+        Sudah punya akun?{" "}
+        <Text style={styles.link} onPress={() => router.push("/login")}>
+          Login
+        </Text>
       </Text>
     </View>
   );
