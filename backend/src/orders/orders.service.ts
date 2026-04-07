@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,6 +8,9 @@ export class OrdersService {
   constructor(private prisma: PrismaService) {}
   // Tambahkan fungsi ini di bawah constructor
   async create(createOrderDto: any) {
+    if (!createOrderDto.items || !Array.isArray(createOrderDto.items) || createOrderDto.items.length === 0) {
+      throw new BadRequestException('Pesanan gagal dibuat: Item barang tidak boleh kosong.');
+    }
     // Hitung total harga otomatis berdasarkan item yang dibeli
     const totalHarga = createOrderDto.items.reduce(
       (sum: number, item: any) => sum + (item.jumlah * item.hargaSatuan), 

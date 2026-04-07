@@ -99,6 +99,7 @@ model Order {
   status           OrderStatus   @default(PENDING)
 
   alamatPengiriman String   @db.Text
+  catatanCustom    String?  @db.Text
   waktuDibuat      DateTime @default(now())
   waktuDiupdate    DateTime @updatedAt
 
