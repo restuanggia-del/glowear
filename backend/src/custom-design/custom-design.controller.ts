@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { CustomDesignService } from './custom-design.service';
 import { CreateCustomDesignDto } from './dto/create-custom-design.dto';
 import { UpdateCustomDesignDto } from './dto/update-custom-design.dto';
@@ -20,6 +20,15 @@ export class CustomDesignController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.customDesignService.findOne(+id);
+  }
+
+  // Untuk Admin: Approve / Reject desain
+  @Put(':id/review')
+  reviewDesign(
+    @Param('id') id: string, 
+    @Body() reviewData: { statusDesain: 'DISETUJUI' | 'DITOLAK', catatanAdmin: string }
+  ) {
+    return this.customDesignService.reviewDesign(id, reviewData);
   }
 
   @Patch(':id')
