@@ -8,6 +8,7 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { CustomDesignModule } from './custom-design/custom-design.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CustomDesignModule } from './custom-design/custom-design.module';
     ProductsModule,
     CategoriesModule,
     CustomDesignModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
