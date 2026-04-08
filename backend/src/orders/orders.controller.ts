@@ -12,25 +12,40 @@ export class OrdersController {
 
   @Post()
   @UseInterceptors(FileInterceptor('fileDesain', {
-  storage: diskStorage({
-    destination: './uploads/designs', // Pastikan folder ini dibuat
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `design-${uniqueSuffix}${extname(file.originalname)}`);
-    },
-  }),
-}))
-async create(@UploadedFile() file: Express.Multer.File, @Body() createOrderDto: any) {
-  // Kita tambahkan nama file ke dalam DTO sebelum dikirim ke service
-  const data = {
-    ...createOrderDto,
-    desain: file ? file.filename : null,
-    // Pastikan konversi tipe data karena dari form-data biasanya terbaca string
-    totalHarga: Number(createOrderDto.totalHarga),
-    userId: createOrderDto.userId, 
-  };
-  return this.ordersService.create(data);
-}
+    storage: diskStorage({
+      destination: './uploads/designs',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `design-${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  // PASTIKAN parameter @Body() menggunakan tipe 'any' agar tidak diblokir otomatis
+  create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    
+    // 1. Terjemahkan string JSON dari Frontend menjadi Array Asli
+    let parsedItems = [];
+    if (typeof body.items === 'string') {
+      try {
+        parsedItems = JSON.parse(body.items);
+      } catch (e) {
+        console.error("Gagal membaca data items");
+      }
+    } else if (Array.isArray(body.items)) {
+      parsedItems = body.items;
+    }
+
+    // 2. Susun ulang datanya
+    const finalData = {
+      ...body,
+      userId: body.userId,
+      totalHarga: Number(body.totalHarga), // Pastikan jadi angka
+      desain: file ? file.filename : null, // Simpan nama file gambar
+      items: parsedItems, // Masukkan array yang sudah diterjemahkan
+    };
+
+    return this.ordersService.create(finalData);
+  }
 
   @Get('pending-verification')
   findPendingVerification() {

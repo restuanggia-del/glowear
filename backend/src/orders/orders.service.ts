@@ -41,29 +41,31 @@ export class OrdersService {
       orders
     };
   }
-  async create(createOrderDto: any) {
-    if (!createOrderDto.items || !Array.isArray(createOrderDto.items) || createOrderDto.items.length === 0) {
-      throw new BadRequestException('Pesanan gagal dibuat: Item barang tidak boleh kosong.');
+  async create(data: any) {
+    // Validasi pencegahan error
+    if (!data.items || data.items.length === 0) {
+      throw new Error('Pesanan gagal dibuat: Item barang tidak boleh kosong.');
     }
-    // Hitung total harga otomatis berdasarkan item yang dibeli
-    const totalHarga = createOrderDto.items.reduce(
-      (sum: number, item: any) => sum + (item.jumlah * item.hargaSatuan), 
-      0
-    );
 
+    // Format data untuk disimpan ke Prisma
     return this.prisma.order.create({
       data: {
-        userId: createOrderDto.userId, // Untuk sementara kita pakai ID dummy
-        alamatPengiriman: createOrderDto.alamatPengiriman,
-        totalHarga: totalHarga,
-        catatanCustom: createOrderDto.catatanCustom,
+        userId: data.userId,
+        totalHarga: data.totalHarga,
+        alamatPengiriman: data.alamatPengiriman,
+        catatanCustom: data.catatanCustom,
+        statusPembayaran: 'BELUM_BAYAR',
+        status: 'PENDING',
+        // Jika Anda punya kolom 'desain' di database, buka komentar di bawah ini:
+        // desain: data.desain, 
+        
+        // Simpan data item ke tabel berelasi (OrderItems)
         items: {
-          create: createOrderDto.items.map((item: any) => ({
+          create: data.items.map((item: any) => ({
             productId: item.productId,
             jumlah: item.jumlah,
             hargaSatuan: item.hargaSatuan,
             jenisSablon: item.jenisSablon,
-            deskripsiDesain: item.deskripsiDesain,
           })),
         },
       },
