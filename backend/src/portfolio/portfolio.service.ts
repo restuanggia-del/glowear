@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PortfolioService {
-  create(createPortfolioDto: CreatePortfolioDto) {
-    return 'This action adds a new portfolio';
+  constructor(private prisma: PrismaService) {}
+  create(data: any) {
+    return this.prisma.portofolio.create({ data });
   }
 
   findAll() {
-    return `This action returns all portfolio`;
+    return this.prisma.portofolio.findMany({ 
+      orderBy: { waktuDibuat: 'desc' } 
+    });
   }
 
   findOne(id: number) {
@@ -20,7 +24,9 @@ export class PortfolioService {
     return `This action updates a #${id} portfolio`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} portfolio`;
+  remove(id: string) {
+    return this.prisma.portofolio.delete({ 
+      where: { id } 
+    });
   }
 }
