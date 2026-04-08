@@ -148,3 +148,14 @@ model PengaturanToko {
 
   @@map("pengaturan_toko")
 }
+
+model Banner {
+  id          String   @id @default(uuid())
+  judul       String
+  gambar      String
+  link        String?
+  status      Boolean  @default(true)
+  waktuDibuat DateTime @default(now())
+
+  @@map("banners")
+}
