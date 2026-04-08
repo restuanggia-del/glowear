@@ -17,7 +17,8 @@ import {
   HandCoins,
   Settings,
   Flag,
-  MonitorSmartphone
+  MonitorSmartphone,
+  ChartCandlestick
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState, useEffect } from 'react';
@@ -184,6 +185,14 @@ export default function Sidebar() {
                 }`}
               >
                 <Flag size={18} /> Banner Promo
+              </Link>
+              <Link
+                href="/dashboard/portfolio"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                  pathname.includes('/dashboard/portfolio') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                }`}
+              >
+                <ChartCandlestick size={18} /> Portofolio
               </Link>
               <Link
                 href="/dashboard/settings"
