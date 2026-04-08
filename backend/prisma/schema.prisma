@@ -135,3 +135,16 @@ model OrderItem {
 
   @@map("order_items")
 }
+
+model PengaturanToko {
+  id              Int      @id @default(1)
+  namaToko        String   @default("Glowear")
+  whatsappCS      String?
+  namaBank        String?
+  nomorRekening   String?
+  atasNamaBank    String?
+  syaratKetentuan String?  @db.Text
+  waktuDiubah     DateTime @updatedAt
+
+  @@map("pengaturan_toko")
+}
