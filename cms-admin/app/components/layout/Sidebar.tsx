@@ -19,7 +19,13 @@ import {
   Flag,
   MonitorSmartphone,
   ChartCandlestick,
-  SquareLibrary
+  SquareLibrary,
+  Smartphone,
+  Store,
+  Palette,
+  Clock4,
+  Truck,
+  UserCircle
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState, useEffect } from 'react';
@@ -28,21 +34,25 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
   
-  // Deteksi URL aktif untuk masing-masing grup
-  const isOrderActive = pathname.includes('/dashboard/orders') || pathname.includes('/dashboard/payments') || pathname.includes('/dashboard/custom-designs');
+  // Deteksi URL aktif Admin
+  const isOrderActive = pathname.includes('/dashboard/orders') || pathname.includes('/dashboard/payments') || pathname.includes('/dashboard/custom-designs') || pathname.includes('/dashboard/reports');
   const isCatalogActive = pathname.includes('/dashboard/products') || pathname.includes('/dashboard/categories');
-  const isSystemActive = pathname.includes('/dashboard/users') || pathname.includes('/dashboard/settings') || pathname.includes('/dashboard/banners');
+  const isSystemActive = pathname.includes('/dashboard/users') || pathname.includes('/dashboard/settings') || pathname.includes('/dashboard/banners') || pathname.includes('/dashboard/portfolio');
 
-  // State Dropdown (Otomatis terbuka jika salah satu sub-menunya sedang aktif)
+  // Deteksi URL aktif Pelanggan
+  const isPelangganActive = pathname.includes('/dashboard/pelanggan');
+
+  // State Dropdown
   const [isOrderOpen, setIsOrderOpen] = useState(isOrderActive);
   const [isCatalogOpen, setIsCatalogOpen] = useState(isCatalogActive);
   const [isSystemOpen, setIsSystemOpen] = useState(isSystemActive);
+  const [isPelangganOpen, setIsPelangganOpen] = useState(isPelangganActive || true);
 
-  // Efek untuk membuka dropdown otomatis jika URL berubah dari luar
   useEffect(() => {
     if (isOrderActive) setIsOrderOpen(true);
     if (isCatalogActive) setIsCatalogOpen(true);
     if (isSystemActive) setIsSystemOpen(true);
+    if (isPelangganActive) setIsPelangganOpen(true);
   }, [pathname]);
 
   return (
@@ -54,164 +64,110 @@ export default function Sidebar() {
         </h1>
       </div>
 
-      <nav className="flex-1 py-6 px-4 space-y-6 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 py-6 px-4 space-y-8 overflow-y-auto custom-scrollbar">
         
-        {/* ================= BAGIAN 1: UTAMA ================= */}
-        <div className="space-y-1">
-          <Link
-            href="/dashboard"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              pathname === '/dashboard' ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <LayoutDashboard size={20} />
-            <span className="font-medium">Dashboard</span>
-          </Link>
-        </div>
+        {/* ========================================================
+            BLOK 1: AREA ADMIN (Dapur Utama)
+        ======================================================== */}
+        <div className="space-y-6">
+          <div>
+            <p className="px-4 text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+              Area Admin
+            </p>
+            <Link
+              href="/dashboard"
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                pathname === '/dashboard' ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <LayoutDashboard size={20} />
+              <span className="font-medium">Dashboard</span>
+            </Link>
+          </div>
 
-        {/* ================= BAGIAN 2: TRANSAKSI ================= */}
-        <div>
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pemesanan</p>
-          <button
-            onClick={() => setIsOrderOpen(!isOrderOpen)}
-            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              isOrderActive && !isOrderOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <ShoppingBag size={20} className={isOrderActive ? "text-blue-500" : ""} />
-              <span className="font-medium">Transaksi</span>
+          {/* Transaksi */}
+          <div>
+            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pemesanan</p>
+            <button onClick={() => setIsOrderOpen(!isOrderOpen)} className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isOrderActive && !isOrderOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <div className="flex items-center gap-3"><ShoppingBag size={20} className={isOrderActive ? "text-blue-500" : ""} /><span className="font-medium">Transaksi</span></div>
+              {isOrderOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ${isOrderOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+              <div className="pl-11 pr-2 space-y-1">
+                <Link href="/dashboard/orders" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/orders') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><BanknoteArrowUp size={18} /> Pesanan Masuk</Link>
+                <Link href="/dashboard/payments" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/payments') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><HandCoins size={18} /> Verifikasi Bayar</Link>
+                <Link href="/dashboard/custom-designs" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/custom-designs') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Shirt size={18} /> Custom Design</Link>
+                <Link href="/dashboard/reports" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/reports') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><SquareLibrary size={18} /> Laporan</Link>
+              </div>
             </div>
-            {isOrderOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
+          </div>
 
-          <div className={`overflow-hidden transition-all duration-300 ${isOrderOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-            <div className="pl-11 pr-2 space-y-1">
-              <Link
-                href="/dashboard/orders"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/orders') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <BanknoteArrowUp size={18} /> Pesanan Masuk
-              </Link>
-              <Link
-                href="/dashboard/payments"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/payments') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <HandCoins size={18} /> Verifikasi Bayar
-              </Link>
-              <Link
-                href="/dashboard/custom-designs"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/custom-designs') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Shirt size={18} /> Custom Design
-              </Link>
-              <Link
-                href="/dashboard/reports"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/reports') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <SquareLibrary size={18} /> Laporan
-              </Link>
+          {/* Katalog */}
+          <div>
+            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Master Data</p>
+            <button onClick={() => setIsCatalogOpen(!isCatalogOpen)} className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isCatalogActive && !isCatalogOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <div className="flex items-center gap-3"><FolderTree size={20} className={isCatalogActive ? "text-blue-500" : ""} /><span className="font-medium">Katalog</span></div>
+              {isCatalogOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ${isCatalogOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+              <div className="pl-11 pr-2 space-y-1">
+                <Link href="/dashboard/categories" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/categories') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Layers size={18} /> Kategori</Link>
+                <Link href="/dashboard/products" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/products') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Package size={18} /> Produk</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Sistem Web */}
+          <div>
+            <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pengaturan</p>
+            <button onClick={() => setIsSystemOpen(!isSystemOpen)} className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isSystemActive && !isSystemOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <div className="flex items-center gap-3"><MonitorSmartphone size={20} className={isSystemActive ? "text-blue-500" : ""} /><span className="font-medium">Sistem Web</span></div>
+              {isSystemOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ${isSystemOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+              <div className="pl-11 pr-2 space-y-1">
+                <Link href="/dashboard/users" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/users') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Users size={18} /> Pengguna</Link>
+                <Link href="/dashboard/banners" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/banners') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Flag size={18} /> Banner Promo</Link>
+                <Link href="/dashboard/portfolio" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/portfolio') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><ChartCandlestick size={18} /> Portofolio</Link>
+                <Link href="/dashboard/settings" className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/settings') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Settings size={18} /> Toko & Kontak</Link>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ================= BAGIAN 3: KATALOG ================= */}
-        <div>
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Master Data</p>
-          <button
-            onClick={() => setIsCatalogOpen(!isCatalogOpen)}
-            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              isCatalogActive && !isCatalogOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <FolderTree size={20} className={isCatalogActive ? "text-blue-500" : ""} />
-              <span className="font-medium">Katalog</span>
-            </div>
-            {isCatalogOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
+        {/* ========================================================
+            BLOK 2: AREA PELANGGAN (Simulasi Mobile / Client)
+        ======================================================== */}
+        <div className="pt-6 border-t border-slate-700/50">
+          <p className="px-4 text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+            Simulasi Mobile App
+          </p>
+          
+          <div className="bg-slate-800/30 rounded-xl p-2 border border-slate-700/50 space-y-1">
+            <Link href="/dashboard/pelanggan/beranda" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/beranda' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <Smartphone size={18} /> Beranda App
+            </Link>
 
-          <div className={`overflow-hidden transition-all duration-300 ${isCatalogOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-            <div className="pl-11 pr-2 space-y-1">
-              <Link
-                href="/dashboard/categories"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/categories') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Layers size={18} /> Kategori
-              </Link>
-              <Link
-                href="/dashboard/products"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/products') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Package size={18} /> Produk
-              </Link>
-            </div>
-          </div>
-        </div>
+            <Link href="/dashboard/pelanggan/katalog" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/katalog' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <Store size={18} /> Pilih Baju Polos
+            </Link>
 
-        {/* ================= BAGIAN 4: SISTEM & WEB ================= */}
-        <div>
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pengaturan</p>
-          <button
-            onClick={() => setIsSystemOpen(!isSystemOpen)}
-            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              isSystemActive && !isSystemOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <MonitorSmartphone size={20} className={isSystemActive ? "text-blue-500" : ""} />
-              <span className="font-medium">Sistem Web</span>
-            </div>
-            {isSystemOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
+            <Link href="/dashboard/pelanggan/pesan" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/pesan' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <Palette size={18} /> Studio Custom
+            </Link>
 
-          <div className={`overflow-hidden transition-all duration-300 ${isSystemOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-            <div className="pl-11 pr-2 space-y-1">
-              <Link
-                href="/dashboard/users"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/users') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Users size={18} /> Pengguna
-              </Link>
-              <Link
-                href="/dashboard/banners"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/banners') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Flag size={18} /> Banner Promo
-              </Link>
-              <Link
-                href="/dashboard/portfolio"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/portfolio') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <ChartCandlestick size={18} /> Portofolio
-              </Link>
-              <Link
-                href="/dashboard/settings"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
-                  pathname.includes('/dashboard/settings') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
-              >
-                <Settings size={18} /> Toko & Kontak
-              </Link>
-            </div>
+            <Link href="/dashboard/pelanggan/tagihan" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/tagihan' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <Clock4 size={18} /> Tagihan & Struk
+            </Link>
+
+            {/* Fitur Tambahan Krusial */}
+            <Link href="/dashboard/pelanggan/lacak" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/lacak' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <Truck size={18} /> Lacak Pesanan
+            </Link>
+
+            <Link href="/dashboard/pelanggan/profil" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/profil' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
+              <UserCircle size={18} /> Profil & Alamat
+            </Link>
           </div>
         </div>
 
