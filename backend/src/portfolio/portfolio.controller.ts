@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { PortfolioService } from './portfolio.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('portfolio')
 export class PortfolioController {
   constructor(private readonly portfolioService: PortfolioService) {}
 
   @Post()
-  create(@Body() createPortfolioDto: CreatePortfolioDto) {
-    return this.portfolioService.create(createPortfolioDto);
+  @UseInterceptors(FileInterceptor('gambar', {
+    storage: diskStorage({
+      destination: './uploads/portfolio',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `portfolio-${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    return this.portfolioService.create({
+      judul: body.judul,
+      deskripsi: body.deskripsi,
+      kategori: body.kategori,
+      gambar: file.filename,
+    });
   }
 
   @Get()
