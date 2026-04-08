@@ -112,10 +112,14 @@ export default function KatalogPelangganPage() {
               <div className="aspect-square bg-gray-50 relative overflow-hidden flex items-center justify-center p-6">
                 {product.gambar ? (
                   <img 
-                    src={`http://localhost:3001/uploads/products/${product.gambar}`} 
+                    src={`http://localhost:3001/uploads/${product.gambar}`} 
                     alt={product.namaProduk} 
                     className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
-                  />
+                    onError={(e) => {
+                        // Jika gambar dari backend tidak ditemukan, ganti dengan gambar cadangan ini otomatis
+                        e.currentTarget.src = "https://placehold.co/400x400/f8fafc/94a3b8?text=Tidak+Ada+Gambar";
+                    }}
+                    />
                 ) : (
                   // Placeholder jika admin belum upload gambar produk
                   <div className="w-full h-full bg-gray-100 rounded-xl flex flex-col items-center justify-center text-gray-400">
