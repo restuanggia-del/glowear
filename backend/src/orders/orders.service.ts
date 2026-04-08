@@ -6,7 +6,41 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
-  // Tambahkan fungsi ini di bawah constructor
+  async getFinancialReport(month: number, year: number) {
+    // Cari tanggal awal dan akhir bulan yang dipilih
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const orders = await this.prisma.order.findMany({
+      where: {
+        waktuDibuat: {
+          gte: startDate,
+          lt: endDate,
+        },
+        // Hanya hitung pesanan yang minimal sudah DP atau LUNAS
+        statusPembayaran: { in: ['DP', 'LUNAS'] }
+      },
+      include: {
+        pengguna: { select: { nama: true } },
+      },
+      orderBy: { waktuDibuat: 'asc' }
+    });
+
+    // Kalkulasi Total
+    const totalOmzet = orders.reduce((sum, order) => sum + (order.totalHarga || 0), 0);
+    const totalDPMasuk = orders.reduce((sum, order) => sum + (order.dpAmount || 0), 0);
+    const pesananSelesai = orders.filter(o => o.status === 'SELESAI').length;
+
+    return {
+      summary: {
+        totalOmzet,
+        totalDP: totalDPMasuk,
+        totalPesanan: orders.length,
+        pesananSelesai
+      },
+      orders
+    };
+  }
   async create(createOrderDto: any) {
     if (!createOrderDto.items || !Array.isArray(createOrderDto.items) || createOrderDto.items.length === 0) {
       throw new BadRequestException('Pesanan gagal dibuat: Item barang tidak boleh kosong.');
