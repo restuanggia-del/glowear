@@ -12,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { UsersModule } from './users/users.module';
 import { SettingsModule } from './settings/settings.module';
 import { BannersModule } from './banners/banners.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BannersModule } from './banners/banners.module';
     UsersModule,
     SettingsModule,
     BannersModule,
+    PortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
