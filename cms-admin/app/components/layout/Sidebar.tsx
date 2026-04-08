@@ -14,7 +14,8 @@ import {
   Shirt,
   BanknoteArrowUp,
   Users,
-  HandCoins
+  HandCoins,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState } from 'react';
@@ -128,6 +129,15 @@ export default function Sidebar() {
         >
           <Users size={20} />
           <span className="font-medium">Pengguna</span>
+        </Link>
+        <Link
+          href="/dashboard/settings"
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            pathname.includes('/dashboard/settings') ? "bg-blue-600 text-white shadow-md" : "hover:bg-slate-800 hover:text-white"
+          }`}
+        >
+          <Settings size={20} />
+          <span className="font-medium">Pengaturan</span>
         </Link>
       </nav>
 
