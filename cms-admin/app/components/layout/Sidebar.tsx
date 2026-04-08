@@ -18,7 +18,8 @@ import {
   Settings,
   Flag,
   MonitorSmartphone,
-  ChartCandlestick
+  ChartCandlestick,
+  SquareLibrary
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState, useEffect } from 'react';
@@ -109,6 +110,14 @@ export default function Sidebar() {
                 }`}
               >
                 <Shirt size={18} /> Custom Design
+              </Link>
+              <Link
+                href="/dashboard/reports"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                  pathname.includes('/dashboard/reports') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                }`}
+              >
+                <SquareLibrary size={18} /> Laporan
               </Link>
             </div>
           </div>
