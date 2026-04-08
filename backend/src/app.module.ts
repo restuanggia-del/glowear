@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { CustomDesignModule } from './custom-design/custom-design.module';
 import { OrdersModule } from './orders/orders.module';
 import { UsersModule } from './users/users.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     CustomDesignModule,
     OrdersModule,
     UsersModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
