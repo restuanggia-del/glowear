@@ -11,6 +11,7 @@ import { CustomDesignModule } from './custom-design/custom-design.module';
 import { OrdersModule } from './orders/orders.module';
 import { UsersModule } from './users/users.module';
 import { SettingsModule } from './settings/settings.module';
+import { BannersModule } from './banners/banners.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SettingsModule } from './settings/settings.module';
     OrdersModule,
     UsersModule,
     SettingsModule,
+    BannersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
