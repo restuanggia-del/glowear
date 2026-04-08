@@ -10,6 +10,26 @@ import { extname } from 'path';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  // Endpoint khusus untuk upload bukti pembayaran (struk)
+  @Post(':id/upload-receipt')
+  @UseInterceptors(FileInterceptor('struk', {
+    storage: diskStorage({
+      // Kita simpan langsung di folder uploads agar mudah dibaca oleh Admin
+      destination: './uploads', 
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `struk-${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  uploadReceipt(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    // Panggil service untuk memperbarui nama file di database
+    return this.ordersService.update(id, {
+      buktiPembayaran: file.filename,
+      // Kita tidak mengubah status menjadi LUNAS di sini, karena Admin yang harus verifikasi
+    });
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('fileDesain', {
     storage: diskStorage({
@@ -47,26 +67,6 @@ export class OrdersController {
     return this.ordersService.create(finalData);
   }
 
-  // Endpoint khusus untuk upload bukti pembayaran (struk)
-  @Post(':id/upload-receipt')
-  @UseInterceptors(FileInterceptor('struk', {
-    storage: diskStorage({
-      // Kita simpan langsung di folder uploads agar mudah dibaca oleh Admin
-      destination: './uploads', 
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `struk-${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
-  }))
-  uploadReceipt(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-    // Panggil service untuk memperbarui nama file di database
-    return this.ordersService.update(id, {
-      buktiPembayaran: file.filename,
-      // Kita tidak mengubah status menjadi LUNAS di sini, karena Admin yang harus verifikasi
-    });
-  }
-
   @Get('pending-verification')
   findPendingVerification() {
     return this.ordersService.findPendingVerification();
@@ -100,11 +100,6 @@ export class OrdersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
   }
 
   @Delete(':id')

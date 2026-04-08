@@ -133,8 +133,12 @@ export class OrdersService {
     return `This action returns a #${id} order`;
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  // Fungsi untuk update data order secara umum (seperti nambah struk)
+  async update(id: string, updateData: any) {
+    return this.prisma.order.update({
+      where: { id },
+      data: updateData,
+    });
   }
 
   remove(id: number) {
