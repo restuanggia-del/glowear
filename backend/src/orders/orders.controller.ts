@@ -1,16 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: any) {
-    return this.ordersService.create(createOrderDto);
-  }
+  @UseInterceptors(FileInterceptor('fileDesain', {
+  storage: diskStorage({
+    destination: './uploads/designs', // Pastikan folder ini dibuat
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, `design-${uniqueSuffix}${extname(file.originalname)}`);
+    },
+  }),
+}))
+async create(@UploadedFile() file: Express.Multer.File, @Body() createOrderDto: any) {
+  // Kita tambahkan nama file ke dalam DTO sebelum dikirim ke service
+  const data = {
+    ...createOrderDto,
+    desain: file ? file.filename : null,
+    // Pastikan konversi tipe data karena dari form-data biasanya terbaca string
+    totalHarga: Number(createOrderDto.totalHarga),
+    userId: createOrderDto.userId, 
+  };
+  return this.ordersService.create(data);
+}
 
   @Get('pending-verification')
   findPendingVerification() {
