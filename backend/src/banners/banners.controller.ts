@@ -1,15 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { BannersService } from './banners.service';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('banners')
 export class BannersController {
   constructor(private readonly bannersService: BannersService) {}
 
   @Post()
-  create(@Body() createBannerDto: CreateBannerDto) {
-    return this.bannersService.create(createBannerDto);
+  @UseInterceptors(FileInterceptor('gambar', {
+    storage: diskStorage({
+      destination: './uploads/banners',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    return this.bannersService.create({
+      judul: body.judul,
+      link: body.link,
+      gambar: file.filename,
+    });
   }
 
   @Get()
