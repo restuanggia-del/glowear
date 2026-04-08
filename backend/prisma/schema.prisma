@@ -159,3 +159,14 @@ model Banner {
 
   @@map("banners")
 }
+
+model Portofolio {
+  id          String   @id @default(uuid())
+  judul       String
+  deskripsi   String?  @db.Text
+  gambar      String   // Nama file gambar
+  kategori    String   // Misal: "Kaos", "Hoodie", "Polo"
+  waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
+
+  @@map("portofolio")
+}
