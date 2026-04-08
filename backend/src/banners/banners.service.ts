@@ -6,8 +6,8 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class BannersService {
   constructor(private prisma: PrismaService) {}
-  create(createBannerDto: CreateBannerDto) {
-    return 'This action adds a new banner';
+  create(data: any) {
+    return this.prisma.banner.create({ data });
   }
 
   findAll() {
@@ -22,7 +22,9 @@ export class BannersService {
     return `This action updates a #${id} banner`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} banner`;
+  remove(id: string) {
+    return this.prisma.banner.delete({ 
+      where: { id } 
+    });
   }
 }
