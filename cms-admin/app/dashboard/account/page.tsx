@@ -47,7 +47,7 @@ export default function AdminAccountPage() {
 
     try {
       const res = await fetch(`http://localhost:3001/users/${user?.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
       });
