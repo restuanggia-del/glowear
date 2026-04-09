@@ -20,6 +20,8 @@ model Pengguna {
   email       String   @unique
   kataSandi   String   @map("kata_sandi")
   role        Role     @default(PELANGGAN)
+  noTelp      String?
+  alamat      String?  @db.Text
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")
   orders Order[]
