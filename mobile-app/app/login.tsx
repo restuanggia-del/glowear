@@ -19,7 +19,7 @@ export default function Login() {
       // PERBAIKAN: Gunakan key "kataSandi" sesuai database backend Anda
       const res = await api.post("/auth/login", {
         email: email,
-        kataSandi: kataSandi, 
+        password: kataSandi, 
       });
 
       // Simpan Token dan Data User ke memori HP
