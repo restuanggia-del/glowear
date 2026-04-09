@@ -43,10 +43,12 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateData: any) {
+    return this.prisma.pengguna.update({
+      where: { id },
+      data: updateData,
+    });
   }
-
   remove(id: number) {
     return `This action removes a #${id} user`;
   }

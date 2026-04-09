@@ -108,10 +108,10 @@ export default function Topbar() {
               <p className="text-sm font-medium text-gray-800 truncate">{user?.email || 'admin@glowear.com'}</p>
             </div>
             <div className="p-1">
-              <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-colors">
-                <Settings size={16} />
-                Pengaturan Toko
-              </Link>
+              {/* Ubah teks dan href-nya */}
+              <Link href="/dashboard/account" className="flex items-center gap-2 text-blue-600 hover:bg-gray-50 p-2 rounded">
+                <Settings size={16} /> Pengaturan Akun
+              </Link> 
             </div>
             <div className="p-1 border-t border-gray-50">
               <button 
