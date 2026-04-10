@@ -32,7 +32,7 @@ const handleLogin = async () => {
       await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
       
       Alert.alert("Sukses", "Login berhasil!");
-      router.replace("/home");
+      router.replace("./(tabs)");
     } catch (err: any) {
       console.log("Login error:", err.response?.data || err.message);
       const errorMessage = err.response?.data?.message || "Periksa kembali email dan password Anda.";

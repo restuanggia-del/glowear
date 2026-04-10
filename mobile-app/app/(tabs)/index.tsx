@@ -1,6 +1,7 @@
 import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions } from "react-native";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
+import { API_URL } from "@/constants/config";
 
 const { width } = Dimensions.get("window");
 
@@ -45,9 +46,13 @@ export default function CatalogScreen() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image 
-              source={{ uri: item.gambar?.startsWith('http') ? item.gambar : `http://IP_KOMPUTER_ANDA:3001/uploads/${item.gambar}` }} 
-              style={styles.image} 
-            />
+                source={{ 
+                    uri: item.gambar?.startsWith('http') 
+                    ? item.gambar 
+                    : `${API_URL}/uploads/${item.gambar}` // Ganti IP ke IP Laptop Anda
+                }} 
+                style={{ width: '100%', height: 150 }} // WAJIB ada width & height
+                />
             <View style={styles.info}>
               <Text style={styles.catName}>{item.category?.namaKategori}</Text>
               <Text style={styles.prodName} numberOfLines={1}>{item.namaProduk}</Text>
