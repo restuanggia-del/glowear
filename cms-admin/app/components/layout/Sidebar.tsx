@@ -98,7 +98,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
                 </p>
               </div>
               <div className="relative w-8 h-8 ml-2">
-                <Image src="/logoglomed.png" alt="Glomed" fill className="object-contain" priority />
+                <Image src="/logoglomed.png" alt="Glomed Logo" fill sizes="100px" className="object-contain" priority />
               </div>
             </div>
           )}

@@ -85,12 +85,7 @@ export default function RegisterPage() {
         {/* Logo Atas */}
         <div className="flex justify-center mb-2">
           <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
-            <Image
-              src="/logoglomed.png" // 👈 Sesuaikan dengan nama logo Anda
-              alt="Logo Glowear"
-              fill
-              priority
-            />
+            <Image src="/logoglomed.png" alt="Glomed Logo" fill sizes="100px" className="object-contain" priority />
           </div>
         </div>
 
