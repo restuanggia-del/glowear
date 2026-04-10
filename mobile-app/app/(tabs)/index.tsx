@@ -2,6 +2,7 @@ import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions,
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "@/constants/config";
 
 const { width } = Dimensions.get("window");
 
@@ -108,7 +109,7 @@ export default function CatalogScreen() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image 
-              source={{ uri: item.gambar?.startsWith('http') ? item.gambar : `http://192.168.1.15:3001/uploads/${item.gambar}` }} 
+              source={{ uri: item.gambar?.startsWith('http') ? item.gambar : `${API_URL}/uploads/${item.gambar}` }} 
               style={styles.image} 
             />
             <View style={styles.info}>
