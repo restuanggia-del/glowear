@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
-import { api } from "./services/api";
+import { api } from "../services/api";
 import { router } from "expo-router";
 
 export default function Register() {

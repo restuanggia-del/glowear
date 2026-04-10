@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
-import { api } from "./services/api"; // Pastikan path ini benar
+import { api } from "../services/api"; // Pastikan path ini benar
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -18,8 +18,8 @@ export default function Login() {
     try {
       // PERBAIKAN: Gunakan key "kataSandi" sesuai database backend Anda
       const res = await api.post("/auth/login", {
-        email: email,
-        kataSandi: kataSandi, 
+        email,
+        kataSandi,
       });
 
       // Simpan Token dan Data User ke memori HP

@@ -1,0 +1,1 @@
+export const API_URL = 'http://192.168.100.9:3001'; // rubah ip sesuai jaringan yang anda gunakan
