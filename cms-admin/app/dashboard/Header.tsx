@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Bell, Search, User, LogOut, ChevronRight, Package, Receipt, Plus } from "lucide-react";
+import { Menu, Bell, Search, User, LogOut, ChevronRight, Package, Receipt, Clock } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -13,15 +13,38 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [greeting, setGreeting] = useState("Selamat datang");
+  
+  // State untuk Jam Real-time
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
-  // Sapaan otomatis berdasarkan jam
+  // Effect untuk Sapaan Otomatis & Detak Jam Real-time
   useEffect(() => {
+    // 1. Set sapaan
     const hour = new Date().getHours();
     if (hour < 11) setGreeting("Selamat pagi");
     else if (hour < 15) setGreeting("Selamat siang");
     else if (hour < 18) setGreeting("Selamat sore");
     else setGreeting("Selamat malam");
+
+    // 2. Set waktu pertama kali komponen dimuat (untuk mencegah error Hydration di Next.js)
+    setCurrentTime(new Date());
+
+    // 3. Buat interval yang berdetak setiap 1000ms (1 detik)
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Bersihkan interval saat komponen ditutup agar tidak membebani memori
+    return () => clearInterval(timer);
   }, []);
+
+  // Fungsi Pemformatan Jam
+  const formatTime = (date: Date) => {
+    const h = String(date.getHours()).padStart(2, '0');
+    const m = String(date.getMinutes()).padStart(2, '0');
+    const s = String(date.getSeconds()).padStart(2, '0');
+    return `${h}:${m}:${s} WIB`;
+  };
 
   const getPageTitle = () => {
     if (pathname === '/dashboard') return 'Dashboard Utama';
@@ -42,7 +65,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
       
       {/* ================= KIRI: Burger & Breadcrumbs ================= */}
       <div className="flex items-center gap-3 md:gap-4">
-        {/* Tombol Burger Mobile (Sekarang z-index tinggi agar bisa diklik) */}
         <button 
           onClick={onMenuClick}
           className="relative z-50 p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-blue-600 lg:hidden shadow-sm active:scale-95 transition-all"
@@ -50,7 +72,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <Menu size={22} />
         </button>
         
-        {/* Breadcrumbs Modern */}
         <div className="hidden lg:flex items-center gap-2 text-sm">
           <span className="text-gray-500 font-bold px-2.5 py-1 bg-gray-100 rounded-md border border-gray-200 uppercase tracking-wider text-[10px]">
             Glomed
@@ -60,7 +81,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
       </div>
 
-      {/* ================= TENGAH: Search Bar ala Spotlight ================= */}
+      {/* ================= TENGAH: Search Bar ================= */}
       <div className="hidden md:flex flex-1 max-w-md mx-6">
         <div className="relative w-full group">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -69,7 +90,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             placeholder="Cari transaksi, produk, atau pelanggan..." 
             className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-16 py-2.5 text-sm outline-none transition-all shadow-inner placeholder:text-gray-400"
           />
-          {/* Hint Keyboard Shortcut */}
           <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-60">
             <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">Ctrl</kbd>
             <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">K</kbd>
@@ -77,16 +97,16 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
       </div>
 
-      {/* ================= KANAN: Aksi Cepat & Profil ================= */}
+      {/* ================= KANAN: Jam, Notif & Profil ================= */}
       <div className="flex items-center gap-3 sm:gap-4">
         
-        {/* Tombol Buat Pesanan Baru (Hanya Desktop) */}
-        <Link 
-          href="/dashboard/custom-designs" 
-          className="hidden lg:flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg active:scale-95"
-        >
-          <Plus size={16} /> Buat Pesanan
-        </Link>
+        {/* JAM DIGITAL REAL-TIME (Menggantikan Tombol Buat Pesanan) */}
+        <div className="hidden lg:flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl shadow-inner text-slate-600 cursor-default">
+          <Clock size={16} className="text-blue-500" />
+          <span className="text-sm font-bold font-mono tracking-widest w-[100px] text-center">
+            {currentTime ? formatTime(currentTime) : "--:--:-- WIB"}
+          </span>
+        </div>
 
         <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
 
@@ -100,7 +120,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
           </button>
 
-          {/* Isi Dropdown Notifikasi (Sama seperti sebelumnya) */}
           {isNotifOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)}></div>
