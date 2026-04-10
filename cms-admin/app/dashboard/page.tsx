@@ -88,15 +88,53 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 font-sans pb-10">
       {/* Header Welcome */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-2xl shadow-lg text-white flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Selamat datang, {user?.nama}! 👋</h1>
-          <p className="text-blue-100 opacity-90 text-sm">
-            Pantau aktivitas konveksi Glowear Anda secara real-time hari ini.
-          </p>
-        </div>
-        <div className="hidden md:block bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-          <p className="text-sm font-semibold">{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-8 sm:p-10 rounded-[2rem] shadow-2xl text-white border border-slate-700/50">
+        
+        {/* Ornamen Latar Belakang (Cahaya Pendar) */}
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-500 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 bg-indigo-500 rounded-full blur-[80px] opacity-30 pointer-events-none"></div>
+        {/* Pola Grid Halus (Opsional, memberi tekstur) */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8">
+          
+          {/* Bagian Kiri: Sapaan & Info Cerdas */}
+          <div className="max-w-2xl">
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
+                Halo, {user?.nama || "Admin"}! 👋
+              </h1>
+              
+              {/* Alert Cerdas: Hanya muncul jika ada pesanan pending */}
+              {dashboardData?.stats?.pesananBaru > 0 && (
+                <span className="inline-flex items-center gap-1.5 bg-orange-500/20 text-orange-300 border border-orange-500/30 px-3 py-1.5 rounded-full text-xs font-bold animate-pulse shadow-lg shadow-orange-500/10">
+                  <span className="w-2 h-2 rounded-full bg-orange-400"></span>
+                  {dashboardData.stats.pesananBaru} Pesanan Perlu Proses
+                </span>
+              )}
+            </div>
+            
+            <p className="text-blue-100/70 text-sm sm:text-base leading-relaxed font-medium">
+              Ini adalah ringkasan performa konveksi Glowear hari ini. Pantau arus kas masuk, dan pastikan target produksi tercapai tepat waktu.
+            </p>
+          </div>
+
+          {/* Bagian Kanan: Widget Kalender Elegan */}
+          <div className="flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-inner shrink-0 w-full xl:w-auto">
+            <div className="bg-gradient-to-b from-white/20 to-white/5 border border-white/20 w-14 h-14 rounded-xl flex items-center justify-center text-white shadow-sm">
+              {/* Ikon Kalender Mini (Bisa pakai lucide-react jika sudah import Calendar) */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            </div>
+            <div>
+              <p className="text-[10px] text-blue-200/80 font-bold uppercase tracking-widest mb-1">
+                Tanggal Operasional
+              </p>
+              <p className="text-base sm:text-lg font-bold text-white tracking-wide">
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
 
