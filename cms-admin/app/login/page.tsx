@@ -7,6 +7,7 @@ import { useAuth } from "../lib/auth-context";
 import type { LoginCredentials } from "../services/api";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type FormData = LoginCredentials;
 
@@ -44,18 +45,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-slate-800 to-indigo-950">
+    <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-slate-900">
       
-      {/* Latar Belakang Vektor (Pegunungan Abstrak) */}
-      <div className="absolute bottom-0 left-0 w-full leading-none z-0 pointer-events-none opacity-80">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
-          <path fill="#1e1b4b" fillOpacity="1" d="M0,224L60,213.3C120,203,240,181,360,181.3C480,181,600,203,720,218.7C840,235,960,245,1080,229.3C1200,213,1320,171,1380,149.3L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-        </svg>
-      </div>
-      <div className="absolute bottom-0 left-0 w-full leading-none z-0 pointer-events-none opacity-60">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
-          <path fill="#312e81" fillOpacity="1" d="M0,160L80,176C160,192,320,224,480,208C640,192,800,128,960,117.3C1120,107,1280,149,1360,170.7L1440,192L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
-        </svg>
+      {/* ================= LATAR BELAKANG FOTO LOKAL ================= */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/bg-login.jpg" 
+          alt="Latar Belakang Glowear"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        {/* Overlay Gelap: Sangat penting agar form putih tetap kontras dan mudah dibaca */}
+        <div className="absolute inset-0 bg-indigo-950/60 backdrop-blur-[2px] mix-blend-multiply"></div>
       </div>
 
       {/* Kontainer Utama */}
