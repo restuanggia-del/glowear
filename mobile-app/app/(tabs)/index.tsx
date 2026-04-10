@@ -2,13 +2,14 @@ import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions,
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "@/constants/config";
+import { API_URL, BASE_URL } from "../../constants/config"; // Pastikan import ini sesuai nama konstanta Anda
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 export default function CatalogScreen() {
   const [products, setProducts] = useState<any[]>([]);
-  const [banners, setBanners] = useState<any[]>([]); // State untuk Banner
+  const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // State untuk Modal Kelengkapan Data
@@ -21,7 +22,6 @@ export default function CatalogScreen() {
   // 1. Ambil data produk & Banner sekaligus
   const fetchData = async () => {
     try {
-      // Mengambil data secara paralel agar lebih cepat
       const [resProducts, resBanners] = await Promise.all([
         api.get("/products"),
         api.get("/banners")
@@ -35,20 +35,37 @@ export default function CatalogScreen() {
     }
   };
 
-  // 2. Cek kelengkapan profil pengguna
+  // 2. Cek kelengkapan profil pengguna dengan data TERBARU dari server
   const checkUserProfile = async () => {
     try {
       const dataString = await AsyncStorage.getItem("userData");
       if (dataString) {
-        const user = JSON.parse(dataString);
-        setUserData(user);
+        const localUser = JSON.parse(dataString);
         
-        if (!user.alamat || !user.noTelepon) {
-          setShowProfileModal(true);
+        // Tarik data asli dari database agar noTelepon & alamat ter-update
+        try {
+          const response = await api.get(`/auth/profile?userId=${localUser.id}`);
+          const currentUser = response.data;
+
+          // Perbarui state dan memori lokal
+          setUserData(currentUser);
+          await AsyncStorage.setItem("userData", JSON.stringify(currentUser));
+
+          // Cek kelengkapan berdasarkan data dari database
+          if (!currentUser.alamat || !currentUser.noTelepon) {
+            setShowProfileModal(true);
+          }
+        } catch (apiError) {
+          console.error("Gagal menarik profil terbaru:", apiError);
+          // Fallback jika API gagal (misal koneksi putus)
+          setUserData(localUser);
+          if (!localUser.alamat || !localUser.noTelepon) {
+            setShowProfileModal(true);
+          }
         }
       }
     } catch (error) {
-      console.error("Gagal membaca data user:", error);
+      console.error("Gagal membaca data user lokal:", error);
     }
   };
 
@@ -95,13 +112,12 @@ export default function CatalogScreen() {
   // ==========================================
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Tampilkan slider hanya jika ada data banner */}
       {banners.length > 0 && (
         <View style={styles.bannerSection}>
           <FlatList
             data={banners}
             horizontal
-            pagingEnabled // Membuatnya bergeser per satu gambar (Snap)
+            pagingEnabled
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id}
             snapToAlignment="center"
@@ -137,7 +153,7 @@ export default function CatalogScreen() {
   return (
     <View style={styles.container}>
       
-      {/* FlatList Utama (Menampung Banner di atas dan Produk di bawah) */}
+      {/* FlatList Utama */}
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
@@ -147,7 +163,11 @@ export default function CatalogScreen() {
         ListHeaderComponent={renderHeader} 
         contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity 
+            style={styles.card}
+            activeOpacity={0.8}
+            onPress={() => router.push(`/product/${item.id}`)}
+          >
             <Image 
               source={{ 
                 uri: item.gambar?.startsWith('http') 
@@ -161,7 +181,7 @@ export default function CatalogScreen() {
               <Text style={styles.prodName} numberOfLines={1}>{item.namaProduk}</Text>
               <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
 
@@ -224,32 +244,13 @@ const styles = StyleSheet.create({
   // Style Header & Banner
   headerContainer: { paddingTop: 15 },
   bannerSection: { marginBottom: 10 },
-  bannerWrapper: {
-    width: width - 30, // Lebar layar dikurangi padding kiri-kanan
-    marginRight: 10,
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  bannerImage: {
-    width: "100%",
-    height: (width - 30) * (9 / 16), // Menjaga rasio 16:9 agar tidak gepeng
-    resizeMode: "cover",
-    backgroundColor: "#1e293b",
-  },
-  
+  bannerWrapper: { width: width - 30, marginRight: 10, borderRadius: 16, overflow: "hidden" },
+  bannerImage: { width: "100%", height: (width - 30) * (9 / 16), resizeMode: "cover", backgroundColor: "#1e293b" },
   headerTitle: { fontSize: 24, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginVertical: 15 },
   
   // Style Produk
   row: { justifyContent: "space-between" },
-  card: {
-    backgroundColor: "#1e293b",
-    width: width * 0.44,
-    borderRadius: 16,
-    marginBottom: 16,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#334155"
-  },
+  card: { backgroundColor: "#1e293b", width: width * 0.44, borderRadius: 16, marginBottom: 16, overflow: "hidden", borderWidth: 1, borderColor: "#334155" },
   image: { width: "100%", height: 160, backgroundColor: "#334155" },
   info: { padding: 12 },
   catName: { color: "#38bdf8", fontSize: 10, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 2 },
