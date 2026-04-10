@@ -9,30 +9,34 @@ export default function Login() {
   const [kataSandi, setKataSandi] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email || !kataSandi) {
-      return Alert.alert("Error", "Email dan password wajib diisi");
+const handleLogin = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = kataSandi.trim();
+    
+    if (!trimmedEmail || !trimmedPassword) {
+      Alert.alert("Error", "Email dan password wajib diisi");
+      return;
     }
 
     setLoading(true);
     try {
-      // PERBAIKAN: Gunakan key "kataSandi" sesuai database backend Anda
+      console.log("Attempting login for:", trimmedEmail);
       const res = await api.post("/auth/login", {
-        email,
-        kataSandi,
+        email: trimmedEmail,
+        kataSandi: trimmedPassword,
       });
+      
+      console.log("Login response:", res.data);
 
-      // Simpan Token dan Data User ke memori HP
-      await AsyncStorage.setItem("userToken", res.data.access_token);
+      // Store user data (backend doesn't return token)
       await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
       
       Alert.alert("Sukses", "Login berhasil!");
-      
-      // Gunakan replace agar user tidak bisa 'back' ke halaman login
-      router.replace("/home"); 
+      router.replace("/home");
     } catch (err: any) {
-      console.log(err.response?.data);
-      Alert.alert("Login gagal", err.response?.data?.message || "Periksa kembali email dan password Anda.");
+      console.log("Login error:", err.response?.data || err.message);
+      const errorMessage = err.response?.data?.message || "Periksa kembali email dan password Anda.";
+      Alert.alert("Login gagal", errorMessage);
     } finally {
       setLoading(false);
     }
