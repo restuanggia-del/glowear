@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { 
   Search, Edit, Truck, Package, CheckCircle, Clock, Banknote, 
   Eye, X, MapPin, FileText, CalendarDays, AlertCircle, 
-  CheckCircle2, Info, XCircle, ChevronDown 
+  CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon
 } from "lucide-react";
+import Image from "next/image"; // Menggunakan Next Image untuk optimasi
 
 // ==========================================
-// DATA MASTER UNTUK CUSTOM DROPDOWN
+// CONFIGURASI & DATA MASTER
 // ==========================================
+const API_BASE_URL = "http://localhost:3001"; // Sesuaikan dengan URL Backend Anda
+
 const STATUS_OPTIONS = [
   { value: 'PENDING', label: 'Pending (Menunggu)', icon: Clock, color: 'text-orange-500' },
   { value: 'DIPROSES', label: 'Diproses (Masuk Konveksi)', icon: Package, color: 'text-blue-500' },
@@ -33,6 +36,23 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   
+  // ==========================================
+  // STATE BARU: IMAGE PREVIEW (ZOOM)
+  // ==========================================
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+
+  const openPreview = (url: string) => {
+    setPreviewImageUrl(url);
+    setIsPreviewOpen(true);
+  };
+
+  const closePreview = () => {
+    setIsPreviewOpen(false);
+    setTimeout(() => setPreviewImageUrl(null), 200); // Delay hapus URL agar transisi mulus
+  };
+  // ==========================================
+
   // State Custom Dropdown
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isPaymentDropdownOpen, setIsPaymentDropdownOpen] = useState(false);
@@ -61,7 +81,7 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:3001/orders");
+      const res = await fetch(`${API_BASE_URL}/orders`);
       const data = await res.json();
       setOrders(data);
     } catch (error) {
@@ -79,7 +99,7 @@ export default function OrdersPage() {
     showDialog('confirm', 'Konfirmasi Update', `Yakin ingin mengubah status pesanan ORD-${selectedOrder.id.substring(0, 6).toUpperCase()}?`, async () => {
       closeDialog();
       try {
-        const res = await fetch(`http://localhost:3001/orders/${selectedOrder.id}/status`, {
+        const res = await fetch(`${API_BASE_URL}/orders/${selectedOrder.id}/status`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -138,7 +158,7 @@ export default function OrdersPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight">Pesanan Masuk</h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">Kelola status produksi dan pembayaran pelanggan Glowear.</p>
+          <p className="text-sm text-slate-500 mt-1 font-medium">Kelola produksi & cek detail desain custom pelanggan Glowear.</p>
         </div>
       </div>
 
@@ -224,16 +244,16 @@ export default function OrdersPage() {
       </div>
 
       {/* =========================================
-          MODAL DETAIL PESANAN
+          MODAL DETAIL PESANAN (Overhauled Layout)
       ========================================= */}
       {isDetailModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
             
-            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8">
+            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
               
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white flex-shrink-0">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white flex-shrink-0 z-10 relative">
                 <div>
                   <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
                     <Package className="text-blue-600"/> Detail Pesanan 
@@ -248,68 +268,122 @@ export default function OrdersPage() {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-50/50 custom-scrollbar">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Kolom Kiri */}
-                  <div className="space-y-6">
-                    <section>
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Alamat Pengiriman</h3>
-                      <div className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-slate-700">
-                        <MapPin size={18} className="text-rose-500 mt-0.5 shrink-0"/>
-                        <p className="text-sm font-medium leading-relaxed">{selectedOrder.alamatPengiriman || "Alamat tidak tersedia"}</p>
-                      </div>
-                    </section>
-                    
-                    <section>
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <FileText size={14}/> Catatan Pelanggan
-                      </h3>
-                      <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-sm text-amber-900 italic font-medium shadow-sm">
-                        {selectedOrder.catatanCustom ? `"${selectedOrder.catatanCustom}"` : 'Tidak ada catatan tambahan.'}
-                      </div>
-                    </section>
-                  </div>
+              {/* Area Content (Scrollable) */}
+              <div className="p-6 overflow-y-auto space-y-8 flex-1 bg-slate-50/50 custom-scrollbar relative z-0">
+                
+                {/* Bagian Atas: Alamat, Catatan, Keuangan */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <section className="md:col-span-1">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><MapPin size={12} className="text-rose-500"/> Alamat Pengiriman</h3>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-slate-700 h-full flex items-center">
+                      <p className="text-sm font-medium leading-relaxed">{selectedOrder.alamatPengiriman || "Alamat tidak tersedia"}</p>
+                    </div>
+                  </section>
+                  
+                  <section className="md:col-span-1">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><FileText size={12} className="text-amber-500"/> Catatan Utama</h3>
+                    <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 text-sm text-amber-900 italic font-medium shadow-sm h-full flex items-center">
+                      {selectedOrder.catatanCustom ? `"${selectedOrder.catatanCustom}"` : 'Tidak ada catatan tambahan.'}
+                    </div>
+                  </section>
 
-                  {/* Kolom Kanan: Keuangan */}
-                  <div className="space-y-6">
-                    <section>
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Ringkasan Pembayaran</h3>
-                      <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 text-sm text-slate-700 shadow-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium text-slate-500">Total Tagihan</span>
-                          <span className="font-black text-lg text-slate-800">{formatRupiah(selectedOrder.totalHarga)}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-blue-700 bg-blue-50/50 p-2 rounded-lg">
-                          <span className="font-bold">DP Dibayar</span>
-                          <span className="font-black">{formatRupiah(selectedOrder.dpAmount)}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-rose-600 border-t border-slate-100 pt-3">
-                          <span className="font-bold uppercase tracking-wider text-[10px]">Sisa Pelunasan</span>
-                          <span className="font-black text-base">{formatRupiah(selectedOrder.sisaPembayaran)}</span>
-                        </div>
-                      </div>
-                    </section>
-                  </div>
+                  <section className="md:col-span-1">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Banknote size={12} className="text-emerald-500"/> Ringkasan Biaya</h3>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3.5 text-sm text-slate-700 shadow-sm">
+                      <div className="flex justify-between items-center"><span className="font-medium text-slate-500">Total</span><span className="font-black text-lg text-slate-800">{formatRupiah(selectedOrder.totalHarga)}</span></div>
+                      <div className="flex justify-between items-center text-blue-700 bg-blue-50 px-2 py-1 rounded-md"><span className="font-bold">DP Paid</span><span className="font-black">{formatRupiah(selectedOrder.dpAmount)}</span></div>
+                      <div className="flex justify-between items-center text-rose-600 border-t border-slate-100 pt-2.5"><span className="font-bold uppercase tracking-wider text-[10px]">Sisa Pelunasan</span><span className="font-black text-base">{formatRupiah(selectedOrder.sisaPembayaran)}</span></div>
+                    </div>
+                  </section>
                 </div>
 
-                {/* Rincian Item */}
+                {/* Bagian Bawah: Daftar Item Ber-Gambar (Overhauled) */}
                 <section>
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-200 pb-2">
-                    Daftar Barang ({selectedOrder.items?.length || 0})
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2.5 flex items-center gap-2">
+                    <Shirt size={14} className="text-blue-500"/> Daftar Barang Produksi ({selectedOrder.items?.length || 0})
                   </h3>
-                  <div className="space-y-3">
+                  
+                  <div className="space-y-6">
                     {selectedOrder.items?.map((item: any, idx: number) => (
-                      <div key={idx} className="flex flex-col sm:flex-row justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm gap-4">
-                        <div>
-                          <p className="font-black text-slate-800 text-sm">{item.product?.namaProduk || "Produk Tidak Diketahui"}</p>
-                          <div className="text-xs font-medium text-slate-500 mt-1.5 space-y-1">
-                            {item.jenisSablon && <p>Sablon: <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{item.jenisSablon}</span></p>}
-                            {item.deskripsiDesain && <p>Desain: {item.deskripsiDesain}</p>}
+                      <div key={idx} className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row gap-6 p-6 transition-hover hover:shadow-md">
+                        
+                        {/* 1. Info Produk & Sablon (Kiri) */}
+                        <div className="flex-1 space-y-4">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-slate-100 p-3 rounded-xl border border-slate-200 text-blue-600"><Shirt size={20}/></div>
+                            <div>
+                              <p className="font-black text-slate-900 text-base">{item.product?.namaProduk || "Produk Custom"}</p>
+                              <p className="text-xs font-bold text-slate-500 mt-0.5">{item.jumlah} Pcs x {formatRupiah(item.hargaSatuan)}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2.5">
+                            {item.jenisSablon && <p className="text-sm font-medium text-slate-600">Jenis Sablon: <span className="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md text-xs border border-blue-200">{item.jenisSablon}</span></p>}
+                            {item.deskripsiDesain && (
+                              <div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Permintaan Desain:</p>
+                                <p className="text-sm text-slate-700 mt-1 font-medium leading-relaxed">{item.deskripsiDesain}</p>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right shrink-0 bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-center h-fit">
-                          <p className="text-sm font-black text-slate-800">{item.jumlah} Pcs</p>
-                          <p className="text-[10px] font-bold text-slate-400 mt-0.5">{formatRupiah(item.hargaSatuan)} / pcs</p>
+
+                        {/* 2. AREA LAMPIRAN GAMBAR (Kanan) - SESUAI REFERENSI */}
+                        <div className="w-full md:w-80 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-5 md:pt-0 md:pl-6 space-y-4">
+                          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Palette size={12} className="text-blue-500"/> Lampiran Desain Custom</h4>
+                          
+                          {/* Grid Gambar */}
+                          <div className="grid grid-cols-2 gap-3">
+                            
+                            {/* Tampilan Desain Depan */}
+                            <div className="space-y-1.5">
+                              <p className="text-[10px] font-bold text-slate-500 text-center">Desain Depan</p>
+                              <div className="aspect-square bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer" 
+                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileDesainDepan}`)}
+                              >
+                                {item.fileDesainDepan ? (
+                                  <>
+                                    <Image src={`${API_BASE_URL}/${item.fileDesainDepan}`} alt="Depan" fill className="object-cover group-hover:scale-110 transition-transform duration-300"/>
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={20}/></div>
+                                  </>
+                                ) : (
+                                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-1"><ImageIcon size={24}/><span className="text-[10px]">Polos</span></div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Tampilan Desain Belakang */}
+                            <div className="space-y-1.5">
+                              <p className="text-[10px] font-bold text-slate-500 text-center">Desain Belakang</p>
+                              <div className="aspect-square bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer"
+                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileDesainBelakang}`)}
+                              >
+                                {item.fileDesainBelakang ? (
+                                  <>
+                                    <Image src={`${API_BASE_URL}/${item.fileDesainBelakang}`} alt="Belakang" fill className="object-cover group-hover:scale-110 transition-transform duration-300"/>
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={20}/></div>
+                                  </>
+                                ) : (
+                                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-1"><ImageIcon size={24}/><span className="text-[10px]">Polos</span></div>
+                                )}
+                              </div>
+                            </div>
+
+                          </div>
+                          
+                          {/* Gambar Referensi (Jika Ada) */}
+                          {item.fileGambarReferensi && (
+                            <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                              <p className="text-[10px] font-bold text-slate-500">Gambar Referensi/Inspirasi</p>
+                              <div className="w-full h-20 bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer"
+                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileGambarReferensi}`)}
+                              >
+                                <Image src={`${API_BASE_URL}/${item.fileGambarReferensi}`} alt="Referensi" fill className="object-cover group-hover:scale-105 transition-transform duration-300"/>
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-2 text-xs font-bold"><Eye size={16}/> Zoom Ref</div>
+                              </div>
+                            </div>
+                          )}
+
                         </div>
                       </div>
                     ))}
@@ -317,7 +391,7 @@ export default function OrdersPage() {
                 </section>
               </div>
               
-              <div className="p-5 border-t border-slate-100 bg-white flex justify-end flex-shrink-0">
+              <div className="p-5 border-t border-slate-100 bg-white flex justify-end flex-shrink-0 relative z-10">
                 <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/20">
                   Tutup Detail
                 </button>
@@ -328,7 +402,34 @@ export default function OrdersPage() {
       )}
 
       {/* =========================================
-          MODAL UPDATE STATUS (Dengan Custom Dropdown & Centered)
+          MODAL PREVIEW GAMBAR (ZOOM LIGHTBOX)
+      ========================================= */}
+      {isPreviewOpen && previewImageUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
+          {/* Backdrop Gelap */}
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm"></div>
+          
+          {/* Kontainer Gambar (Centered) */}
+          <div className="relative z-10 max-w-7xl max-h-[90vh] p-4 flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <Image 
+              src={previewImageUrl} 
+              alt="Zoom Preview" 
+              width={1200} 
+              height={1200} 
+              className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border-4 border-white/10 animate-in zoom-in-95 duration-300"
+            />
+            <p className="text-white/60 text-xs mt-4 font-medium tracking-wide">Klik di luar gambar atau tombol X untuk menutup</p>
+          </div>
+
+          {/* Tombol Tutup X */}
+          <button onClick={closePreview} className="absolute top-6 right-6 z-20 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 border border-white/10 transition-colors">
+            <X size={28} />
+          </button>
+        </div>
+      )}
+
+      {/* =========================================
+          MODAL UPDATE STATUS (Icon Dropdown & Centered)
       ========================================= */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -446,14 +547,14 @@ export default function OrdersPage() {
       )}
 
       {/* =========================================
-          CUSTOM DIALOG SYSTEM (Pengganti Alert)
+          CUSTOM DIALOG SYSTEM (Centered)
       ========================================= */}
       {dialog.isOpen && (
         <div className="fixed inset-0 z-[100] overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
             
-            <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8">
+            <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
               
               <div className={`mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-5 shadow-inner
                 ${dialog.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 
