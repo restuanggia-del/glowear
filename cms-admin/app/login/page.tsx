@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
@@ -11,12 +11,32 @@ import Image from "next/image";
 
 type FormData = LoginCredentials;
 
+// Daftar foto latar belakang yang ada di folder public
+const BACKGROUND_IMAGES = [
+  "/bg-1.jpeg", 
+  "/bg-2.jpeg", 
+  "/bg-3.jpeg"
+];
+
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
+  
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [currentBg, setCurrentBg] = useState(0); // State untuk melacak gambar yang aktif
+
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+
+  // Efek Slideshow Otomatis setiap 5 detik
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBg((prevBg) => (prevBg + 1) % BACKGROUND_IMAGES.length);
+    }, 5000); // 5000 milidetik = 5 detik
+
+    // Bersihkan interval saat komponen ditutup agar tidak bocor di memori
+    return () => clearInterval(timer);
+  }, []);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -47,21 +67,31 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-slate-900">
       
-      {/* ================= LATAR BELAKANG FOTO LOKAL ================= */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/bg-login.jpg" 
-          alt="Latar Belakang Glowear"
-          fill
-          priority
-          className="object-cover object-center"
-        />
-        {/* Overlay Gelap: Sangat penting agar form putih tetap kontras dan mudah dibaca */}
-        <div className="absolute inset-0 bg-indigo-950/60 backdrop-blur-[2px] mix-blend-multiply"></div>
+      {/* ================= SLIDESHOW LATAR BELAKANG FOTO ================= */}
+      <div className="absolute inset-0 z-0 bg-slate-900">
+        {BACKGROUND_IMAGES.map((bg, index) => (
+          <div
+            key={bg}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              index === currentBg ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={bg}
+              alt={`Background Glowear ${index + 1}`}
+              fill
+              priority={index === 0} // Hanya prioritaskan pemuatan foto pertama
+              className="object-cover object-center"
+            />
+          </div>
+        ))}
+        {/* Overlay Gelap: Sangat penting agar form putih tetap kontras */}
+        <div className="absolute inset-0 bg-indigo-950/70 backdrop-blur-[2px] mix-blend-multiply z-10"></div>
       </div>
+      {/* =============================================================== */}
 
-      {/* Kontainer Utama */}
-      <div className="relative z-10 w-full max-w-md px-6">
+      {/* Kontainer Utama Form */}
+      <div className="relative z-20 w-full max-w-md px-6">
         
         {/* Logo Atas */}
         <div className="flex justify-center mb-8">
@@ -142,7 +172,7 @@ export default function LoginPage() {
       </div>
 
       {/* Footer Copyright */}
-      <div className="absolute bottom-4 left-0 w-full text-center z-10">
+      <div className="absolute bottom-4 left-0 w-full text-center z-20">
         <p className="text-xs text-white/50 font-medium">
           © {new Date().getFullYear()} Glowear Konveksi. All rights reserved.
         </p>
