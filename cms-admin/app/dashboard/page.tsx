@@ -87,52 +87,83 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 font-sans pb-10">
-      {/* Header Welcome */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-8 sm:p-10 rounded-[2rem] shadow-2xl text-white border border-slate-700/50">
+      {/* Header Welcome Kelas Enterprise (Dengan Ilustrasi) */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl shadow-lg border border-blue-500/20 mb-8">
         
-        {/* Ornamen Latar Belakang (Cahaya Pendar) */}
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-500 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 bg-indigo-500 rounded-full blur-[80px] opacity-30 pointer-events-none"></div>
-        {/* Pola Grid Halus (Opsional, memberi tekstur) */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+        {/* Dekorasi Latar Belakang (Lingkaran Samar) */}
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -bottom-24 left-10 w-48 h-48 bg-indigo-400/20 rounded-full blur-xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between px-8 py-10 md:py-12 gap-8">
           
-          {/* Bagian Kiri: Sapaan & Info Cerdas */}
-          <div className="max-w-2xl">
-            <div className="flex flex-wrap items-center gap-3 mb-3">
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-                Halo, {user?.nama || "Admin"}! 👋
-              </h1>
-              
-              {/* Alert Cerdas: Hanya muncul jika ada pesanan pending */}
+          {/* Sisi Kiri: Teks & Informasi */}
+          <div className="flex-1 text-white max-w-xl">
+            <h1 className="text-3xl md:text-4xl font-black mb-3 leading-tight tracking-tight">
+              Kendalikan Konveksi Anda,<br/> {user?.nama || "Admin"}! 👋
+            </h1>
+            <p className="text-blue-100 text-sm md:text-base leading-relaxed mb-6 font-medium max-w-md">
+              Pantau arus kas, kelola pesanan masuk, dan pastikan target produksi Glowear tercapai tepat waktu hari ini.
+            </p>
+            
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Tombol Aksi Cepat (Opsional) */}
+              <Link 
+                href="/dashboard/orders" 
+                className="bg-white text-blue-700 hover:bg-blue-50 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors"
+              >
+                Cek Pesanan Masuk
+              </Link>
+
+              {/* Alert Cerdas (Sama seperti sebelumnya) */}
               {dashboardData?.stats?.pesananBaru > 0 && (
-                <span className="inline-flex items-center gap-1.5 bg-orange-500/20 text-orange-300 border border-orange-500/30 px-3 py-1.5 rounded-full text-xs font-bold animate-pulse shadow-lg shadow-orange-500/10">
-                  <span className="w-2 h-2 rounded-full bg-orange-400"></span>
-                  {dashboardData.stats.pesananBaru} Pesanan Perlu Proses
+                <span className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-white"></span>
+                  {dashboardData.stats.pesananBaru} Perlu Proses
                 </span>
               )}
             </div>
-            
-            <p className="text-blue-100/70 text-sm sm:text-base leading-relaxed font-medium">
-              Ini adalah ringkasan performa konveksi Glowear hari ini. Pantau arus kas masuk, dan pastikan target produksi tercapai tepat waktu.
-            </p>
           </div>
 
-          {/* Bagian Kanan: Widget Kalender Elegan */}
-          <div className="flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-inner shrink-0 w-full xl:w-auto">
-            <div className="bg-gradient-to-b from-white/20 to-white/5 border border-white/20 w-14 h-14 rounded-xl flex items-center justify-center text-white shadow-sm">
-              {/* Ikon Kalender Mini (Bisa pakai lucide-react jika sudah import Calendar) */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-            </div>
-            <div>
-              <p className="text-[10px] text-blue-200/80 font-bold uppercase tracking-widest mb-1">
-                Tanggal Operasional
-              </p>
-              <p className="text-base sm:text-lg font-bold text-white tracking-wide">
-                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-              </p>
-            </div>
+          {/* Sisi Kanan: Ilustrasi Kustom (Menggunakan SVG Inline) */}
+          <div className="hidden md:flex shrink-0 relative mr-4 lg:mr-12">
+            {/* Bayangan di bawah ilustrasi */}
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-4 bg-black/20 blur-md rounded-full"></div>
+            
+            {/* SVG Ilustrasi Bisnis/Dashboard */}
+            <svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-xl relative z-10">
+              {/* Meja */}
+              <rect x="20" y="150" width="200" height="6" rx="3" fill="#94A3B8"/>
+              
+              {/* Layar Monitor */}
+              <rect x="50" y="40" width="140" height="90" rx="8" fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="4"/>
+              <rect x="54" y="44" width="132" height="82" rx="4" fill="#F8FAFC"/>
+              
+              {/* Kaki Monitor */}
+              <path d="M110 130L100 150H140L130 130H110Z" fill="#CBD5E1"/>
+              
+              {/* Grafik di Monitor */}
+              <rect x="65" y="80" width="15" height="30" rx="2" fill="#3B82F6"/>
+              <rect x="85" y="60" width="15" height="50" rx="2" fill="#10B981"/>
+              <rect x="105" y="90" width="15" height="20" rx="2" fill="#F59E0B"/>
+              <rect x="125" y="50" width="15" height="60" rx="2" fill="#8B5CF6"/>
+              <rect x="145" y="70" width="15" height="40" rx="2" fill="#EF4444"/>
+              
+              {/* Jendela Data Mini Kiri */}
+              <rect x="10" y="20" width="60" height="40" rx="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" className="animate-bounce" style={{animationDuration: '3s'}}/>
+              <circle cx="25" cy="40" r="8" fill="#F59E0B" />
+              <rect x="40" y="36" width="20" height="4" rx="2" fill="#CBD5E1"/>
+              <rect x="40" y="44" width="15" height="4" rx="2" fill="#E2E8F0"/>
+
+              {/* Jendela Data Mini Kanan */}
+              <rect x="170" y="60" width="60" height="50" rx="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" className="animate-bounce" style={{animationDuration: '4s', animationDelay: '1s'}}/>
+              <path d="M180 95L190 85L200 90L215 75" stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="215" cy="75" r="3" fill="#10B981"/>
+            </svg>
+
+            {/* Aksen bintang/sparkle */}
+            <svg className="absolute -top-6 -right-6 text-yellow-300 animate-pulse" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+            </svg>
           </div>
 
         </div>
