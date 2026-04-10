@@ -1,9 +1,15 @@
 import { IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsOptional()
-  nama?: string;
+   @IsOptional()
+   nama?: string;
+
+   @IsOptional()
+   username?: string;
 
   @IsOptional()
-  username?: string;
-}
+  noTelp?: string;
+  
+  @IsOptional()
+  alamat?: string;
+ }

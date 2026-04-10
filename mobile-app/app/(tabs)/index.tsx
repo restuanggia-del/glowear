@@ -60,10 +60,10 @@ export default function CatalogScreen() {
     setSavingProfile(true);
     try {
       // ✅ PERBAIKAN URL DI SINI (Sesuaikan dengan controller backend Anda)
-      const res = await api.put(`/auth/profile?userId=${userData.id}`, {
-        noTelepon: noTelepon,
-        alamat: alamat,
-      });
+        const res = await api.put(`/auth/profile?userId=${userData.id}`, {
+          noTelp: noTelepon,
+          alamat: alamat,
+        });
 
       if (res.status === 200 || res.status === 201) {
         // Update data di penyimpanan lokal HP
