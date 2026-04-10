@@ -5,8 +5,9 @@ import { useAuth } from "@/app/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { Users, Package, ShoppingCart, TrendingUp, Clock, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
-// Import komponen chart dari Recharts
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Lottie from "lottie-react";
+import animationData from "@/app/assets/Product Offer.json";
 
 export default function DashboardPage() {
   const { user, validate } = useAuth();
@@ -87,17 +88,16 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 font-sans pb-10">
-      {/* Header Welcome Kelas Enterprise (Dengan Ilustrasi) */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl shadow-lg border border-blue-500/20 mb-8">
         
-        {/* Dekorasi Latar Belakang (Lingkaran Samar) */}
+        {/* Dekorasi Latar Belakang */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         <div className="absolute -bottom-24 left-10 w-48 h-48 bg-indigo-400/20 rounded-full blur-xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between px-8 py-10 md:py-12 gap-8">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between px-8 py-6 md:py-8 gap-8">
           
           {/* Sisi Kiri: Teks & Informasi */}
-          <div className="flex-1 text-white max-w-xl">
+          <div className="flex-1 text-white max-w-xl z-20">
             <h1 className="text-3xl md:text-4xl font-black mb-3 leading-tight tracking-tight">
               Kendalikan Konveksi Anda,<br/> {user?.nama || "Admin"}! 👋
             </h1>
@@ -106,7 +106,6 @@ export default function DashboardPage() {
             </p>
             
             <div className="flex flex-wrap items-center gap-4">
-              {/* Tombol Aksi Cepat (Opsional) */}
               <Link 
                 href="/dashboard/orders" 
                 className="bg-white text-blue-700 hover:bg-blue-50 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors"
@@ -114,7 +113,7 @@ export default function DashboardPage() {
                 Cek Pesanan Masuk
               </Link>
 
-              {/* Alert Cerdas (Sama seperti sebelumnya) */}
+              {/* Alert Cerdas */}
               {dashboardData?.stats?.pesananBaru > 0 && (
                 <span className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 animate-pulse">
                   <span className="w-2 h-2 rounded-full bg-white"></span>
@@ -124,51 +123,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Sisi Kanan: Ilustrasi Kustom (Menggunakan SVG Inline) */}
-          <div className="hidden md:flex shrink-0 relative mr-4 lg:mr-12">
-            {/* Bayangan di bawah ilustrasi */}
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-4 bg-black/20 blur-md rounded-full"></div>
-            
-            {/* SVG Ilustrasi Bisnis/Dashboard */}
-            <svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-xl relative z-10">
-              {/* Meja */}
-              <rect x="20" y="150" width="200" height="6" rx="3" fill="#94A3B8"/>
-              
-              {/* Layar Monitor */}
-              <rect x="50" y="40" width="140" height="90" rx="8" fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="4"/>
-              <rect x="54" y="44" width="132" height="82" rx="4" fill="#F8FAFC"/>
-              
-              {/* Kaki Monitor */}
-              <path d="M110 130L100 150H140L130 130H110Z" fill="#CBD5E1"/>
-              
-              {/* Grafik di Monitor */}
-              <rect x="65" y="80" width="15" height="30" rx="2" fill="#3B82F6"/>
-              <rect x="85" y="60" width="15" height="50" rx="2" fill="#10B981"/>
-              <rect x="105" y="90" width="15" height="20" rx="2" fill="#F59E0B"/>
-              <rect x="125" y="50" width="15" height="60" rx="2" fill="#8B5CF6"/>
-              <rect x="145" y="70" width="15" height="40" rx="2" fill="#EF4444"/>
-              
-              {/* Jendela Data Mini Kiri */}
-              <rect x="10" y="20" width="60" height="40" rx="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" className="animate-bounce" style={{animationDuration: '3s'}}/>
-              <circle cx="25" cy="40" r="8" fill="#F59E0B" />
-              <rect x="40" y="36" width="20" height="4" rx="2" fill="#CBD5E1"/>
-              <rect x="40" y="44" width="15" height="4" rx="2" fill="#E2E8F0"/>
-
-              {/* Jendela Data Mini Kanan */}
-              <rect x="170" y="60" width="60" height="50" rx="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" className="animate-bounce" style={{animationDuration: '4s', animationDelay: '1s'}}/>
-              <path d="M180 95L190 85L200 90L215 75" stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="215" cy="75" r="3" fill="#10B981"/>
-            </svg>
-
-            {/* Aksen bintang/sparkle */}
-            <svg className="absolute -top-6 -right-6 text-yellow-300 animate-pulse" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
-            </svg>
+          {/* Sisi Kanan: Animasi Lottie! */}
+          {/* Menggunakan relative dan margin negatif agar animasi bisa membesar/menonjol tanpa merusak layout */}
+          <div className="hidden md:flex shrink-0 relative w-64 h-64 lg:w-80 lg:h-80 -my-8 lg:-my-12 z-10">
+             <Lottie 
+                animationData={animationData} 
+                loop={true} 
+                className="w-full h-full drop-shadow-2xl"
+             />
           </div>
 
         </div>
       </div>
-
       {/* Baris Statistik */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
