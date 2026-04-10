@@ -112,7 +112,7 @@ export default function RegisterPage() {
                   type="text"
                   {...register("nama", { required: "Nama wajib diisi" })}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                  placeholder="Budi Santoso"
+                  placeholder="Sabrina Az Zahra"
                 />
                 {errors.nama && <p className="text-red-500 text-xs mt-1 font-medium">{errors.nama.message as string}</p>}
               </div>
@@ -124,7 +124,7 @@ export default function RegisterPage() {
                   type="text"
                   {...register("username", { required: "Username wajib diisi" })}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                  placeholder="budis"
+                  placeholder="bina"
                   autoCapitalize="none"
                 />
                 {errors.username && <p className="text-red-500 text-xs mt-1 font-medium">{errors.username.message as string}</p>}
@@ -138,7 +138,7 @@ export default function RegisterPage() {
                 type="email"
                 {...register("email", { required: "Email wajib diisi" })}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                placeholder="budi@email.com"
+                placeholder="sabrina@email.com"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1 font-medium">{errors.email.message as string}</p>}
             </div>
