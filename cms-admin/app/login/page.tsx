@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
 import type { LoginCredentials } from "../services/api";
-import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -24,7 +24,7 @@ export default function LoginPage() {
   
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [currentBg, setCurrentBg] = useState(0); // State untuk melacak gambar yang aktif
+  const [currentBg, setCurrentBg] = useState(0);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
@@ -32,9 +32,7 @@ export default function LoginPage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBg((prevBg) => (prevBg + 1) % BACKGROUND_IMAGES.length);
-    }, 5000); // 5000 milidetik = 5 detik
-
-    // Bersihkan interval saat komponen ditutup agar tidak bocor di memori
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
@@ -65,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-slate-900">
+    <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-slate-900 py-10">
       
       {/* ================= SLIDESHOW LATAR BELAKANG FOTO ================= */}
       <div className="absolute inset-0 z-0 bg-slate-900">
@@ -80,12 +78,12 @@ export default function LoginPage() {
               src={bg}
               alt={`Background Glowear ${index + 1}`}
               fill
-              priority={index === 0} // Hanya prioritaskan pemuatan foto pertama
+              priority={index === 0}
               className="object-cover object-center"
             />
           </div>
         ))}
-        {/* Overlay Gelap: Sangat penting agar form putih tetap kontras */}
+        {/* Overlay Gelap */}
         <div className="absolute inset-0 bg-indigo-950/70 backdrop-blur-[2px] mix-blend-multiply z-10"></div>
       </div>
       {/* =============================================================== */}
@@ -93,13 +91,13 @@ export default function LoginPage() {
       {/* Kontainer Utama Form */}
       <div className="relative z-20 w-full max-w-md px-6">
         
+        {/* Logo Atas (Disesuaikan ukurannya seperti di Register) */}
         <div className="flex justify-center mb-2">
-          <div className="relative w-40 h-40 flex items-center justify-center">
+          <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
             <Image
-              src="/logoglomed.png" // 👈 UBAH INI sesuai nama file logo Anda di folder public
+              src="/logoglomed.png"
               alt="Logo Glowear"
               fill
-              // className="object-contain p-3" // p-3 memberi jarak agar logo tidak nabrak garis pinggir
               priority
             />
           </div>
@@ -107,7 +105,14 @@ export default function LoginPage() {
 
         {/* Kartu Login Putih */}
         <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-2xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          
+          {/* Header Kartu (Ditambahkan agar seragam dengan Register) */}
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Selamat Datang</h1>
+            <p className="text-sm text-slate-500 mt-1 font-medium">Silakan masuk ke akun Anda</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             
             {/* Input Email */}
             <div>
@@ -147,18 +152,19 @@ export default function LoginPage() {
             </div>
 
             {/* Baris Bawah Form: Remember Me & Button Log In */}
-            <div className="flex items-center justify-between pt-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
                 <span className="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Remember Me</span>
               </label>
 
+              {/* Tombol Login (Disesuaikan warnanya dengan gaya Register) */}
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-wait text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-blue-600/30 transition-all active:scale-95"
+                className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-wait text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-slate-900/20 transition-all active:scale-95"
               >
-                {loading ? "Loading..." : "Log In"}
+                {loading ? "Memproses..." : "Log In"}
               </button>
             </div>
           </form>
@@ -166,18 +172,18 @@ export default function LoginPage() {
 
         {/* Tautan Tambahan di Bawah Kartu */}
         <div className="mt-8 text-center space-y-3">
-          <Link href="/lupa-password" className="block text-sm text-blue-200 hover:text-white transition-colors">
-            Lost your password?
+          <Link href="/lupa-password" className="block text-sm text-slate-300 hover:text-white transition-colors">
+            Lupa kata sandi?
           </Link>
           <Link href="/register" className="block text-sm font-medium text-white hover:text-blue-200 transition-colors">
-            &larr; Create an Account
+            Buat Akun Baru &rarr;
           </Link>
         </div>
 
       </div>
 
       {/* Footer Copyright */}
-      <div className="absolute bottom-4 left-0 w-full text-center z-20">
+      <div className="absolute bottom-4 left-0 w-full text-center z-20 hidden md:block">
         <p className="text-xs text-white/50 font-medium">
           © {new Date().getFullYear()} Glowear Konveksi. All rights reserved.
         </p>
