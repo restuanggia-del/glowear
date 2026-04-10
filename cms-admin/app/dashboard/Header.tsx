@@ -2,7 +2,7 @@
 
 import { Menu, Bell, Search, User, LogOut, ChevronRight, Package, Receipt, Clock } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,172 +13,137 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [greeting, setGreeting] = useState("Selamat datang");
-  
-  // State untuk Jam Real-time
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  
+  // Referensi untuk input pencarian (Ctrl+K)
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Effect untuk Sapaan Otomatis & Detak Jam Real-time
   useEffect(() => {
-    // 1. Set sapaan
+    // Set Sapaan
     const hour = new Date().getHours();
-    if (hour < 11) setGreeting("Selamat pagi");
-    else if (hour < 15) setGreeting("Selamat siang");
-    else if (hour < 18) setGreeting("Selamat sore");
-    else setGreeting("Selamat malam");
+    if (hour < 11) setGreeting("Selamat pagi,");
+    else if (hour < 15) setGreeting("Selamat siang,");
+    else if (hour < 18) setGreeting("Selamat sore,");
+    else setGreeting("Selamat malam,");
 
-    // 2. Set waktu pertama kali komponen dimuat (untuk mencegah error Hydration di Next.js)
+    // Set Jam Real-time
     setCurrentTime(new Date());
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 
-    // 3. Buat interval yang berdetak setiap 1000ms (1 detik)
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    // Event Listener untuk Shortcut Ctrl+K
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus(); // Fokus otomatis ke kolom pencarian
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
 
-    // Bersihkan interval saat komponen ditutup agar tidak membebani memori
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
-  // Fungsi Pemformatan Jam
-  const formatTime = (date: Date) => {
+  const formatTimeStr = (date: Date) => {
     const h = String(date.getHours()).padStart(2, '0');
     const m = String(date.getMinutes()).padStart(2, '0');
     const s = String(date.getSeconds()).padStart(2, '0');
-    return `${h}:${m}:${s} WIB`;
+    return `${h}:${m}:${s}`;
   };
 
   const getPageTitle = () => {
     if (pathname === '/dashboard') return 'Dashboard Utama';
     if (pathname.includes('/orders')) return 'Pesanan Masuk';
-    if (pathname.includes('/payments')) return 'Verifikasi Pembayaran';
-    if (pathname.includes('/custom-designs')) return 'Custom Design';
-    if (pathname.includes('/reports')) return 'Laporan Keuangan';
     if (pathname.includes('/products')) return 'Katalog Produk';
-    if (pathname.includes('/categories')) return 'Kategori Master';
-    if (pathname.includes('/users')) return 'Manajemen Pengguna';
-    if (pathname.includes('/account')) return 'Pengaturan Akun';
-    if (pathname.includes('/pelanggan')) return 'Simulasi Mobile App';
     return 'Dashboard';
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+    <header className="bg-white border-b border-gray-200 h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       
       {/* ================= KIRI: Burger & Breadcrumbs ================= */}
       <div className="flex items-center gap-3 md:gap-4">
-        <button 
-          onClick={onMenuClick}
-          className="relative z-50 p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-blue-600 lg:hidden shadow-sm active:scale-95 transition-all"
-        >
+        <button onClick={onMenuClick} className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden shadow-sm transition-all">
           <Menu size={22} />
         </button>
         
-        <div className="hidden lg:flex items-center gap-2 text-sm">
-          <span className="text-gray-500 font-bold px-2.5 py-1 bg-gray-100 rounded-md border border-gray-200 uppercase tracking-wider text-[10px]">
-            Glomed
+        {/* Breadcrumbs Modern (Sesuai Gambar) */}
+        <div className="hidden md:flex items-center gap-3 text-sm">
+          <span className="text-slate-600 font-bold px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 uppercase tracking-widest text-[10px]">
+            GLOMED
           </span>
-          <ChevronRight size={14} className="text-gray-300" />
-          <span className="text-slate-800 font-bold tracking-wide">{getPageTitle()}</span>
+          <ChevronRight size={14} className="text-slate-300" />
+          <span className="text-slate-800 font-black tracking-wide text-[15px]">{getPageTitle()}</span>
         </div>
       </div>
 
-      {/* ================= TENGAH: Search Bar ================= */}
-      <div className="hidden md:flex flex-1 max-w-md mx-6">
-        <div className="relative w-full group">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+      {/* ================= TENGAH & KANAN ================= */}
+      <div className="flex flex-1 items-center justify-end gap-4 lg:gap-6 ml-4">
+        
+        {/* Search Bar (Fungsional Ctrl+K) */}
+        <div className="hidden lg:flex relative w-full max-w-md group">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           <input 
+            ref={searchInputRef}
             type="text" 
             placeholder="Cari transaksi, produk, atau pelanggan..." 
-            className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-16 py-2.5 text-sm outline-none transition-all shadow-inner placeholder:text-gray-400"
+            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl pl-10 pr-20 py-2.5 text-sm outline-none transition-all placeholder:text-slate-400"
           />
-          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-60">
-            <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">Ctrl</kbd>
-            <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">K</kbd>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded">Ctrl</kbd>
+            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded">K</kbd>
           </div>
         </div>
-      </div>
 
-      {/* ================= KANAN: Jam, Notif & Profil ================= */}
-      <div className="flex items-center gap-3 sm:gap-4">
-        
-        {/* JAM DIGITAL REAL-TIME (Menggantikan Tombol Buat Pesanan) */}
-        <div className="hidden lg:flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl shadow-inner text-slate-600 cursor-default">
-          <Clock size={16} className="text-blue-500" />
-          <span className="text-sm font-bold font-mono tracking-widest w-[100px] text-center">
-            {currentTime ? formatTime(currentTime) : "--:--:-- WIB"}
-          </span>
+        {/* Jam Digital (Format sesuai gambar) */}
+        <div className="hidden md:flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-slate-600 cursor-default shrink-0">
+          <Clock size={18} className="text-blue-500" />
+          <div className="flex flex-col text-center">
+            <span className="text-sm font-black font-mono tracking-widest leading-none text-slate-700">
+              {currentTime ? formatTimeStr(currentTime) : "--:--:--"}
+            </span>
+            <span className="text-[10px] font-black text-slate-500 mt-1 leading-none uppercase">WIB</span>
+          </div>
         </div>
 
-        <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
+        {/* Garis Pemisah */}
+        <div className="h-8 w-px bg-slate-200 hidden sm:block shrink-0"></div>
 
         {/* Notifikasi */}
-        <div className="relative">
-          <button 
-            onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
-            className={`relative p-2.5 rounded-xl transition-all border ${isNotifOpen ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
-          >
-            <Bell size={20} />
-            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
-          </button>
+        <button 
+          onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
+          className="relative p-2.5 rounded-xl border bg-white border-slate-200 text-slate-500 hover:bg-slate-50 transition-all shrink-0"
+        >
+          <Bell size={20} />
+          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
 
-          {isNotifOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)}></div>
-              <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transform origin-top-right transition-all">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                  <p className="text-sm font-bold text-gray-800">Notifikasi</p>
-                  <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">2 Baru</span>
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 flex gap-3 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><Receipt size={18} /></div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-800">Struk Pembayaran</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Struk baru untuk ORD-A1B2 perlu dicek.</p>
-                      <p className="text-[10px] text-gray-400 mt-1 font-medium">5 mnt lalu</p>
-                    </div>
-                  </div>
-                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex gap-3 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"><Package size={18} /></div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-800">Pesanan Baru Masuk</p>
-                      <p className="text-xs text-gray-500 mt-0.5">24 pcs Hoodie custom menunggu validasi.</p>
-                      <p className="text-[10px] text-gray-400 mt-1 font-medium">1 jam lalu</p>
-                    </div>
-                  </div>
-                </div>
-                <Link href="/dashboard/orders" onClick={() => setIsNotifOpen(false)} className="block text-center text-xs font-bold text-blue-600 py-3 bg-gray-50 hover:bg-gray-100 transition-colors">Lihat Semua Notifikasi</Link>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Profil Menu */}
-        <div className="relative">
+        {/* Profil Menu (Sesuai Gambar: Teks Kiri, Avatar Kanan) */}
+        <div className="relative shrink-0">
           <button 
             onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotifOpen(false); }}
-            className="flex items-center gap-3 pl-2 pr-1 py-1 bg-white border border-gray-200 rounded-full focus:outline-none hover:shadow-md hover:border-blue-200 transition-all active:scale-95"
+            className="flex items-center gap-3 pl-4 pr-1.5 py-1.5 bg-white border border-slate-200 rounded-full hover:shadow-md transition-all active:scale-95"
           >
-            <div className="hidden md:block text-right pl-2">
-              <p className="text-[10px] font-bold text-gray-400">{greeting},</p>
-              <p className="text-sm font-bold text-slate-800 leading-tight">{user?.nama || "Admin"}</p>
+            <div className="hidden sm:flex flex-col text-right">
+              <span className="text-[10px] font-bold text-slate-500 leading-none">{greeting}</span>
+              <span className="text-[13px] font-black text-slate-800 leading-none mt-1">{user?.nama || "admin"}</span>
             </div>
-            <div className="w-9 h-9 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm border-2 border-white relative shadow-sm">
+            <div className="w-9 h-9 bg-[#0B1120] text-white rounded-full flex items-center justify-center font-bold text-sm relative shadow-sm border-2 border-white">
               {user?.nama?.charAt(0).toUpperCase() || "A"}
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></span>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></span>
             </div>
           </button>
 
+          {/* Isi Dropdown Profil (Sama seperti sebelumnya) */}
           {isProfileOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
-              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all">
+              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-50 mb-2">
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Akses Sistem</p>
                   <p className="text-sm font-bold text-gray-800 truncate">{user?.email}</p>
                 </div>
-                <Link href="/dashboard/account" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                  <User size={18} /> Pengaturan Akun
-                </Link>
                 <button onClick={() => { setIsProfileOpen(false); logout(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors mt-1">
                   <LogOut size={18} /> Keluar Aplikasi
                 </button>
