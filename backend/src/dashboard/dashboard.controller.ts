@@ -12,9 +12,9 @@ export class DashboardController {
     return this.dashboardService.create(createDashboardDto);
   }
 
-  @Get()
-  findAll() {
-    return this.dashboardService.findAll();
+  @Get('stats')
+  getDahsboardData() {
+    return this.dashboardService.getDashboardStats();
   }
 
   @Get(':id')
