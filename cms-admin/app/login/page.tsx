@@ -117,7 +117,7 @@ export default function LoginPage() {
             {/* Input Email */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Email Address
+                Email
               </label>
               <input
                 type="email"
@@ -155,7 +155,7 @@ export default function LoginPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
-                <span className="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Remember Me</span>
+                <span className="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Ingat Saya</span>
               </label>
 
               {/* Tombol Login (Disesuaikan warnanya dengan gaya Register) */}
@@ -164,7 +164,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-wait text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-slate-900/20 transition-all active:scale-95"
               >
-                {loading ? "Memproses..." : "Log In"}
+                {loading ? "Memproses..." : "Masuk"}
               </button>
             </div>
           </form>
