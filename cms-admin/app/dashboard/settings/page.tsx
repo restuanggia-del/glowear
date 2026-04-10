@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Store, Phone, CreditCard, FileText, Save, Info } from "lucide-react";
+import { Store, Phone, CreditCard, FileText, Save, Info, Loader2, AlertCircle, CheckCircle2, X } from "lucide-react";
 
 export default function SettingsPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +14,24 @@ export default function SettingsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // ==========================================
+  // STATE CUSTOM DIALOG (Pengganti Alert)
+  // ==========================================
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'info' | 'confirm';
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, type: 'info', title: '', message: '' });
+
+  const showDialog = (type: 'success' | 'error' | 'info' | 'confirm', title: string, message: string, onConfirm?: () => void) => {
+    setDialog({ isOpen: true, type, title, message, onConfirm });
+  };
+
+  const closeDialog = () => setDialog({ ...dialog, isOpen: false });
+  // ==========================================
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -31,7 +49,7 @@ export default function SettingsPage() {
           });
         }
       } catch (error) {
-        console.error("Gagal mengambil data pengaturan", error);
+        showDialog('error', 'Koneksi Gagal', 'Gagal mengambil data pengaturan dari server.');
       } finally {
         setLoading(false);
       }
@@ -54,157 +72,233 @@ export default function SettingsPage() {
       });
 
       if (res.ok) {
-        alert("Pengaturan Toko berhasil diperbarui!");
+        showDialog('success', 'Berhasil Disimpan', 'Semua pengaturan toko telah diperbarui dan langsung terhubung ke Aplikasi Mobile.');
       } else {
-        alert("Gagal menyimpan pengaturan.");
+        showDialog('error', 'Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan pengaturan ke database.');
       }
     } catch (error) {
-      alert("Terjadi kesalahan sistem.");
+      showDialog('error', 'Kesalahan Sistem', 'Gagal menghubungi server.');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div className="p-6 text-gray-500">Memuat pengaturan...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-slate-200 shadow-sm">
+        <Loader2 size={40} className="text-blue-500 animate-spin mb-4" />
+        <p className="text-slate-500 font-medium">Memuat pengaturan sistem...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="font-sans space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Pengaturan Toko</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Informasi ini akan terhubung langsung dan tampil di Aplikasi Mobile pelanggan.
+    <div className="font-sans space-y-6 pb-10 relative">
+      
+      {/* Header Halaman */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Pengaturan Toko</h1>
+        <p className="text-sm text-slate-500 mt-1 font-medium">
+          Informasi kontak, rekening, dan ketentuan yang Anda atur di sini akan tampil secara real-time di Aplikasi Pelanggan.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* Kolom Kiri */}
-          <div className="space-y-6">
+          {/* =========================================
+              KOLOM KIRI: INFO UMUM & REKENING
+          ========================================= */}
+          <div className="space-y-8">
+            
             {/* Bagian: Informasi Umum */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5 flex items-center gap-2">
-                <Store size={18} /> Profil Bisnis
-              </h2>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                  <Store size={20} className="stroke-[2.5px]" />
+                </div>
+                <h2 className="text-lg font-black text-slate-800 tracking-tight">Profil Bisnis</h2>
+              </div>
               
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Toko / Konveksi</label>
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nama Toko / Konveksi</label>
                   <input
                     type="text"
                     name="namaToko"
                     value={formData.namaToko}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    required
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium"
                     placeholder="Contoh: Glowear Sablon"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp CS</label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-gray-500 sm:text-sm">
-                      <Phone size={14} />
-                    </span>
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nomor WhatsApp CS</label>
+                  <div className="relative group">
+                    <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <input
                       type="text"
                       name="whatsappCS"
                       value={formData.whatsappCS}
                       onChange={handleChange}
-                      className="flex-1 w-full border border-gray-200 rounded-r-lg p-2.5 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      required
+                      className="w-full border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium"
                       placeholder="Contoh: 08123456789"
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">Gunakan format angka mulai dari 0 atau 62.</p>
+                  <p className="text-[10px] text-slate-400 mt-2 font-medium uppercase tracking-wider">Format: Mulai dari angka 0 atau 62.</p>
                 </div>
               </div>
             </div>
 
             {/* Bagian: Rekening Bank */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5 flex items-center gap-2">
-                <CreditCard size={18} /> Rekening Tujuan Transfer
-              </h2>
-              <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-4 flex gap-3 text-blue-800 text-sm">
-                <Info size={16} className="shrink-0 mt-0.5" />
-                <p>Rekening ini akan ditampilkan di halaman Pembayaran pada Aplikasi Mobile pelanggan.</p>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+                  <CreditCard size={20} className="stroke-[2.5px]" />
+                </div>
+                <h2 className="text-lg font-black text-slate-800 tracking-tight">Rekening Transfer</h2>
+              </div>
+              
+              <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-6 flex gap-3 text-blue-800 text-sm shadow-inner">
+                <Info size={16} className="shrink-0 mt-0.5 text-blue-500" />
+                <p className="font-medium leading-relaxed">Rekening tunggal ini akan menjadi tujuan pembayaran DP maupun Pelunasan oleh seluruh pelanggan.</p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Bank / E-Wallet</label>
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nama Bank / E-Wallet</label>
                   <input
                     type="text"
                     name="namaBank"
                     value={formData.namaBank}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    required
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium"
                     placeholder="Contoh: BCA / Mandiri / DANA"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nomor Rekening</label>
                     <input
                       type="text"
                       name="nomorRekening"
                       value={formData.nomorRekening}
                       onChange={handleChange}
-                      className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono"
+                      required
+                      className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono placeholder:font-sans placeholder:font-medium placeholder:text-slate-400"
                       placeholder="8473xxx"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Atas Nama</label>
+                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Atas Nama</label>
                     <input
                       type="text"
                       name="atasNamaBank"
                       value={formData.atasNamaBank}
                       onChange={handleChange}
-                      className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      required
+                      className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium"
                       placeholder="Ahmad Faiz"
                     />
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
 
-          {/* Kolom Kanan */}
-          <div className="space-y-6">
-            {/* Bagian: Syarat & Ketentuan */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full flex flex-col">
-              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5 flex items-center gap-2">
-                <FileText size={18} /> Syarat & Ketentuan Pemesanan
-              </h2>
+          {/* =========================================
+              KOLOM KANAN: SYARAT & KETENTUAN
+          ========================================= */}
+          <div className="space-y-6 flex flex-col h-full">
+            
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
+                  <FileText size={20} className="stroke-[2.5px]" />
+                </div>
+                <h2 className="text-lg font-black text-slate-800 tracking-tight">Syarat & Ketentuan</h2>
+              </div>
+              
               <div className="flex-1 flex flex-col">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Teks Ketentuan (Muncul saat pelanggan akan checkout)
+                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
+                  Kebijakan Order (Muncul di Aplikasi Pelanggan)
                 </label>
                 <textarea
                   name="syaratKetentuan"
                   value={formData.syaratKetentuan}
                   onChange={handleChange}
-                  rows={12}
-                  className="w-full flex-1 border border-gray-200 rounded-lg p-3 text-sm text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none leading-relaxed"
-                  placeholder="1. Pengerjaan memakan waktu 7-14 hari kerja.&#10;2. DP yang sudah masuk tidak dapat dikembalikan.&#10;3. Kesalahan ukuran dari pihak pelanggan di luar tanggung jawab Glowear."
+                  required
+                  className="w-full flex-1 min-h-[300px] border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-700 bg-slate-50 outline-none focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all resize-none leading-relaxed custom-scrollbar placeholder:text-slate-400"
+                  placeholder="1. Pengerjaan memakan waktu 7-14 hari kerja.&#10;2. DP minimal 50% untuk mulai produksi.&#10;3. Kesalahan ukuran dari pihak pelanggan di luar tanggung jawab kami."
                 />
               </div>
             </div>
+
+            {/* Tombol Simpan */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:text-slate-500 text-white px-8 py-4 rounded-full font-bold transition-all shadow-xl shadow-slate-900/20 active:scale-95"
+              >
+                {saving ? (
+                  <><Loader2 size={20} className="animate-spin" /> Menyimpan Sistem...</>
+                ) : (
+                  <><Save size={20} /> Simpan Pengaturan</>
+                )}
+              </button>
+            </div>
+
           </div>
-
-        </div>
-
-        {/* Floating Action Bar (Bawah) */}
-        <div className="flex justify-end pt-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-          >
-            {saving ? "Menyimpan..." : <><Save size={20} /> Simpan Pengaturan</>}
-          </button>
         </div>
       </form>
+
+      {/* =========================================
+          CUSTOM DIALOG SYSTEM
+      ========================================= */}
+      {dialog.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
+          
+          <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 border border-slate-100">
+            
+            <div className={`mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-5 shadow-inner
+              ${dialog.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 
+                dialog.type === 'error' ? 'bg-rose-100 text-rose-500' : 
+                dialog.type === 'confirm' ? 'bg-amber-100 text-amber-500' : 
+                'bg-blue-100 text-blue-500'}`}
+            >
+              {dialog.type === 'success' && <CheckCircle2 size={32} />}
+              {dialog.type === 'error' && <X size={32} />}
+              {dialog.type === 'confirm' && <AlertCircle size={32} />}
+              {dialog.type === 'info' && <Info size={32} />}
+            </div>
+
+            <h3 className="text-xl font-black text-slate-800 mb-2">{dialog.title}</h3>
+            <p className="text-sm font-medium text-slate-500 leading-relaxed mb-8">{dialog.message}</p>
+
+            {dialog.type === 'confirm' ? (
+              <div className="flex gap-3">
+                <button onClick={closeDialog} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
+                  Batal
+                </button>
+                <button onClick={dialog.onConfirm} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
+                  Ya, Lanjutkan
+                </button>
+              </div>
+            ) : (
+              <button onClick={closeDialog} className="w-full py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
+                Mengerti
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
