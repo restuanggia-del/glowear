@@ -93,10 +93,15 @@ export default function LoginPage() {
       {/* Kontainer Utama Form */}
       <div className="relative z-20 w-full max-w-md px-6">
         
-        {/* Logo Atas */}
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/30 shadow-xl">
-            <ShieldCheck size={32} className="text-white" />
+        <div className="flex justify-center mb-2">
+          <div className="relative w-40 h-40 flex items-center justify-center">
+            <Image
+              src="/logoglomed.png" // 👈 UBAH INI sesuai nama file logo Anda di folder public
+              alt="Logo Glowear"
+              fill
+              // className="object-contain p-3" // p-3 memberi jarak agar logo tidak nabrak garis pinggir
+              priority
+            />
           </div>
         </div>
 
