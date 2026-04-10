@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { SettingsModule } from './settings/settings.module';
 import { BannersModule } from './banners/banners.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     SettingsModule,
     BannersModule,
     PortfolioModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
