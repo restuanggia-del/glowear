@@ -1,8 +1,8 @@
 "use client";
 
-import { Menu, Bell, Search, User, ShieldCheck, LogOut, ChevronRight, Package, Receipt } from "lucide-react";
+import { Menu, Bell, Search, User, LogOut, ChevronRight, Package, Receipt, Plus } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,8 +12,17 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [greeting, setGreeting] = useState("Selamat datang");
 
-  // Fungsi cerdas untuk menerjemahkan URL menjadi judul halaman (Breadcrumbs)
+  // Sapaan otomatis berdasarkan jam
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 11) setGreeting("Selamat pagi");
+    else if (hour < 15) setGreeting("Selamat siang");
+    else if (hour < 18) setGreeting("Selamat sore");
+    else setGreeting("Selamat malam");
+  }, []);
+
   const getPageTitle = () => {
     if (pathname === '/dashboard') return 'Dashboard Utama';
     if (pathname.includes('/orders')) return 'Pesanan Masuk';
@@ -29,48 +38,69 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 h-20 px-4 md:px-8 flex items-center justify-between shrink-0 z-20 relative">
+    <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-20 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       
-      {/* KIRI: Tombol Mobile & Breadcrumbs */}
-      <div className="flex items-center gap-4">
+      {/* ================= KIRI: Burger & Breadcrumbs ================= */}
+      <div className="flex items-center gap-3 md:gap-4">
+        {/* Tombol Burger Mobile (Sekarang z-index tinggi agar bisa diklik) */}
         <button 
           onClick={onMenuClick}
-          className="p-2 -ml-2 rounded-xl text-gray-500 hover:bg-gray-100 lg:hidden transition-colors"
+          className="relative z-50 p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-blue-600 lg:hidden shadow-sm active:scale-95 transition-all"
         >
-          <Menu size={24} />
+          <Menu size={22} />
         </button>
         
-        {/* Breadcrumbs (Hanya tampil di layar agak besar) */}
-        <div className="hidden sm:flex items-center gap-2 text-sm font-medium">
-          <span className="text-gray-400">Glowear</span>
-          <ChevronRight size={16} className="text-gray-300" />
-          <span className="text-blue-600 font-bold">{getPageTitle()}</span>
+        {/* Breadcrumbs Modern */}
+        <div className="hidden lg:flex items-center gap-2 text-sm">
+          <span className="text-gray-500 font-bold px-2.5 py-1 bg-gray-100 rounded-md border border-gray-200 uppercase tracking-wider text-[10px]">
+            Glomed
+          </span>
+          <ChevronRight size={14} className="text-gray-300" />
+          <span className="text-slate-800 font-bold tracking-wide">{getPageTitle()}</span>
         </div>
       </div>
 
-      {/* TENGAH: Search Bar (Hanya tampil di Desktop) */}
-      <div className="hidden lg:flex items-center bg-gray-50 border border-gray-200 rounded-full px-4 py-2 w-80 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all shadow-inner">
-        <Search size={18} className="text-gray-400 mr-2 shrink-0" />
-        <input 
-          type="text" 
-          placeholder="Cari ID Pesanan (Cth: ORD-123)..." 
-          className="bg-transparent border-none outline-none text-sm w-full text-gray-700"
-        />
+      {/* ================= TENGAH: Search Bar ala Spotlight ================= */}
+      <div className="hidden md:flex flex-1 max-w-md mx-6">
+        <div className="relative w-full group">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+          <input 
+            type="text" 
+            placeholder="Cari transaksi, produk, atau pelanggan..." 
+            className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl pl-10 pr-16 py-2.5 text-sm outline-none transition-all shadow-inner placeholder:text-gray-400"
+          />
+          {/* Hint Keyboard Shortcut */}
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-60">
+            <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">Ctrl</kbd>
+            <kbd className="hidden lg:inline-block bg-white border border-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">K</kbd>
+          </div>
+        </div>
       </div>
 
-      {/* KANAN: Notifikasi & Profil */}
-      <div className="flex items-center gap-3 md:gap-5">
+      {/* ================= KANAN: Aksi Cepat & Profil ================= */}
+      <div className="flex items-center gap-3 sm:gap-4">
         
-        {/* Dropdown Notifikasi */}
+        {/* Tombol Buat Pesanan Baru (Hanya Desktop) */}
+        <Link 
+          href="/dashboard/custom-designs" 
+          className="hidden lg:flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg active:scale-95"
+        >
+          <Plus size={16} /> Buat Pesanan
+        </Link>
+
+        <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
+
+        {/* Notifikasi */}
         <div className="relative">
           <button 
             onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
-            className={`relative p-2.5 rounded-full transition-colors ${isNotifOpen ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}
+            className={`relative p-2.5 rounded-xl transition-all border ${isNotifOpen ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
           >
             <Bell size={20} />
             <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
           </button>
 
+          {/* Isi Dropdown Notifikasi (Sama seperti sebelumnya) */}
           {isNotifOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)}></div>
@@ -79,81 +109,58 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                   <p className="text-sm font-bold text-gray-800">Notifikasi</p>
                   <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">2 Baru</span>
                 </div>
-                
                 <div className="max-h-80 overflow-y-auto">
-                  {/* Item Notifikasi 1 */}
                   <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 flex gap-3 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                      <Receipt size={18} />
-                    </div>
+                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><Receipt size={18} /></div>
                     <div>
-                      <p className="text-sm font-bold text-gray-800">Bukti Transfer Diunggah</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Pelanggan telah mengunggah struk untuk ORD-A1B2. Segera verifikasi.</p>
-                      <p className="text-[10px] text-gray-400 mt-1 font-medium">5 menit yang lalu</p>
+                      <p className="text-sm font-bold text-gray-800">Struk Pembayaran</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Struk baru untuk ORD-A1B2 perlu dicek.</p>
+                      <p className="text-[10px] text-gray-400 mt-1 font-medium">5 mnt lalu</p>
                     </div>
                   </div>
-
-                  {/* Item Notifikasi 2 */}
                   <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex gap-3 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                      <Package size={18} />
-                    </div>
+                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"><Package size={18} /></div>
                     <div>
-                      <p className="text-sm font-bold text-gray-800">Pesanan Sablon Baru</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Ada pesanan custom 24 pcs Hoodie. Menunggu konfirmasi Anda.</p>
-                      <p className="text-[10px] text-gray-400 mt-1 font-medium">1 jam yang lalu</p>
+                      <p className="text-sm font-bold text-gray-800">Pesanan Baru Masuk</p>
+                      <p className="text-xs text-gray-500 mt-0.5">24 pcs Hoodie custom menunggu validasi.</p>
+                      <p className="text-[10px] text-gray-400 mt-1 font-medium">1 jam lalu</p>
                     </div>
                   </div>
                 </div>
-                
-                <Link href="/dashboard/orders" onClick={() => setIsNotifOpen(false)} className="block text-center text-xs font-bold text-blue-600 py-3 bg-gray-50 hover:bg-gray-100 transition-colors">
-                  Lihat Semua Aktivitas
-                </Link>
+                <Link href="/dashboard/orders" onClick={() => setIsNotifOpen(false)} className="block text-center text-xs font-bold text-blue-600 py-3 bg-gray-50 hover:bg-gray-100 transition-colors">Lihat Semua Notifikasi</Link>
               </div>
             </>
           )}
         </div>
 
-        <div className="h-8 w-px bg-gray-200 mx-1"></div>
-
-        {/* Dropdown Profil */}
+        {/* Profil Menu */}
         <div className="relative">
           <button 
             onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotifOpen(false); }}
-            className="flex items-center gap-3 text-left focus:outline-none hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 pl-2 pr-1 py-1 bg-white border border-gray-200 rounded-full focus:outline-none hover:shadow-md hover:border-blue-200 transition-all active:scale-95"
           >
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-bold text-gray-700 leading-tight">{user?.nama || "Admin"}</p>
-              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Online</p>
+            <div className="hidden md:block text-right pl-2">
+              <p className="text-[10px] font-bold text-gray-400">{greeting},</p>
+              <p className="text-sm font-bold text-slate-800 leading-tight">{user?.nama || "Admin"}</p>
             </div>
-            <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-md border-2 border-white relative">
+            <div className="w-9 h-9 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm border-2 border-white relative shadow-sm">
               {user?.nama?.charAt(0).toUpperCase() || "A"}
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></span>
             </div>
           </button>
 
-          {/* Menu Dropdown Profil */}
           {isProfileOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
               <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all">
                 <div className="px-4 py-3 border-b border-gray-50 mb-2">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Login Sebagai</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Akses Sistem</p>
                   <p className="text-sm font-bold text-gray-800 truncate">{user?.email}</p>
                 </div>
-                
-                <Link 
-                  href="/dashboard/account" 
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                >
+                <Link href="/dashboard/account" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                   <User size={18} /> Pengaturan Akun
                 </Link>
-                
-                <button 
-                  onClick={() => { setIsProfileOpen(false); logout(); }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors mt-1"
-                >
+                <button onClick={() => { setIsProfileOpen(false); logout(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors mt-1">
                   <LogOut size={18} /> Keluar Aplikasi
                 </button>
               </div>

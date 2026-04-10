@@ -24,3 +24,40 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =========================================
+   CUSTOM SCROLLBAR ALA MACOS (ELEGAN)
+   ========================================= */
+
+/* Untuk Google Chrome, Edge, Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* Lebar scrollbar vertikal */
+  height: 6px; /* Tinggi scrollbar horizontal */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Jalurnya dibuat transparan */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* Warna abu-abu yang elegan (Tailwind slate-300) */
+  border-radius: 10px; /* Ujungnya dibuat tumpul/bulat */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8; /* Warnanya sedikit lebih gelap saat disorot mouse */
+}
+
+/* Untuk Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
