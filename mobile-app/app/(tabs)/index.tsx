@@ -7,7 +7,8 @@ import { API_URL } from "@/constants/config";
 const { width } = Dimensions.get("window");
 
 export default function CatalogScreen() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [banners, setBanners] = useState<any[]>([]); // State untuk Banner
   const [loading, setLoading] = useState(true);
 
   // State untuk Modal Kelengkapan Data
@@ -17,13 +18,18 @@ export default function CatalogScreen() {
   const [alamat, setAlamat] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // 1. Ambil data produk
-  const fetchProducts = async () => {
+  // 1. Ambil data produk & Banner sekaligus
+  const fetchData = async () => {
     try {
-      const res = await api.get("/products");
-      setProducts(res.data);
+      // Mengambil data secara paralel agar lebih cepat
+      const [resProducts, resBanners] = await Promise.all([
+        api.get("/products"),
+        api.get("/banners")
+      ]);
+      setProducts(resProducts.data);
+      setBanners(resBanners.data);
     } catch (error) {
-      console.error("Gagal ambil produk:", error);
+      console.error("Gagal ambil data:", error);
     } finally {
       setLoading(false);
     }
@@ -37,7 +43,6 @@ export default function CatalogScreen() {
         const user = JSON.parse(dataString);
         setUserData(user);
         
-        // Jika data alamat ATAU no telepon kosong, tampilkan modal
         if (!user.alamat || !user.noTelepon) {
           setShowProfileModal(true);
         }
@@ -48,7 +53,7 @@ export default function CatalogScreen() {
   };
 
   useEffect(() => { 
-    fetchProducts(); 
+    fetchData(); 
     checkUserProfile();
   }, []);
 
@@ -60,19 +65,16 @@ export default function CatalogScreen() {
 
     setSavingProfile(true);
     try {
-      // ✅ PERBAIKAN URL DI SINI (Sesuaikan dengan controller backend Anda)
-        const res = await api.put(`/auth/profile?userId=${userData.id}`, {
-          noTelp: noTelepon,
-          alamat: alamat,
-        });
+      const res = await api.put(`/auth/profile?userId=${userData.id}`, {
+        noTelepon: noTelepon,
+        alamat: alamat,
+      });
 
       if (res.status === 200 || res.status === 201) {
-        // Update data di penyimpanan lokal HP
         const updatedUser = { ...userData, noTelepon, alamat };
         await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
         setUserData(updatedUser);
         
-        // Tutup Modal
         setShowProfileModal(false);
         Alert.alert("Sukses", "Data diri berhasil dilengkapi!");
       }
@@ -88,6 +90,42 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  // ==========================================
+  // KOMPONEN HEADER (SLIDER BANNER + JUDUL)
+  // ==========================================
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      {/* Tampilkan slider hanya jika ada data banner */}
+      {banners.length > 0 && (
+        <View style={styles.bannerSection}>
+          <FlatList
+            data={banners}
+            horizontal
+            pagingEnabled // Membuatnya bergeser per satu gambar (Snap)
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            snapToAlignment="center"
+            decelerationRate="fast"
+            renderItem={({ item }) => (
+              <View style={styles.bannerWrapper}>
+                <Image 
+                  source={{ 
+                    uri: item.gambar?.startsWith('http') 
+                      ? item.gambar 
+                      : `${API_URL}/uploads/banners/${item.gambar}` 
+                  }} 
+                  style={styles.bannerImage} 
+                />
+              </View>
+            )}
+          />
+        </View>
+      )}
+      
+      <Text style={styles.headerTitle}>Koleksi Terbaik</Text>
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={styles.loadingArea}>
@@ -98,18 +136,24 @@ export default function CatalogScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>Koleksi Terbaik</Text>
       
+      {/* FlatList Utama (Menampung Banner di atas dan Produk di bawah) */}
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={renderHeader} 
+        contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image 
-              source={{ uri: item.gambar?.startsWith('http') ? item.gambar : `${API_URL}/uploads/${item.gambar}` }} 
+              source={{ 
+                uri: item.gambar?.startsWith('http') 
+                  ? item.gambar 
+                  : `${API_URL}/uploads/${item.gambar}` 
+              }} 
               style={styles.image} 
             />
             <View style={styles.info}>
@@ -173,11 +217,29 @@ export default function CatalogScreen() {
   );
 }
 
-// PERHATIKAN: Saya sudah menambahkan properti fontFamily 'Poppins_...' di style ini
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a", paddingHorizontal: 15 },
-  headerTitle: { fontSize: 24, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginVertical: 20 },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
+  
+  // Style Header & Banner
+  headerContainer: { paddingTop: 15 },
+  bannerSection: { marginBottom: 10 },
+  bannerWrapper: {
+    width: width - 30, // Lebar layar dikurangi padding kiri-kanan
+    marginRight: 10,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  bannerImage: {
+    width: "100%",
+    height: (width - 30) * (9 / 16), // Menjaga rasio 16:9 agar tidak gepeng
+    resizeMode: "cover",
+    backgroundColor: "#1e293b",
+  },
+  
+  headerTitle: { fontSize: 24, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginVertical: 15 },
+  
+  // Style Produk
   row: { justifyContent: "space-between" },
   card: {
     backgroundColor: "#1e293b",
@@ -195,47 +257,13 @@ const styles = StyleSheet.create({
   price: { color: "#94a3b8", fontSize: 13, fontFamily: "Poppins_500Medium", marginTop: 4 },
 
   // Style untuk Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.9)", // Backdrop gelap dengan opacity
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: "#1e293b",
-    width: "100%",
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: "#334155",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
-  },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(15, 23, 42, 0.9)", justifyContent: "center", alignItems: "center", padding: 20 },
+  modalContent: { backgroundColor: "#1e293b", width: "100%", borderRadius: 24, padding: 24, borderWidth: 1, borderColor: "#334155", elevation: 10 },
   modalTitle: { fontSize: 22, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginBottom: 8, textAlign: "center" },
   modalSubtitle: { fontSize: 13, fontFamily: "Poppins_400Regular", color: "#94a3b8", textAlign: "center", marginBottom: 24, lineHeight: 20 },
   inputLabel: { fontSize: 12, fontFamily: "Poppins_600SemiBold", color: "#e2e8f0", marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.5 },
-  input: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 12,
-    color: "#fff",
-    fontFamily: "Poppins_500Medium",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 20,
-  },
+  input: { backgroundColor: "#0f172a", borderWidth: 1, borderColor: "#334155", borderRadius: 12, color: "#fff", fontFamily: "Poppins_500Medium", paddingHorizontal: 16, paddingVertical: 14, marginBottom: 20 },
   textArea: { height: 100, paddingTop: 14 },
-  saveButton: {
-    backgroundColor: "#38bdf8",
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    marginTop: 10,
-  },
+  saveButton: { backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10 },
   saveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 },
 });
