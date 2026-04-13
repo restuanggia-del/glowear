@@ -124,7 +124,7 @@ export default function CatalogScreen() {
           <TouchableOpacity 
             style={styles.card}
             activeOpacity={0.8}
-            onPress={() => router.push(`/product/${item.id}`)}
+            onPress={() => router.push(`/product/${item.gambar}`)}
           >
             <Image 
               source={{ 
