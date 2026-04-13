@@ -2,7 +2,7 @@ import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions,
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL, BASE_URL } from "../../constants/config"; // Pastikan import ini sesuai nama konstanta Anda
+import { API_URL } from "../../constants/config";
 import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
@@ -42,22 +42,18 @@ export default function CatalogScreen() {
       if (dataString) {
         const localUser = JSON.parse(dataString);
         
-        // Tarik data asli dari database agar noTelepon & alamat ter-update
         try {
           const response = await api.get(`/auth/profile?userId=${localUser.id}`);
           const currentUser = response.data;
 
-          // Perbarui state dan memori lokal
           setUserData(currentUser);
           await AsyncStorage.setItem("userData", JSON.stringify(currentUser));
 
-          // Cek kelengkapan berdasarkan data dari database
           if (!currentUser.alamat || !currentUser.noTelepon) {
             setShowProfileModal(true);
           }
         } catch (apiError) {
           console.error("Gagal menarik profil terbaru:", apiError);
-          // Fallback jika API gagal (misal koneksi putus)
           setUserData(localUser);
           if (!localUser.alamat || !localUser.noTelepon) {
             setShowProfileModal(true);
@@ -107,6 +103,9 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  // ==========================================
+  // KOMPONEN HEADER (SLIDER BANNER + JUDUL)
+  // ==========================================
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       {banners.length > 0 && (
@@ -125,7 +124,7 @@ export default function CatalogScreen() {
                   source={{ 
                     uri: item.gambar?.startsWith('http') 
                       ? item.gambar 
-                      : `${API_URL}/uploads/banners/${item.gambar}` 
+                      : `${BASE_URL}/uploads/banners/${item.gambar}` 
                   }} 
                   style={styles.bannerImage} 
                 />
@@ -169,7 +168,7 @@ export default function CatalogScreen() {
               source={{ 
                 uri: item.gambar?.startsWith('http') 
                   ? item.gambar 
-                  : `${API_URL}/uploads/${item.gambar}` 
+                  : `${BASE_URL}/uploads/${item.gambar}` 
               }} 
               style={styles.image} 
             />
@@ -215,6 +214,7 @@ export default function CatalogScreen() {
               onChangeText={setAlamat}
             />
 
+            {/* Tombol Simpan */}
             <TouchableOpacity 
               style={styles.saveButton} 
               onPress={handleSaveProfile}
@@ -226,6 +226,16 @@ export default function CatalogScreen() {
                 <Text style={styles.saveButtonText}>Simpan Data</Text>
               )}
             </TouchableOpacity>
+
+            {/* Tombol Nanti Saja (BARU) */}
+            <TouchableOpacity 
+              style={styles.cancelButton} 
+              onPress={() => setShowProfileModal(false)}
+              disabled={savingProfile}
+            >
+              <Text style={styles.cancelButtonText}>Nanti Saja</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </Modal>
@@ -264,4 +274,8 @@ const styles = StyleSheet.create({
   textArea: { height: 100, paddingTop: 14 },
   saveButton: { backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10 },
   saveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 },
+  
+  // Style Baru untuk Tombol "Nanti Saja"
+  cancelButton: { paddingVertical: 14, alignItems: "center", marginTop: 5 },
+  cancelButtonText: { color: "#94a3b8", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
 });
