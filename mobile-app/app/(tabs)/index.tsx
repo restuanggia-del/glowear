@@ -49,6 +49,11 @@ export default function CatalogScreen() {
           setUserData(currentUser);
           await AsyncStorage.setItem("userData", JSON.stringify(currentUser));
 
+          // Set nilai awal input jika sudah ada data di database
+          if (currentUser.noTelepon) setNoTelepon(currentUser.noTelepon);
+          if (currentUser.alamat) setAlamat(currentUser.alamat);
+
+          // Munculkan modal jika salah satu masih kosong
           if (!currentUser.alamat || !currentUser.noTelepon) {
             setShowProfileModal(true);
           }
@@ -70,7 +75,7 @@ export default function CatalogScreen() {
     checkUserProfile();
   }, []);
 
-  // 3. Fungsi Simpan Profil yang Kurang
+  // 3. Fungsi Simpan Profil
   const handleSaveProfile = async () => {
     if (!noTelepon || !alamat) {
       return Alert.alert("Perhatian", "Nomor Telepon dan Alamat wajib diisi untuk keperluan pengiriman pesanan.");
@@ -89,7 +94,7 @@ export default function CatalogScreen() {
         setUserData(updatedUser);
         
         setShowProfileModal(false);
-        Alert.alert("Sukses", "Data diri berhasil dilengkapi!");
+        Alert.alert("Sukses", "Data diri berhasil diperbarui!");
       }
     } catch (error) {
       console.log("Error update profil:", error);
@@ -103,9 +108,6 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
-  // ==========================================
-  // KOMPONEN HEADER (SLIDER BANNER + JUDUL)
-  // ==========================================
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       {banners.length > 0 && (
@@ -133,7 +135,6 @@ export default function CatalogScreen() {
           />
         </View>
       )}
-      
       <Text style={styles.headerTitle}>Koleksi Terbaik</Text>
     </View>
   );
@@ -148,8 +149,6 @@ export default function CatalogScreen() {
 
   return (
     <View style={styles.container}>
-      
-      {/* FlatList Utama */}
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
@@ -214,7 +213,6 @@ export default function CatalogScreen() {
               onChangeText={setAlamat}
             />
 
-            {/* Tombol Simpan */}
             <TouchableOpacity 
               style={styles.saveButton} 
               onPress={handleSaveProfile}
@@ -227,19 +225,20 @@ export default function CatalogScreen() {
               )}
             </TouchableOpacity>
 
-            {/* Tombol Nanti Saja (BARU) */}
+            {/* Tombol Nanti Saja / Sudah Mengisi dengan Logika Kondisional */}
             <TouchableOpacity 
               style={styles.cancelButton} 
               onPress={() => setShowProfileModal(false)}
               disabled={savingProfile}
             >
-              <Text style={styles.cancelButtonText}>Nanti Saja</Text>
+              <Text style={styles.cancelButtonText}>
+                {userData?.noTelepon && userData?.alamat ? "Sudah Mengisi" : "Nanti Saja"}
+              </Text>
             </TouchableOpacity>
 
           </View>
         </View>
       </Modal>
-
     </View>
   );
 }
@@ -247,15 +246,11 @@ export default function CatalogScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a", paddingHorizontal: 15 },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
-  
-  // Style Header & Banner
   headerContainer: { paddingTop: 15 },
   bannerSection: { marginBottom: 10 },
   bannerWrapper: { width: width - 30, marginRight: 10, borderRadius: 16, overflow: "hidden" },
   bannerImage: { width: "100%", height: (width - 30) * (9 / 16), resizeMode: "cover", backgroundColor: "#1e293b" },
   headerTitle: { fontSize: 24, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginVertical: 15 },
-  
-  // Style Produk
   row: { justifyContent: "space-between" },
   card: { backgroundColor: "#1e293b", width: width * 0.44, borderRadius: 16, marginBottom: 16, overflow: "hidden", borderWidth: 1, borderColor: "#334155" },
   image: { width: "100%", height: 160, backgroundColor: "#334155" },
@@ -263,8 +258,6 @@ const styles = StyleSheet.create({
   catName: { color: "#38bdf8", fontSize: 10, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 2 },
   prodName: { color: "#fff", fontSize: 14, fontFamily: "Poppins_600SemiBold" },
   price: { color: "#94a3b8", fontSize: 13, fontFamily: "Poppins_500Medium", marginTop: 4 },
-
-  // Style untuk Modal
   modalOverlay: { flex: 1, backgroundColor: "rgba(15, 23, 42, 0.9)", justifyContent: "center", alignItems: "center", padding: 20 },
   modalContent: { backgroundColor: "#1e293b", width: "100%", borderRadius: 24, padding: 24, borderWidth: 1, borderColor: "#334155", elevation: 10 },
   modalTitle: { fontSize: 22, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginBottom: 8, textAlign: "center" },
@@ -274,8 +267,6 @@ const styles = StyleSheet.create({
   textArea: { height: 100, paddingTop: 14 },
   saveButton: { backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10 },
   saveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 },
-  
-  // Style Baru untuk Tombol "Nanti Saja"
   cancelButton: { paddingVertical: 14, alignItems: "center", marginTop: 5 },
   cancelButtonText: { color: "#94a3b8", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
 });
