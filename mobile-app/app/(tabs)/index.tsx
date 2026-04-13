@@ -124,7 +124,7 @@ export default function CatalogScreen() {
                   source={{ 
                     uri: item.gambar?.startsWith('http') 
                       ? item.gambar 
-                      : `${BASE_URL}/uploads/banners/${item.gambar}` 
+                      : `${API_URL}/uploads/banners/${item.gambar}` 
                   }} 
                   style={styles.bannerImage} 
                 />
@@ -168,7 +168,7 @@ export default function CatalogScreen() {
               source={{ 
                 uri: item.gambar?.startsWith('http') 
                   ? item.gambar 
-                  : `${BASE_URL}/uploads/${item.gambar}` 
+                  : `${API_URL}/uploads/${item.gambar}` 
               }} 
               style={styles.image} 
             />
