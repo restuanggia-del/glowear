@@ -121,17 +121,32 @@ export default function CatalogScreen() {
             snapToAlignment="center"
             decelerationRate="fast"
             renderItem={({ item }) => (
-              <View style={styles.bannerWrapper}>
-                <Image 
-                  source={{ 
-                    uri: item.gambar?.startsWith('http') 
-                      ? item.gambar 
-                      : `${API_URL}/uploads/banners/${item.gambar}` 
-                  }} 
-                  style={styles.bannerImage} 
-                />
+          <TouchableOpacity 
+            style={styles.card}
+            activeOpacity={0.8}
+            onPress={() => router.push(`/product/${item.id}`)}
+          >
+            <Image 
+              source={{ 
+                uri: item.gambar?.startsWith('http') 
+                  ? item.gambar 
+                  : `${API_URL}/uploads/${item.gambar}` 
+              }} 
+              style={styles.image} 
+            />
+            <View style={styles.info}>
+              <Text style={styles.catName}>{item.category?.namaKategori}</Text>
+              <Text style={styles.prodName} numberOfLines={1}>{item.namaProduk}</Text>
+              <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
+              
+              {/* TOMBOL EKSPLISIT BARU */}
+              <View style={{ backgroundColor: "#38bdf8", paddingVertical: 8, borderRadius: 8, marginTop: 12, alignItems: "center" }}>
+                <Text style={{ color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 11 }}>Lihat Detail</Text>
               </View>
-            )}
+
+            </View>
+          </TouchableOpacity>
+        )}
           />
         </View>
       )}
