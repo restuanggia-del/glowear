@@ -107,9 +107,6 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
-  // ==========================================
-  // KOMPONEN HEADER (SLIDER BANNER + JUDUL)
-  // ==========================================
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       {banners.length > 0 && (
