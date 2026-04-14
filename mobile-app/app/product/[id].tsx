@@ -2,7 +2,7 @@ import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, Touchable
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
-import { BASE_URL } from "../../constants/config";
+import { API_URL } from "../../constants/config";
 import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
@@ -75,7 +75,7 @@ export default function ProductDetailScreen() {
           source={{ 
             uri: product.gambar?.startsWith('http') 
               ? product.gambar 
-              : `${BASE_URL}/uploads/${product.gambar}` 
+              : `${API_URL}/uploads/${product.gambar}` 
           }} 
           style={styles.imageFull} 
         />
