@@ -148,7 +148,7 @@ export default function OrdersPage() {
   };
 
   const filteredOrders = orders.filter((order) =>
-    order.id.toLowerCase().includes(searchQuery.toLowerCase())
+    String(order.id).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
