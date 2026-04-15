@@ -67,6 +67,11 @@ export class OrdersController {
     return this.ordersService.create(finalData);
   }
 
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.ordersService.findByUser(userId);
+  }
+
   @Get('pending-verification')
   findPendingVerification() {
     return this.ordersService.findPendingVerification();
