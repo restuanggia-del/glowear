@@ -117,7 +117,7 @@ export default function MyOrdersScreen() {
 
               <View style={styles.productRow}>
                 <Image 
-                  source={{ uri: item.produk?.gambar?.startsWith('http') ? item.produk.gambar : `${BASE_URL}/uploads/${item.produk?.gambar}` }} 
+                  source={{ uri: item.produk?.gambar?.startsWith('http') ? item.produk.gambar : `${API_URL}/uploads/${item.produk?.gambar}` }} 
                   style={styles.productImage} 
                 />
                 <View style={styles.productInfo}>
