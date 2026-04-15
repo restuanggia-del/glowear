@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar} from "react-native";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -251,7 +251,7 @@ export default function CatalogScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a", paddingHorizontal: 15 },
+  container: { flex: 1, backgroundColor: "#0f172a", paddingHorizontal: 15, paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
   headerContainer: { paddingTop: 15 },
   bannerSection: { marginBottom: 10 },
