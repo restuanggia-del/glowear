@@ -110,6 +110,7 @@ model Order {
   //verifikasi pembayaran
   buktiPembayaran  String?
   tanggalBayar     DateTime?
+  nomorResi        String?
 
   items OrderItem[]
 
