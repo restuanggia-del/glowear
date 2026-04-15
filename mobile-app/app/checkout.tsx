@@ -5,10 +5,12 @@ import { api } from "../services/api";
 import { API_URL } from "../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CheckoutScreen() {
   const { productId } = useLocalSearchParams();
   const router = useRouter();
+  const [designImage, setDesignImage] = useState<string | null>(null);
 
   const [product, setProduct] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
@@ -48,10 +50,50 @@ export default function CheckoutScreen() {
   };
 
   const handleCheckout = async () => {
-    if (!userData?.alamat || !userData?.noTelepon) {
-      Alert.alert("Data Belum Lengkap", "Silakan lengkapi Alamat dan Nomor Telepon di menu Profil terlebih dahulu.");
-      return;
+  setSubmitting(true);
+  try {
+    const formData = new FormData();
+    
+    // Data Dasar
+    formData.append('userId', userData.id);
+    formData.append('totalHarga', (product.harga * qty).toString());
+    formData.append('alamatPengiriman', userData.alamat);
+    formData.append('catatanCustom', catatan);
+    
+    // Data Items (Harus di-string-kan karena FormData hanya menerima teks/file)
+    const itemsData = [{
+      productId: product.id,
+      jumlah: qty,
+      hargaSatuan: product.harga,
+      jenisSablon: "DTF" // Sesuaikan dengan Enum di Prisma
+    }];
+    formData.append('items', JSON.stringify(itemsData));
+
+    // Data File Desain (Jika ada)
+    if (designImage) {
+      const fileExt = designImage.split('.').pop() || 'jpg';
+      formData.append('fileDesain', {
+        uri: designImage,
+        name: `design-${Date.now()}.${fileExt}`,
+        type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`
+      } as any);
     }
+
+    // KIRIM KE ENDPOINT /orders/custom (Sesuai yang kita buat di Controller)
+    await api.post('/orders/custom', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    Alert.alert("Berhasil!", "Pesanan custom Anda telah dibuat.");
+    router.push("/(tabs)/profile");
+
+  } catch (error) {
+    console.log(error);
+    Alert.alert("Gagal", "Terjadi kesalahan saat membuat pesanan.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
     setSubmitting(true);
     try {
@@ -85,6 +127,18 @@ export default function CheckoutScreen() {
       // 4. Tangkap error jika gagal
       console.log("ERROR CHECKOUT:", error.response?.data || error.message);
       Alert.alert("Gagal", "Terjadi kesalahan sistem saat membuat pesanan.");
+    }
+  };
+
+  const pickDesign = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setDesignImage(result.assets[0].uri);
     }
   };
 
