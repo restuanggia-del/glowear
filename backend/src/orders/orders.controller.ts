@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -10,11 +8,10 @@ import { extname } from 'path';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // Endpoint khusus untuk upload bukti pembayaran (struk)
+  // 1. Endpoint khusus untuk upload bukti pembayaran (struk)
   @Post(':id/upload-receipt')
   @UseInterceptors(FileInterceptor('struk', {
     storage: diskStorage({
-      // Kita simpan langsung di folder uploads agar mudah dibaca oleh Admin
       destination: './uploads', 
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -23,14 +20,13 @@ export class OrdersController {
     }),
   }))
   uploadReceipt(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-    // Panggil service untuk memperbarui nama file di database
     return this.ordersService.update(id, {
       buktiPembayaran: file.filename,
-      // Kita tidak mengubah status menjadi LUNAS di sini, karena Admin yang harus verifikasi
     });
   }
 
-  @Post()
+  // 2. Fungsi Checkout dengan Desain Custom (Path diubah menjadi /orders/custom)
+  @Post('custom')
   @UseInterceptors(FileInterceptor('fileDesain', {
     storage: diskStorage({
       destination: './uploads/designs',
@@ -40,10 +36,7 @@ export class OrdersController {
       },
     }),
   }))
-  // PASTIKAN parameter @Body() menggunakan tipe 'any' agar tidak diblokir otomatis
-  create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
-    
-    // 1. Terjemahkan string JSON dari Frontend menjadi Array Asli
+  createWithDesign(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     let parsedItems = [];
     if (typeof body.items === 'string') {
       try {
@@ -55,16 +48,24 @@ export class OrdersController {
       parsedItems = body.items;
     }
 
-    // 2. Susun ulang datanya
     const finalData = {
       ...body,
       userId: body.userId,
-      totalHarga: Number(body.totalHarga), // Pastikan jadi angka
-      desain: file ? file.filename : null, // Simpan nama file gambar
-      items: parsedItems, // Masukkan array yang sudah diterjemahkan
+      totalHarga: Number(body.totalHarga),
+      desain: file ? file.filename : null, 
+      items: parsedItems,
     };
 
     return this.ordersService.create(finalData);
+  }
+
+  // 3. Fungsi Checkout Utama dari Mobile (Path default /orders)
+  @Post()
+  create(@Body() createOrderDto: any) {
+    // CCTV Backend: Akan muncul di terminal tempat backend berjalan
+    console.log("🔴 ADA PESANAN MASUK DARI MOBILE:", createOrderDto);
+    
+    return this.ordersService.create(createOrderDto);
   }
 
   @Get('user/:userId')
@@ -91,7 +92,6 @@ export class OrdersController {
 
   @Get('report')
   getReport(@Query('month') month: string, @Query('year') year: string) {
-    // Default ke bulan & tahun saat ini jika tidak ada query
     const m = month ? parseInt(month) : new Date().getMonth() + 1;
     const y = year ? parseInt(year) : new Date().getFullYear();
     return this.ordersService.getFinancialReport(m, y);

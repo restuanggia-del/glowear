@@ -68,7 +68,7 @@ export default function CheckoutScreen() {
           productId: product.id,
           jumlah: qty,
           hargaSatuan: product.harga,
-          jenisSablon: "Standard" 
+          jenisSablon: "DTF" 
         }]
       });
       
