@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, Platform, StatusBar } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
@@ -6,10 +6,9 @@ import { API_URL } from "../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
-
 export default function MyOrdersScreen() {
   const router = useRouter();
-  const { initialStatus } = useLocalSearchParams(); // Menerima status dari klik menu di Profil
+  const { initialStatus } = useLocalSearchParams(); 
   
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +27,6 @@ export default function MyOrdersScreen() {
         const userString = await AsyncStorage.getItem("userData");
         if (userString) {
           const user = JSON.parse(userString);
-          // Pastikan endpoint ini sesuai dengan backend Anda
           const res = await api.get(`/orders/user/${user.id}`);
           setOrders(res.data);
         }
@@ -45,6 +43,14 @@ export default function MyOrdersScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  // Fungsi Format Tanggal yang Aman
+  const formatDate = (dateString: any) => {
+    if (!dateString) return "Tanggal tidak tersedia";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Tanggal tidak valid";
+    return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "BELUM_BAYAR": return "#f59e0b"; // Amber
@@ -53,6 +59,14 @@ export default function MyOrdersScreen() {
       case "SELESAI": return "#64748b"; // Slate
       default: return "#94a3b8";
     }
+  };
+
+  // Fungsi aman untuk mengambil URL Gambar
+  const getImageUrl = (item: any) => {
+    const imgName = item.items?.[0]?.product?.gambar;
+    if (!imgName) return "https://via.placeholder.com/150"; // Gambar fallback jika kosong
+    if (imgName.startsWith('http')) return imgName;
+    return `${API_URL}/uploads/${imgName}`;
   };
 
   const filteredOrders = activeTab === "SEMUA" 
@@ -107,7 +121,9 @@ export default function MyOrdersScreen() {
           renderItem={({ item }) => (
             <View style={styles.orderCard}>
               <View style={styles.orderHeader}>
-                <Text style={styles.orderDate}>{new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+                {/* Membaca waktuDibuat atau createdAt dari backend */}
+                <Text style={styles.orderDate}>{formatDate(item.waktuDibuat || item.createdAt)}</Text>
+                
                 <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
                   <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
                     {item.status.replace("_", " ")}
@@ -116,13 +132,22 @@ export default function MyOrdersScreen() {
               </View>
 
               <View style={styles.productRow}>
+                {/* Mengambil gambar menggunakan fungsi pengaman */}
                 <Image 
-                  source={{ uri: item.produk?.gambar?.startsWith('http') ? item.produk.gambar : `${API_URL}/uploads/${item.produk?.gambar}` }} 
+                  source={{ uri: getImageUrl(item) }} 
                   style={styles.productImage} 
                 />
                 <View style={styles.productInfo}>
-                  <Text style={styles.productName} numberOfLines={1}>{item.produk?.namaProduk || "Produk dihapus"}</Text>
-                  <Text style={styles.productDetail}>Ukuran: {item.size} | Qty: {item.qty}</Text>
+                  {/* Membaca nama produk dari relasi items */}
+                  <Text style={styles.productName} numberOfLines={1}>
+                    {item.items?.[0]?.product?.namaProduk || "Produk Custom / Dihapus"}
+                  </Text>
+                  
+                  {/* Membaca jumlah (qty) dan sablon */}
+                  <Text style={styles.productDetail}>
+                    Qty: {item.items?.[0]?.jumlah || 0} Pcs {item.items?.[0]?.jenisSablon ? `| ${item.items[0].jenisSablon}` : ''}
+                  </Text>
+                  
                   <Text style={styles.totalPrice}>{formatRupiah(item.totalHarga)}</Text>
                 </View>
               </View>
@@ -130,7 +155,6 @@ export default function MyOrdersScreen() {
               {item.status === "BELUM_BAYAR" && (
                 <TouchableOpacity 
                   style={styles.payButton} 
-                  // Mengarahkan ke halaman payment sambil membawa data ID dan Total Harga
                   onPress={() => router.push({ pathname: '/payment', params: { orderId: item.id, totalHarga: item.totalHarga } })}
                 >
                   <Text style={styles.payButtonText}>Cara Pembayaran</Text>
@@ -145,7 +169,11 @@ export default function MyOrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#0f172a",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0, 
+  },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
   
   tabContainer: { paddingVertical: 10, borderBottomWidth: 1, borderColor: "#1e293b", paddingLeft: 10 },

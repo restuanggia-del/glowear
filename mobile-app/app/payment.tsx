@@ -41,25 +41,48 @@ export default function PaymentScreen() {
   // Fungsi Konfirmasi & Ubah Status
   const handleConfirm = async () => {
     if (!receiptImage) {
-      return Alert.alert("Perhatian", "Silakan upload bukti transfer Anda terlebih dahulu agar kami bisa memprosesnya.");
+      return Alert.alert("Perhatian", "Silakan upload bukti transfer Anda terlebih dahulu.");
     }
 
     setUploading(true);
     try {
-      // Logika Asli: Kita tembak endpoint update status dari BELUM_BAYAR menjadi DIPROSES
-      // (Untuk upload gambar fisik ke server, biasanya butuh konfigurasi Multer di NestJS, 
-      // jadi untuk MVP ini kita fokus mengubah status pesanannya agar pindah tab)
+      // 1. Siapkan 'Paket' File Gambar
+      const formData = new FormData();
       
-      await api.put(`/orders/${orderId}/status`, { status: "DIPROSES" });
+      // Ambil ekstensi file (misal: .jpg atau .png)
+      const fileExt = receiptImage.split('.').pop() || 'jpeg';
+      const fileName = `struk-${orderId}.${fileExt}`;
+
+      // Membungkus file agar dikenali oleh NestJS (Multer)
+      formData.append('struk', {
+        uri: receiptImage,
+        name: fileName,
+        type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`
+      } as any);
+
+      // 2. Kirim File Gambar ke Endpoint Upload Backend
+      await api.post(`/orders/${orderId}/upload-receipt`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // 3. (Opsional) Beri tahu backend untuk mengubah status jadi DIPROSES / MENUNGGU VERIFIKASI
+      // Agar pesanan pindah dari tab "Belum Bayar" di aplikasi mobile
+      await api.put(`/orders/${orderId}/status`, { 
+        status: "DIPROSES", 
+        statusPembayaran: "BELUM_BAYAR" // Tetap belum bayar sampai Admin mengecek struknya di CMS
+      });
 
       Alert.alert(
         "Berhasil!", 
-        "Pembayaran sedang diverifikasi. Pesanan Anda kini masuk ke tahap Diproses.",
-        [{ text: "Mantap", onPress: () => router.push("/(tabs)/profile") }]
+        "Bukti pembayaran Anda telah terkirim dan sedang menunggu verifikasi Admin.",
+        [{ text: "Tutup", onPress: () => router.push("/(tabs)/profile") }]
       );
+      
     } catch (error) {
-      console.error("Gagal update status:", error);
-      Alert.alert("Gagal", "Terjadi kesalahan koneksi saat memproses pembayaran.");
+      console.log("Error Upload:", error.response?.data || error.message);
+      Alert.alert("Gagal", "Gagal mengupload bukti transfer. Pastikan koneksi lancar.");
     } finally {
       setUploading(false);
     }
