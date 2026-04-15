@@ -79,7 +79,7 @@ export default function CheckoutScreen() {
         productId: product.id,
         jumlah: qty,
         hargaSatuan: product.harga,
-        jenisSablon: "DTL"
+        jenisSablon: "DTF"
       }];
       formData.append('items', JSON.stringify(itemsData));
 

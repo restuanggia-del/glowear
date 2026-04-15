@@ -131,6 +131,15 @@ export default function MyOrdersScreen() {
                 </View>
               </View>
 
+              {item.nomorResi && (
+                <View style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Ionicons name="bus-outline" size={14} color="#10b981" />
+                  <Text style={{ color: "#10b981", fontFamily: "Poppins_700Bold", fontSize: 11 }}>
+                    Resi: {item.nomorResi}
+                  </Text>
+                </View>
+              )}
+
               <View style={styles.productRow}>
                 {/* Mengambil gambar menggunakan fungsi pengaman */}
                 <Image 

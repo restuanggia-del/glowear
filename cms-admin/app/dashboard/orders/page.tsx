@@ -127,7 +127,8 @@ export default function OrdersPage() {
     setUpdateForm({
       status: order.status,
       statusPembayaran: order.statusPembayaran,
-      dpAmount: order.dpAmount
+      dpAmount: order.dpAmount || 0,
+      nomorResi: order.nomorResi || ""
     });
     setIsStatusDropdownOpen(false);
     setIsPaymentDropdownOpen(false);
