@@ -2,9 +2,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, 
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
-import { BASE_URL } from "../constants/config";
+import { API_URL } from "../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+
 
 export default function MyOrdersScreen() {
   const router = useRouter();
