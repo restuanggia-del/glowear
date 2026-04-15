@@ -198,7 +198,7 @@ export default function OrdersPage() {
                 <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="py-4 px-6">
                     <p className="font-mono text-sm font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded inline-block mb-1 border border-slate-200">
-                      ORD-{order.id.substring(0, 6).toUpperCase()}
+                      ORD-{String(order.id).substring(0, 6).toUpperCase()}
                     </p>
                     <p className="text-xs text-slate-500 font-medium">{formatDate(order.waktuDibuat)}</p>
                   </td>

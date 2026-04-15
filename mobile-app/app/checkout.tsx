@@ -55,18 +55,35 @@ export default function CheckoutScreen() {
 
     setSubmitting(true);
     try {
-      // Simulasi pengiriman pesanan ke backend (Nanti kita buat endpoint-nya)
-      // await api.post('/orders', { productId, qty, size, catatan, userId: userData.id });
+      // 1. CCTV Mobile: Cek data apa yang mau dikirim
+      console.log("MENGIRIM DATA KE BACKEND:", { userId: userData.id, total: product.harga * qty });
+
+      // 2. Pastikan INI AKTIF (tidak ada tanda // di depannya)
+      const response = await api.post('/orders', { 
+        userId: userData.id,
+        totalHarga: product.harga * qty,
+        alamatPengiriman: userData.alamat,
+        catatanCustom: catatan,
+        items: [{
+          productId: product.id,
+          jumlah: qty,
+          hargaSatuan: product.harga,
+          jenisSablon: "Standard" 
+        }]
+      });
       
-      setTimeout(() => {
-        setSubmitting(false);
-        Alert.alert("Berhasil!", "Pesanan Anda sedang diproses. Silakan lakukan pembayaran.", [
-          { text: "OK", onPress: () => router.push("/(tabs)/profile") } // Arahkan ke profil setelah sukses
-        ]);
-      }, 1500);
+      // 3. CCTV Mobile: Cek balasan dari server
+      console.log("BALASAN DARI SERVER:", response.data);
+
+      setSubmitting(false);
+      Alert.alert("Berhasil!", "Pesanan Anda berhasil dibuat.", [
+        { text: "OK", onPress: () => router.push("/(tabs)/profile") } 
+      ]);
 
     } catch (error) {
       setSubmitting(false);
+      // 4. Tangkap error jika gagal
+      console.log("ERROR CHECKOUT:", error.response?.data || error.message);
       Alert.alert("Gagal", "Terjadi kesalahan sistem saat membuat pesanan.");
     }
   };
