@@ -128,7 +128,11 @@ export default function MyOrdersScreen() {
               </View>
 
               {item.status === "BELUM_BAYAR" && (
-                <TouchableOpacity style={styles.payButton} onPress={() => alert("Menuju halaman instruksi transfer...")}>
+                <TouchableOpacity 
+                  style={styles.payButton} 
+                  // Mengarahkan ke halaman payment sambil membawa data ID dan Total Harga
+                  onPress={() => router.push({ pathname: '/payment', params: { orderId: item.id, totalHarga: item.totalHarga } })}
+                >
                   <Text style={styles.payButtonText}>Cara Pembayaran</Text>
                 </TouchableOpacity>
               )}
