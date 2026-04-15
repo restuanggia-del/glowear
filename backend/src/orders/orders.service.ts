@@ -129,10 +129,14 @@ export class OrdersService {
     });
   }
 
-  async findByUser(userId: string) {
-    return this.prisma.order.findMany({ // Catatan: Sesuaikan 'pesanan' dengan nama model Prisma Anda (misal: 'order' atau 'pesanan')
-      where: { userId: userId }, // Sesuaikan 'penggunaId' dengan kolom ID user di tabel pesanan Anda
-      include: { items: true }, // Sertakan relasi produk agar gambar/nama produk bisa tampil di mobile
+async findByUser(userId: string) {
+    return this.prisma.order.findMany({ 
+      where: { userId: userId }, 
+      include: { 
+        items: {
+          include: { product: true }
+        } 
+      }, 
       orderBy: { waktuDibuat: 'desc' }
     });
   }
