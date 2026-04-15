@@ -536,6 +536,23 @@ export default function OrdersPage() {
                   </div>
                 )}
 
+                {updateForm.status === 'DIKIRIM' && (
+                  <div className="p-5 bg-purple-50 rounded-2xl border border-purple-100 shadow-inner mt-4">
+                    <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <Truck size={14} /> Nomor Resi Pengiriman
+                    </label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="Contoh: JNE123456789"
+                      value={updateForm.nomorResi} 
+                      onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
+                      className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
+                    />
+                    <p className="text-[10px] text-purple-600 mt-2 font-medium italic">*Nomor ini akan langsung terlihat oleh pelanggan di aplikasi HP mereka.</p>
+                  </div>
+                )}
+
                 <div className="flex gap-3 pt-6">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
                   <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Update</button>
