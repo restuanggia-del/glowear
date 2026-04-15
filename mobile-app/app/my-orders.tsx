@@ -16,7 +16,7 @@ export default function MyOrdersScreen() {
 
   const tabs = [
     { id: "SEMUA", label: "Semua" },
-    { id: "BELUM_BAYAR", label: "Belum Bayar" },
+    { id: "PENDING", label: "Belum Bayar" },
     { id: "DIPROSES", label: "Diproses" },
     { id: "DIKIRIM", label: "Dikirim" }
   ];
@@ -152,14 +152,17 @@ export default function MyOrdersScreen() {
                 </View>
               </View>
 
-              {item.status === "BELUM_BAYAR" && (
+              {/* {item.status === "BELUM_BAYAR" && ( */}
                 <TouchableOpacity 
                   style={styles.payButton} 
-                  onPress={() => router.push({ pathname: '/payment', params: { orderId: item.id, totalHarga: item.totalHarga } })}
+                  onPress={() => router.push({ 
+                    pathname: '/payment', 
+                    params: { orderId: item.id, totalHarga: item.totalHarga } 
+                  })}
                 >
                   <Text style={styles.payButtonText}>Cara Pembayaran</Text>
                 </TouchableOpacity>
-              )}
+              {/* )} */}
             </View>
           )}
         />
