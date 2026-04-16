@@ -90,7 +90,7 @@ export default function UsersPage() {
 
     try {
       const res = await fetch(`http://localhost:3001/users/${selectedUser.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
