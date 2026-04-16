@@ -17,7 +17,7 @@ export default function UsersPage() {
   const [userForm, setUserForm] = useState({
     nama: "",
     email: "",
-    password: "", // Kosongkan jika tidak ingin ganti password
+    password: "",
     noTelepon: "",
     alamat: "",
     role: "PELANGGAN"
