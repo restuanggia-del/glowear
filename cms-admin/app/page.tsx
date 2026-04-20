@@ -43,9 +43,9 @@ export default function Home() {
       >
         Masuk Admin
       </a>
-      <button className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white text-sm font-semibold transition-all">
+      {/* <button className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white text-sm font-semibold transition-all">
         Login / Daftar
-      </button>
+      </button> */}
     </div>
   </nav>
 
