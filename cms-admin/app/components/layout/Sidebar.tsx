@@ -7,11 +7,11 @@ import {
   ShoppingBag, FolderTree, Shirt, BanknoteArrowUp, Users, HandCoins, 
   Settings, Flag, MonitorSmartphone, ChartCandlestick, SquareLibrary,
   Smartphone, Store, Palette, Clock4, Truck, UserCircle, X,
-  ChevronLeft, ChevronRight // <--- Icon panah baru
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState, useEffect } from 'react';
-import Image from 'next/image'; // <--- Import untuk Logo
+import Image from 'next/image';
 
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const pathname = usePathname();
