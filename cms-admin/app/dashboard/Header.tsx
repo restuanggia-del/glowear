@@ -20,7 +20,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
   useEffect(() => {
     // Set Sapaan
-    const hour = new Date().getHours();
+    const hour = new Date().getHours(); 
     if (hour < 11) setGreeting("Selamat pagi,");
     else if (hour < 15) setGreeting("Selamat siang,");
     else if (hour < 18) setGreeting("Selamat sore,");
