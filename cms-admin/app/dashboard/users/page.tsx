@@ -85,7 +85,7 @@ export default function UsersPage() {
     };
 
     if (userForm.password.trim() !== "") {
-      payload.kataSandi = userForm.password; // Sesuaikan nama field dengan backend Anda
+      payload.kataSandi = userForm.password;
     }
 
     try {
