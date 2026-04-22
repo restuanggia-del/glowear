@@ -1,9 +1,8 @@
 "use client";
 
-import { Menu, Bell, Search, User, LogOut, ChevronRight, Package, Receipt, Clock } from "lucide-react";
+import { Menu, Bell, Search, LogOut, ChevronRight, Clock } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
@@ -20,7 +19,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
   useEffect(() => {
     // Set Sapaan
-    const hour = new Date().getHours(); 
+    const hour = new Date().getHours();
     if (hour < 11) setGreeting("Selamat pagi,");
     else if (hour < 15) setGreeting("Selamat siang,");
     else if (hour < 18) setGreeting("Selamat sore,");
@@ -34,7 +33,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        searchInputRef.current?.focus(); // Fokus otomatis ke kolom pencarian
+        searchInputRef.current?.focus(); 
+      }
+      // Tambahan: Tekan ESC untuk menutup menu
+      if (e.key === 'Escape') {
+        setIsProfileOpen(false);
+        setIsNotifOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -53,9 +57,11 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   const getPageTitle = () => {
+    // Gunakan tanda tanya (?) untuk mencegah error saat pathname belum siap
     if (pathname === '/dashboard') return 'Dashboard Utama';
-    if (pathname.includes('/orders')) return 'Pesanan Masuk';
-    if (pathname.includes('/products')) return 'Katalog Produk';
+    if (pathname?.includes('/orders')) return 'Pesanan Masuk';
+    if (pathname?.includes('/products')) return 'Katalog Produk';
+    if (pathname?.includes('/users')) return 'Manajemen Pengguna';
     return 'Dashboard';
   };
 
@@ -68,7 +74,6 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <Menu size={22} />
         </button>
         
-        {/* Breadcrumbs Modern (Sesuai Gambar) */}
         <div className="hidden md:flex items-center gap-3 text-sm">
           <span className="text-slate-600 font-bold px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 uppercase tracking-widest text-[10px]">
             GLOMED
@@ -90,14 +95,14 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             placeholder="Cari transaksi, produk, atau pelanggan..." 
             className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl pl-10 pr-20 py-2.5 text-sm outline-none transition-all placeholder:text-slate-400"
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded">Ctrl</kbd>
-            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded">K</kbd>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 cursor-default">
+            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">Ctrl</kbd>
+            <kbd className="bg-white border border-slate-200 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">K</kbd>
           </div>
         </div>
 
-        {/* Jam Digital (Format sesuai gambar) */}
-        <div className="hidden md:flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-slate-600 cursor-default shrink-0">
+        {/* Jam Digital */}
+        <div className="hidden md:flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-slate-600 cursor-default shrink-0 shadow-sm">
           <Clock size={18} className="text-blue-500" />
           <div className="flex flex-col text-center">
             <span className="text-sm font-black font-mono tracking-widest leading-none text-slate-700">
@@ -110,16 +115,34 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         {/* Garis Pemisah */}
         <div className="h-8 w-px bg-slate-200 hidden sm:block shrink-0"></div>
 
-        {/* Notifikasi */}
-        <button 
-          onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
-          className="relative p-2.5 rounded-xl border bg-white border-slate-200 text-slate-500 hover:bg-slate-50 transition-all shrink-0"
-        >
-          <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-        </button>
+        {/* Notifikasi Wrapper */}
+        <div className="relative shrink-0">
+          <button 
+            onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
+            className="relative p-2.5 rounded-xl border bg-white border-slate-200 text-slate-500 hover:bg-slate-50 transition-all shadow-sm"
+          >
+            <Bell size={20} />
+            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
 
-        {/* Profil Menu (Sesuai Gambar: Teks Kiri, Avatar Kanan) */}
+          {/* Isi Dropdown Notifikasi */}
+          {isNotifOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)}></div>
+              <div className="absolute right-0 top-full mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-50 mb-2 flex justify-between items-center">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Notifikasi Baru</p>
+                </div>
+                <div className="px-4 py-6 flex flex-col items-center justify-center text-center gap-2">
+                  <Bell size={24} className="text-slate-300" />
+                  <p className="text-xs font-medium text-slate-500">Belum ada aktivitas baru.</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Profil Wrapper */}
         <div className="relative shrink-0">
           <button 
             onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotifOpen(false); }}
@@ -129,17 +152,18 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
               <span className="text-[10px] font-bold text-slate-500 leading-none">{greeting}</span>
               <span className="text-[13px] font-black text-slate-800 leading-none mt-1">{user?.nama || "admin"}</span>
             </div>
-            <div className="w-9 h-9 bg-[#0B1120] text-white rounded-full flex items-center justify-center font-bold text-sm relative shadow-sm border-2 border-white">
+            <div className="w-9 h-9 bg-[#0f172a] text-white rounded-full flex items-center justify-center font-bold text-sm relative shadow-sm border-2 border-white">
               {user?.nama?.charAt(0).toUpperCase() || "A"}
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></span>
             </div>
           </button>
 
-          {/* Isi Dropdown Profil (Sama seperti sebelumnya) */}
+          {/* Isi Dropdown Profil */}
           {isProfileOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
-              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+              {/* Tambahkan top-full agar tidak menutupi tombol */}
+              <div className="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-50 mb-2">
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Akses Sistem</p>
                   <p className="text-sm font-bold text-gray-800 truncate">{user?.email}</p>
