@@ -57,3 +57,11 @@ npm install
 npx prisma db push
 npx prisma generate
 npm run start:dev
+
+### 2. Setup Web Admin (Next.Js)
+```bash
+cd frontend-admin
+npm install
+# Konfigurasi environment variables jika diperlukan
+npm run dev
+# Akses CMS di http://localhost:3000
