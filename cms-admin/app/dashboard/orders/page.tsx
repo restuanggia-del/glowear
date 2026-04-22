@@ -248,8 +248,8 @@ export default function OrdersPage() {
           MODAL DETAIL PESANAN (Overhauled Layout)
       ========================================= */}
       {isDetailModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div className="fixed inset-0 z-[999] overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 pt-16 text-center sm:p-0">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
             
             <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
