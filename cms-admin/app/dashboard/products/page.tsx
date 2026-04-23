@@ -318,9 +318,10 @@ export default function ProductsPage() {
       ========================================= */}
 {isModalOpen && (
         <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-          
-          <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100 overflow-hidden">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+            
+            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl text-left flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100 overflow-hidden">
             
             {/* Header (Menempel di Atas) */}
             <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
@@ -404,9 +405,10 @@ export default function ProductsPage() {
       ========================================= */}
 {isEditModalOpen && (
         <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-          
-          <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100 overflow-hidden">
+        <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
+            
+            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl text-left flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100 overflow-hidden">
             
             {/* Header (Menempel di Atas) */}
             <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
