@@ -146,7 +146,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 pt-24 md:pt-32 relative">
+    <div className="font-sans space-y-6 pb-10 pt-10 md:pt-32 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
