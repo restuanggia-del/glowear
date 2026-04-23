@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={poppins.className}>
+      <body className={poppins.className} suppressHydrationWarning={true}>
         <AuthProvider>
           {children}
         </AuthProvider>
