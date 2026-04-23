@@ -316,9 +316,9 @@ export default function ProductsPage() {
       {/* =========================================
           MODAL TAMBAH PRODUK (Tengah Sempurna & Scrollable)
       ========================================= */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+{isModalOpen && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
           
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100 overflow-hidden">
             
@@ -401,9 +401,9 @@ export default function ProductsPage() {
       {/* =========================================
           MODAL EDIT PRODUK (Tengah Sempurna & Scrollable)
       ========================================= */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
+{isEditModalOpen && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
           
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100 overflow-hidden">
             
@@ -477,6 +477,7 @@ export default function ProductsPage() {
               <button type="submit" form="editForm" className="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Perubahan</button>
             </div>
           </div>
+        </div>
         </div>
       )}
 
