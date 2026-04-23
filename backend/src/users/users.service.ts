@@ -3,29 +3,83 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Role } from '@prisma/client';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    // Map and create - username auto-generated from email if not provided
+    const data = {
+      ...createUserDto,
+      username: createUserDto.username || createUserDto.email.split('@')[0],
+    };
+    return this.prisma.pengguna.create({
+      data,
+      select: {
+        id: true,
+        nama: true,
+        username: true,
+        email: true,
+        role: true,
+        noTelp: true,
+        alamat: true,
+        waktuDibuat: true,
+      },
+    });
   }
 
   async findAll() {
-    // Menggunakan prisma.pengguna sesuai dengan nama model di schema
-    const users = await this.prisma.pengguna.findMany({
+    return await this.prisma.pengguna.findMany({
       select: {
         id: true,
         nama: true,
         email: true,
         role: true,
-        waktuDibuat: true, // Karena di schema Anda ada waktuDibuat, kita bisa menampilkannya
+        noTelp: true,
+        alamat: true,
+        waktuDibuat: true,
       },
       orderBy: {
-        waktuDibuat: 'desc', // Urutkan dari pengguna terbaru
+        waktuDibuat: 'desc',
       },
     });
-    return users;
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.prisma.pengguna.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.prisma.pengguna.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('Pengguna tidak ditemukan');
+
+    // Map frontend fields
+    const data: any = { ...updateUserDto };
+    if (data.kataSandi) {
+      data.kataSandi = data.kataSandi; // Plain text for now; add bcrypt later if needed
+    }
+    // noTelepon -> noTelp already handled by DTO PartialType
+
+    return this.prisma.pengguna.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        nama: true,
+        email: true,
+        role: true,
+        noTelp: true,
+        alamat: true,
+      },
+    });
   }
 
   async updateRole(id: string, newRole: Role) {
@@ -35,21 +89,15 @@ export class UsersService {
     return this.prisma.pengguna.update({
       where: { id },
       data: { role: newRole },
-      select: { id: true, nama: true, email: true, role: true }
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  async remove(id: string): Promise<User> {
+    const user = await this.prisma.pengguna.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
-  async update(id: string, updateData: any) {
-    return this.prisma.pengguna.update({
+    return this.prisma.pengguna.delete({
       where: { id },
-      data: updateData,
     });
-  }
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

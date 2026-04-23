@@ -75,11 +75,11 @@ export default function UsersPage() {
   const handleEditUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Siapkan data yang akan dikirim (Abaikan password jika kosong)
+    // Siapkan data yang akan dikirim (Map to backend fields, abaikan password jika kosong)
     const payload: any = {
       nama: userForm.nama,
       email: userForm.email,
-      noTelepon: userForm.noTelepon,
+      noTelp: userForm.noTelepon,
       alamat: userForm.alamat,
       role: userForm.role
     };
