@@ -147,9 +147,9 @@ export default function CustomDesignPage() {
       {/* =========================================
           MODAL REVIEW DESAIN (Split Screen)
       ========================================= */}
-      {selectedItem && !isZoomed && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{selectedItem && !isZoomed && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0">
+          <div className="flex min-h-full items-center justify-center p-4 text-center max-w-6xl w-full">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setSelectedItem(null)}></div>
             
             <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl text-left overflow-hidden flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-200">
@@ -254,9 +254,9 @@ export default function CustomDesignPage() {
       {/* =========================================
           MODAL ZOOM GAMBAR (Overlay Khusus)
       ========================================= */}
-      {isZoomed && selectedItem && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{isZoomed && selectedItem && (
+        <div className="fixed inset-0 z-[100] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 h-[calc(100vh-110px)]">
+          <div className="flex min-h-full items-center justify-center p-4 text-center max-w-6xl w-full">
             <div 
               className="fixed inset-0 bg-slate-900/95 backdrop-blur-md transition-opacity" 
               onClick={() => setIsZoomed(false)}
