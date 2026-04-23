@@ -64,7 +64,7 @@ export default function UsersPage() {
       nama: user.nama || "",
       email: user.email || "",
       password: "", // Selalu kosongkan password untuk keamanan
-      noTelepon: user.noTelepon || "",
+      noTelepon: user.noTelp || user.noTelepon || "",
       alamat: user.alamat || "",
       role: user.role || "PELANGGAN"
     });

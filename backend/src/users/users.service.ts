@@ -31,7 +31,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.prisma.pengguna.findMany({
+    const users = await this.prisma.pengguna.findMany({
       select: {
         id: true,
         nama: true,
@@ -45,6 +45,11 @@ export class UsersService {
         waktuDibuat: 'desc',
       },
     });
+    // Map noTelp to noTelepon for frontend compatibility
+    return users.map(user => ({
+      ...user,
+      noTelepon: user.noTelp,
+    }));
   }
 
   async findOne(id: string): Promise<User> {
