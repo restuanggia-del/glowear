@@ -200,9 +200,9 @@ export default function PaymentVerificationPage() {
       {/* =========================================
           MODAL PREVIEW GAMBAR (Centered + Zoom)
       ========================================= */}
-      {selectedProof && (
-        <div className="fixed inset-0 z-[90] overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{selectedProof && (
+        <div className="fixed inset-0 z-[90] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 h-[calc(100vh-110px)]">
+          <div className="flex min-h-full items-center justify-center p-4 text-center max-w-6xl w-full">
             {/* Latar Belakang Gelap */}
             <div 
               className="fixed inset-0 bg-slate-900/90 backdrop-blur-md transition-opacity" 
@@ -247,9 +247,9 @@ export default function PaymentVerificationPage() {
       {/* =========================================
           CUSTOM DIALOG SYSTEM (Pengganti Alert)
       ========================================= */}
-      {dialog.isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{dialog.isOpen && (
+        <div className="fixed inset-0 z-[100] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-sm w-full mx-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
             
             <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8">
