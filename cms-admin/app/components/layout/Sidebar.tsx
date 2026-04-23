@@ -115,10 +115,12 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
           {/* BLOK 1: AREA ADMIN */}
           <div className="space-y-4">
             {/* Judul Area Admin */}
-            {isMinimized ? (
-              <div className="w-full flex justify-center mb-4"><div className="w-6 h-px bg-slate-700"></div></div>
+{isMinimized ? (
+              <div className="w-full flex justify-center mb-4"><div className="w-8 h-px bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div></div>
             ) : (
-              <p className="px-4 text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 flex items-center gap-2">🛠️ Area Admin</p>
+              <div className="px-4 mb-4">
+                <p className="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">Admin Dashboard</p>
+              </div>
             )}
 
             <Link href="/dashboard" onClick={handleLinkClick} title="Dashboard" className={`flex items-center ${isMinimized ? 'justify-center p-3.5' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${pathname === '/dashboard' ? "bg-blue-600 text-white shadow-md shadow-blue-900/20" : "hover:bg-slate-800 hover:text-white"}`}>
@@ -128,7 +130,12 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
 
             {/* Transaksi */}
             <div>
-              {!isMinimized && <p className="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Pemesanan</p>}
+{!isMinimized && <div className="px-4 mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Orders</span>
+  </div>
+</div>}
               <button title="Pemesanan" onClick={() => handleDropdownClick(setIsOrderOpen, isOrderOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isOrderActive && !isOrderOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
                   <ShoppingBag size={20} className={isOrderActive ? "text-blue-500" : ""} />
@@ -149,7 +156,12 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
 
             {/* Katalog */}
             <div>
-              {!isMinimized && <p className="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Master Data</p>}
+{!isMinimized && <div className="px-4 mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Catalog</span>
+  </div>
+</div>}
               <button title="Katalog" onClick={() => handleDropdownClick(setIsCatalogOpen, isCatalogOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isCatalogActive && !isCatalogOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
                   <FolderTree size={20} className={isCatalogActive ? "text-blue-500" : ""} />
@@ -168,7 +180,12 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
 
             {/* Sistem Web */}
             <div>
-              {!isMinimized && <p className="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Pengaturan</p>}
+{!isMinimized && <div className="px-4 mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
+    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">System</span>
+  </div>
+</div>}
               <button title="Sistem Web" onClick={() => handleDropdownClick(setIsSystemOpen, isSystemOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isSystemActive && !isSystemOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
                   <MonitorSmartphone size={20} className={isSystemActive ? "text-blue-500" : ""} />
