@@ -247,9 +247,9 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL DETAIL PESANAN (Overhauled Layout)
       ========================================= */}
-      {isDetailModalOpen && selectedOrder && (
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 pt-16 text-center sm:p-0">
+{isDetailModalOpen && selectedOrder && (
+        <div className="fixed inset-0 overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 z-[60]">
+          <div className="flex min-h-full items-center justify-center p-4 text-center max-w-6xl w-full">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
             
             <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
@@ -405,8 +405,8 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL PREVIEW GAMBAR (ZOOM LIGHTBOX)
       ========================================= */}
-      {isPreviewOpen && previewImageUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
+{isPreviewOpen && previewImageUrl && (
+        <div className="fixed inset-0 z-[100] pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 h-[calc(100vh-110px)] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
           {/* Backdrop Gelap */}
           <div className="fixed inset-0 bg-black/90 backdrop-blur-sm"></div>
           
@@ -432,9 +432,9 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL UPDATE STATUS (Icon Dropdown & Centered)
       ========================================= */}
-      {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-md w-full mx-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
             
             <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-md text-left overflow-visible animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
@@ -567,9 +567,9 @@ export default function OrdersPage() {
       {/* =========================================
           CUSTOM DIALOG SYSTEM (Centered)
       ========================================= */}
-      {dialog.isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+{dialog.isOpen && (
+        <div className="fixed inset-0 z-[100] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-sm w-full mx-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
             
             <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
