@@ -146,7 +146,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="font-sans space-y-6 pb-10 pt-24 md:pt-32 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
@@ -328,8 +328,8 @@ export default function PortfolioPage() {
       {/* =========================================
           MODAL EDIT PORTOFOLIO (Terpusat)
       ========================================= */}
-      {isEditModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+{isEditModalOpen && editingItem && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
           
           <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-md text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
@@ -419,8 +419,8 @@ export default function PortfolioPage() {
       {/* =========================================
           MODAL ZOOM GAMBAR (LIGHTBOX)
       ========================================= */}
-      {zoomedImage && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
+{zoomedImage && (
+        <div className="fixed inset-0 z-[110] overflow-hidden">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div 
               className="fixed inset-0 bg-slate-900/95 backdrop-blur-md transition-opacity" 
@@ -453,7 +453,7 @@ export default function PortfolioPage() {
           CUSTOM DIALOG SYSTEM (Pengganti Alert)
       ========================================= */}
       {dialog.isOpen && (
-        <div className="fixed inset-0 z-[120] overflow-y-auto">
+        <div className="fixed inset-0 z-[130] overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
             

@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Pastikan baris di bawah ini persis seperti ini */}
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative z-0">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 custom-scrollbar relative z-0">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
