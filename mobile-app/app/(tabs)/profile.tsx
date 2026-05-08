@@ -3,8 +3,8 @@ import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { api } from "../services/api";
-import { API_URL } from "../constants/config";
+import { api } from "../../services/api";
+import { API_URL } from "../../constants/config";
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState<any>(null);
@@ -40,14 +40,14 @@ export default function ProfileScreen() {
       "Apakah Anda yakin ingin keluar dari aplikasi?",
       [
         { text: "Batal", style: "cancel" },
-        { 
-          text: "Ya, Keluar", 
+        {
+          text: "Ya, Keluar",
           style: "destructive",
           onPress: async () => {
             await AsyncStorage.removeItem("userToken");
             await AsyncStorage.removeItem("userData");
             router.replace("/login");
-          } 
+          }
         }
       ]
     );
@@ -81,10 +81,10 @@ export default function ProfileScreen() {
       // 2. Perbarui data di memori HP (AsyncStorage) agar tidak hilang saat direstart
       const updatedUser = { ...userData, ...form };
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
-      
+
       // 3. Perbarui state lokal agar UI langsung berubah
       setUserData(updatedUser);
-      
+
       Alert.alert("Berhasil", "Profil Anda berhasil diperbarui!");
       setIsEditing(false); // Tutup Modal
     } catch (error) {
@@ -106,7 +106,7 @@ export default function ProfileScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: "#0f172a" }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        
+
         {/* Header Profil */}
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
@@ -114,7 +114,7 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.userName}>{userData.nama}</Text>
           <Text style={styles.userEmail}>{userData.email}</Text>
-          
+
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>{userData.role === 'ADMIN' ? 'Administrator' : 'Pelanggan Setia'}</Text>
           </View>
@@ -133,12 +133,12 @@ export default function ProfileScreen() {
               <Text style={styles.editBtnText}>Edit</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>No. WhatsApp</Text>
             <Text style={styles.infoValue}>{userData.noTelepon || "Belum diisi"}</Text>
           </View>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Alamat Lengkap</Text>
             <Text style={styles.infoValue}>{userData.alamat || "Belum diisi"}</Text>
@@ -159,26 +159,26 @@ export default function ProfileScreen() {
               <Text style={styles.cardTitle}>Pesanan Saya</Text>
             </View>
           </View>
-          
+
           <View style={styles.orderMenuContainer}>
-            <TouchableOpacity 
-              style={styles.orderMenuItem} 
+            <TouchableOpacity
+              style={styles.orderMenuItem}
               onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'PENDING' } })}
             >
               <Ionicons name="wallet-outline" size={28} color="#94a3b8" />
               <Text style={styles.orderMenuText}>Belum Bayar</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.orderMenuItem} 
+
+            <TouchableOpacity
+              style={styles.orderMenuItem}
               onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'DIPROSES' } })}
             >
               <Ionicons name="cog-outline" size={28} color="#94a3b8" />
               <Text style={styles.orderMenuText}>Diproses</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.orderMenuItem} 
+
+            <TouchableOpacity
+              style={styles.orderMenuItem}
               onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'DIKIRIM' } })}
             >
               <Ionicons name="cube-outline" size={28} color="#94a3b8" />
@@ -237,8 +237,8 @@ export default function ProfileScreen() {
                 multiline
               />
 
-              <TouchableOpacity 
-                style={styles.saveButton} 
+              <TouchableOpacity
+                style={styles.saveButton}
                 onPress={handleSaveProfile}
                 disabled={saving}
               >
@@ -266,11 +266,11 @@ const styles = StyleSheet.create({
   userEmail: { fontSize: 14, fontFamily: "Poppins_400Regular", color: "#94a3b8" },
   roleBadge: { marginTop: 10, backgroundColor: "rgba(56, 189, 248, 0.15)", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 },
   roleText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 },
-  
+
   card: { backgroundColor: "#1e293b", marginHorizontal: 20, marginTop: 20, borderRadius: 20, padding: 20, borderWidth: 1, borderColor: "#334155" },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 15, paddingBottom: 15, borderBottomWidth: 1, borderColor: "#334155" },
   cardTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 16, marginLeft: 10 },
-  
+
   editBtn: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(56, 189, 248, 0.1)", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: "rgba(56, 189, 248, 0.3)" },
   editBtnText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 12, marginLeft: 4 },
 
@@ -278,11 +278,11 @@ const styles = StyleSheet.create({
   infoLabel: { color: "#64748b", fontFamily: "Poppins_500Medium", fontSize: 11, textTransform: "uppercase" },
   infoValue: { color: "#e2e8f0", fontFamily: "Poppins_600SemiBold", fontSize: 14, marginTop: 2 },
   warningText: { color: "#f59e0b", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 10, fontStyle: "italic", lineHeight: 18 },
-  
+
   orderMenuContainer: { flexDirection: "row", justifyContent: "space-between", paddingTop: 5 },
   orderMenuItem: { alignItems: "center", flex: 1 },
   orderMenuText: { color: "#cbd5e1", fontFamily: "Poppins_500Medium", fontSize: 11, marginTop: 8 },
-  
+
   logoutButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(239, 68, 68, 0.1)", marginHorizontal: 20, marginTop: 30, paddingVertical: 16, borderRadius: 16, borderWidth: 1, borderColor: "rgba(239, 68, 68, 0.3)" },
   logoutText: { color: "#ef4444", fontFamily: "Poppins_700Bold", fontSize: 16, marginLeft: 8 },
   versionText: { textAlign: "center", color: "#475569", fontFamily: "Poppins_500Medium", fontSize: 12, marginTop: 30, marginBottom: 40 },
@@ -292,10 +292,10 @@ const styles = StyleSheet.create({
   modalContent: { backgroundColor: "#0f172a", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 25, minHeight: "50%", borderWidth: 1, borderColor: "#1e293b" },
   modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 25 },
   modalTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 18 },
-  
+
   inputLabel: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 12, marginBottom: 8 },
   input: { backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155", borderRadius: 12, color: "#fff", fontFamily: "Poppins_400Regular", paddingHorizontal: 15, paddingVertical: 12, marginBottom: 20 },
-  
+
   saveButton: { backgroundColor: "#38bdf8", paddingVertical: 15, borderRadius: 12, alignItems: "center", marginTop: 10, marginBottom: 20 },
   saveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 }
 });
