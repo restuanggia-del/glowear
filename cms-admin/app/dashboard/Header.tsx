@@ -11,19 +11,19 @@ import {
   LuCreditCard,
   LuLayoutGrid,
   LuImage,
-  LuBarChart3,
+  LuReceiptText,
   LuSettings,
 } from "react-icons/lu";
 
 const SEARCH_SUGGESTIONS = [
-  { label: "Orders", path: "/dashboard/orders" },
-  { label: "Products", path: "/dashboard/products" },
-  { label: "Users", path: "/dashboard/users" },
-  { label: "Payments", path: "/dashboard/payments" },
-  { label: "Categories", path: "/dashboard/categories" },
-  { label: "Banners", path: "/dashboard/banners" },
-  { label: "Reports", path: "/dashboard/reports" },
-  { label: "Settings", path: "/dashboard/settings" },
+  { label: "Orders", path: "/dashboard/orders", icon: <LuPackage size={18} className="text-gray-500" /> },
+  { label: "Products", path: "/dashboard/products", icon: <LuShoppingBag size={18} className="text-gray-500" /> },
+  { label: "Users", path: "/dashboard/users", icon: <LuUsers size={18} className="text-gray-500" /> },
+  { label: "Payments", path: "/dashboard/payments", icon: <LuCreditCard size={18} className="text-gray-500" /> },
+  { label: "Categories", path: "/dashboard/categories", icon: <LuLayoutGrid size={18} className="text-gray-500" /> },
+  { label: "Banners", path: "/dashboard/banners", icon: <LuImage size={18} className="text-gray-500" /> },
+  { label: "Reports", path: "/dashboard/reports", icon: <LuReceiptText size={18} className="text-gray-500" /> },
+  { label: "Settings", path: "/dashboard/settings", icon: <LuSettings size={18} className="text-gray-500" /> },
 ];
 
 const NOTIFICATIONS = [
