@@ -6,14 +6,14 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 const SEARCH_SUGGESTIONS = [
-  { label: "Orders", path: "/dashboard/orders", icon: "📦" },
-  { label: "Products", path: "/dashboard/products", icon: "🛍️" },
-  { label: "Users", path: "/dashboard/users", icon: "👥" },
-  { label: "Payments", path: "/dashboard/payments", icon: "💰" },
-  { label: "Categories", path: "/dashboard/categories", icon: "🗂️" },
-  { label: "Banners", path: "/dashboard/banners", icon: "🖼️" },
-  { label: "Reports", path: "/dashboard/reports", icon: "📊" },
-  { label: "Settings", path: "/dashboard/settings", icon: "⚙️" },
+  { label: "Orders", path: "/dashboard/orders" },
+  { label: "Products", path: "/dashboard/products" },
+  { label: "Users", path: "/dashboard/users" },
+  { label: "Payments", path: "/dashboard/payments" },
+  { label: "Categories", path: "/dashboard/categories" },
+  { label: "Banners", path: "/dashboard/banners" },
+  { label: "Reports", path: "/dashboard/reports" },
+  { label: "Settings", path: "/dashboard/settings" },
 ];
 
 const NOTIFICATIONS = [
@@ -42,8 +42,8 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
   const filteredSuggestions = searchQuery.length > 0
     ? SEARCH_SUGGESTIONS.filter((s) =>
-        s.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      s.label.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : SEARCH_SUGGESTIONS;
 
   const getGreeting = () => {
