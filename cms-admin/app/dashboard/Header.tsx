@@ -4,6 +4,16 @@ import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User } fr
 import { useAuth } from "@/app/lib/auth-context";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  LuShoppingBag,
+  LuPackage,
+  LuUsers,
+  LuCreditCard,
+  LuLayoutGrid,
+  LuImage,
+  LuBarChart3,
+  LuSettings,
+} from "react-icons/lu";
 
 const SEARCH_SUGGESTIONS = [
   { label: "Orders", path: "/dashboard/orders" },
