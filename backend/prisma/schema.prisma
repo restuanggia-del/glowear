@@ -26,6 +26,7 @@ model Pengguna {
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")
   orders Order[]
+  reviews Review[]
 
   @@map("pengguna")
 }
@@ -111,9 +112,11 @@ model Order {
   //verifikasi pembayaran
   buktiPembayaran  String?
   tanggalBayar     DateTime?
+  kurir            String?
   nomorResi        String?
 
   items OrderItem[]
+  review Review?
 
   @@map("orders")
 }
@@ -138,6 +141,20 @@ model OrderItem {
   catatanAdmin    String?      @db.Text
 
   @@map("order_items")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId      String
+  pengguna    Pengguna @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating      Int      @default(5)
+  komentar    String?  @db.Text
+  foto        String?  
+  waktuDibuat DateTime @default(now())
+
+  @@map("reviews")
 }
 
 model PengaturanToko {

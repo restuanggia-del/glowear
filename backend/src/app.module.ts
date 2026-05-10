@@ -15,6 +15,7 @@ import { BannersModule } from './banners/banners.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     PortfolioModule,
     DashboardModule,
     NotificationsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

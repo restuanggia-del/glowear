@@ -94,7 +94,8 @@ export class OrdersService {
         // Ambil detail barang yang dipesan beserta produk polosnya
         items: {
           include: { product: true }
-        }
+        },
+        review: true
       },
       orderBy: { waktuDibuat: 'desc' }
     });
@@ -124,6 +125,7 @@ export class OrdersService {
         statusPembayaran: data.statusPembayaran,
         dpAmount: dp,
         sisaPembayaran: sisa,
+        kurir: data.kurir,
         nomorResi: data.nomorResi
       },
       include: { pengguna: true }
@@ -137,7 +139,8 @@ export class OrdersService {
 
       if (data.status === 'DIKIRIM') {
         title = "Pesanan Anda Sedang Dikirim! 🚚";
-        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang dalam perjalanan. ${data.nomorResi ? 'Resi: ' + data.nomorResi : ''}`;
+        const kurirName = data.kurir ? ` via ${data.kurir}` : '';
+        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang dalam perjalanan${kurirName}. ${data.nomorResi ? 'Resi: ' + data.nomorResi : ''}`;
       } else if (data.status === 'DIPROSES') {
         title = "Pesanan Diproses 📦";
         body = `Hore! Pembayaran diterima dan pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang diproduksi.`;
@@ -195,7 +198,8 @@ async findByUser(userId: string) {
       include: { 
         items: {
           include: { product: true }
-        } 
+        },
+        review: true 
       }, 
       orderBy: { waktuDibuat: 'desc' }
     });
@@ -208,7 +212,8 @@ async findByUser(userId: string) {
         pengguna: { select: { nama: true, email: true, noTelp: true } },
         items: {
           include: { product: true }
-        }
+        },
+        review: true
       }
     });
     if (!order) throw new NotFoundException('Pesanan tidak ditemukan');

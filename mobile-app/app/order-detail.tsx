@@ -1,14 +1,24 @@
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, Platform, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, Platform, StatusBar, TouchableOpacity, Alert, Linking, Modal, TextInput } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { API_URL } from "../constants/config";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OrderDetailScreen() {
   const { orderId } = useLocalSearchParams();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Review State
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewImage, setReviewImage] = useState<string | null>(null);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -54,6 +64,98 @@ export default function OrderDetailScreen() {
     }
   };
 
+  const copyToClipboard = async (text: string) => {
+    await Clipboard.setStringAsync(text);
+    Alert.alert("Tersalin", "Nomor resi berhasil disalin ke clipboard!");
+  };
+
+  const openTracking = (kurir: string, resi: string) => {
+    // Sebagai fallback, kita bisa arahkan ke cekresi.com
+    const url = `https://cekresi.com/?noresi=${resi}`;
+    Linking.openURL(url).catch(() => {
+      Alert.alert("Error", "Gagal membuka browser.");
+    });
+  };
+
+  // Logika Timeline Jejak
+  const getTimelineSteps = (currentStatus: string) => {
+    if (currentStatus === 'DIBATALKAN') {
+      return [
+        { label: 'Pesanan Dibuat', completed: true },
+        { label: 'Pesanan Dibatalkan', completed: true, isError: true }
+      ];
+    }
+    
+    const steps = [
+      { id: 'PENDING', label: 'Pesanan Dibuat' },
+      { id: 'DIPROSES', label: 'Pembayaran Dikonfirmasi & Diproses' },
+      { id: 'DIKIRIM', label: 'Pesanan Dikirim' },
+      { id: 'SELESAI', label: 'Pesanan Selesai' }
+    ];
+
+    const currentIndex = steps.findIndex(s => s.id === currentStatus);
+    return steps.map((s, index) => ({
+      ...s,
+      completed: index <= currentIndex,
+      isCurrent: index === currentIndex
+    }));
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setReviewImage(result.assets[0].uri);
+    }
+  };
+
+  const submitReview = async () => {
+    setSubmittingReview(true);
+    try {
+      const userString = await AsyncStorage.getItem("userData");
+      const user = userString ? JSON.parse(userString) : null;
+      if (!user) {
+        Alert.alert("Error", "Sesi login tidak valid.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("orderId", orderId as string);
+      formData.append("userId", user.id);
+      formData.append("rating", rating.toString());
+      formData.append("komentar", reviewText);
+
+      if (reviewImage) {
+        const filename = reviewImage.split('/').pop() || 'photo.jpg';
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+        formData.append('foto', { uri: reviewImage, name: filename, type } as any);
+      }
+
+      await api.post("/reviews", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      Alert.alert("Berhasil", "Terima kasih atas ulasan Anda!");
+      setIsReviewModalOpen(false);
+      
+      // Update local state to hide button
+      setOrder({...order, status: 'SELESAI'});
+    } catch (error) {
+      console.error("Gagal mengirim ulasan:", error);
+      Alert.alert("Gagal", "Terjadi kesalahan saat mengirim ulasan.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingArea}>
@@ -95,16 +197,59 @@ export default function OrderDetailScreen() {
           </View>
         </View>
 
-        {/* NOMOR RESI */}
-        {order.nomorResi && (
-          <View style={styles.resiCard}>
-            <Ionicons name="bus-outline" size={20} color="#10b981" />
-            <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text style={{ color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 11, textTransform: "uppercase" }}>Nomor Resi</Text>
-              <Text style={{ color: "#10b981", fontFamily: "Poppins_700Bold", fontSize: 15, marginTop: 2 }}>{order.nomorResi}</Text>
-            </View>
+        {/* JEJAK PESANAN (TIMELINE) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            <Ionicons name="map-outline" size={16} color="#38bdf8" /> Jejak Pesanan
+          </Text>
+          <View style={styles.timelineCard}>
+            {getTimelineSteps(order.status).map((step, index, arr) => (
+              <View key={index} style={styles.timelineRow}>
+                <View style={styles.timelineDotContainer}>
+                  <View style={[
+                    styles.timelineDot,
+                    step.completed ? (step.isError ? styles.timelineDotError : styles.timelineDotActive) : styles.timelineDotInactive
+                  ]}>
+                    {step.completed && <Ionicons name={step.isError ? "close" : "checkmark"} size={12} color="#0f172a" />}
+                  </View>
+                  {index < arr.length - 1 && (
+                    <View style={[
+                      styles.timelineLine,
+                      step.completed && !step.isCurrent ? styles.timelineLineActive : styles.timelineLineInactive
+                    ]} />
+                  )}
+                </View>
+                <View style={styles.timelineContent}>
+                  <Text style={[
+                    styles.timelineLabel,
+                    step.completed ? (step.isError ? {color: '#ef4444'} : {color: '#fff'}) : {color: '#64748b'},
+                    step.isCurrent && {fontFamily: 'Poppins_700Bold'}
+                  ]}>
+                    {step.label}
+                  </Text>
+                  
+                  {/* Tampilkan Kurir & Resi jika langkah ini adalah DIKIRIM dan sedang aktif/sudah lewat */}
+                  {step.id === 'DIKIRIM' && step.completed && order.nomorResi && (
+                    <View style={styles.resiBox}>
+                      <View style={{flex: 1}}>
+                        <Text style={styles.kurirName}>{order.kurir || "Kurir Reguler"}</Text>
+                        <Text style={styles.resiNumber}>{order.nomorResi}</Text>
+                      </View>
+                      <View style={{flexDirection: 'row', gap: 8}}>
+                        <TouchableOpacity onPress={() => copyToClipboard(order.nomorResi)} style={styles.iconBtn}>
+                          <Ionicons name="copy-outline" size={16} color="#38bdf8" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => openTracking(order.kurir, order.nomorResi)} style={styles.iconBtnFilled}>
+                          <Ionicons name="search" size={16} color="#0f172a" />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </View>
+            ))}
           </View>
-        )}
+        </View>
 
         {/* DAFTAR ITEM PESANAN */}
         <View style={styles.section}>
@@ -225,7 +370,80 @@ export default function OrderDetailScreen() {
           </View>
         )}
 
+        {/* TOMBOL PESANAN DITERIMA */}
+        {order.status === 'DIKIRIM' && (
+          <TouchableOpacity 
+            style={styles.receiveButton}
+            onPress={() => setIsReviewModalOpen(true)}
+          >
+            <Ionicons name="checkmark-done-circle" size={20} color="#0f172a" />
+            <Text style={styles.receiveButtonText}>Pesanan Diterima</Text>
+          </TouchableOpacity>
+        )}
+
       </ScrollView>
+
+      {/* MODAL ULASAN */}
+      <Modal visible={isReviewModalOpen} transparent={true} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pesanan Diterima!</Text>
+              <TouchableOpacity onPress={() => setIsReviewModalOpen(false)}>
+                <Ionicons name="close" size={24} color="#94a3b8" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.modalSubtitle}>Bagaimana kualitas produk dan layanan kami?</Text>
+
+            <View style={styles.starsContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                  <Ionicons 
+                    name={star <= rating ? "star" : "star-outline"} 
+                    size={40} 
+                    color={star <= rating ? "#f59e0b" : "#64748b"} 
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TextInput
+              style={styles.reviewInput}
+              placeholder="Ceritakan kepuasan Anda (Opsional)..."
+              placeholderTextColor="#64748b"
+              multiline
+              numberOfLines={4}
+              value={reviewText}
+              onChangeText={setReviewText}
+            />
+
+            <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
+              <Ionicons name="camera-outline" size={20} color="#38bdf8" />
+              <Text style={styles.imagePickerText}>
+                {reviewImage ? "Ganti Foto Ulasan" : "Unggah Foto Ulasan (Opsional)"}
+              </Text>
+            </TouchableOpacity>
+
+            {reviewImage && (
+              <Image source={{ uri: reviewImage }} style={styles.previewImage} />
+            )}
+
+            <TouchableOpacity 
+              style={styles.submitReviewBtn} 
+              onPress={submitReview}
+              disabled={submittingReview}
+            >
+              {submittingReview ? (
+                <ActivityIndicator color="#0f172a" />
+              ) : (
+                <Text style={styles.submitReviewText}>Kirim Ulasan & Selesaikan Pesanan</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -234,11 +452,29 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a", paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
 
-  statusBanner: { flexDirection: "row", alignItems: "center", padding: 18, borderRadius: 16, marginBottom: 16 },
+  statusBanner: { flexDirection: "row", alignItems: "center", padding: 18, borderRadius: 16, marginBottom: 20 },
   statusLabel: { fontFamily: "Poppins_700Bold", fontSize: 16 },
   statusDate: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 2 },
 
-  resiCard: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(16,185,129,0.08)", padding: 14, borderRadius: 12, borderWidth: 1, borderColor: "rgba(16,185,129,0.2)", marginBottom: 20 },
+  // Timeline Styles
+  timelineCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 20, borderWidth: 1, borderColor: "#334155" },
+  timelineRow: { flexDirection: "row", minHeight: 60 },
+  timelineDotContainer: { alignItems: "center", width: 30 },
+  timelineDot: { width: 20, height: 20, borderRadius: 10, justifyContent: "center", alignItems: "center", zIndex: 2 },
+  timelineDotActive: { backgroundColor: "#38bdf8", shadowColor: "#38bdf8", shadowOffset: {width: 0, height: 0}, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+  timelineDotError: { backgroundColor: "#ef4444" },
+  timelineDotInactive: { backgroundColor: "#334155", borderWidth: 2, borderColor: "#475569" },
+  timelineLine: { width: 2, flex: 1, marginVertical: -2 },
+  timelineLineActive: { backgroundColor: "#38bdf8" },
+  timelineLineInactive: { backgroundColor: "#334155" },
+  timelineContent: { flex: 1, paddingLeft: 10, paddingBottom: 25, marginTop: -2 },
+  timelineLabel: { fontFamily: "Poppins_600SemiBold", fontSize: 13 },
+  
+  resiBox: { marginTop: 10, backgroundColor: "rgba(56,189,248,0.08)", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(56,189,248,0.2)", flexDirection: "row", alignItems: "center" },
+  kurirName: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 },
+  resiNumber: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 2 },
+  iconBtn: { padding: 8, backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 8, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)" },
+  iconBtnFilled: { padding: 8, backgroundColor: "#38bdf8", borderRadius: 8 },
 
   section: { marginBottom: 24 },
   sectionTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15, marginBottom: 12 },
@@ -266,6 +502,27 @@ const styles = StyleSheet.create({
   addressPhone: { color: "#38bdf8", fontFamily: "Poppins_500Medium", fontSize: 12, marginTop: 2 },
   addressText: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginTop: 6, lineHeight: 20 },
 
-  noteCard: { backgroundColor: "#1e293b", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#334155" },
   noteText: { color: "#cbd5e1", fontFamily: "Poppins_400Regular", fontSize: 13, lineHeight: 20 },
+
+  receiveButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 16, marginTop: 10, shadowColor: "#38bdf8", shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+  receiveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15, marginLeft: 8 },
+
+  // Modal Review Styles
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.7)", justifyContent: "flex-end" },
+  modalContent: { backgroundColor: "#0f172a", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 25, minHeight: "50%", borderWidth: 1, borderColor: "#1e293b" },
+  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 15 },
+  modalTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 20 },
+  modalSubtitle: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginBottom: 20 },
+  
+  starsContainer: { flexDirection: "row", justifyContent: "center", gap: 10, marginBottom: 25 },
+  
+  reviewInput: { backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155", borderRadius: 12, color: "#fff", fontFamily: "Poppins_400Regular", paddingHorizontal: 15, paddingVertical: 15, height: 100, textAlignVertical: 'top', marginBottom: 20 },
+  
+  imagePickerBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(56,189,248,0.1)", paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", marginBottom: 15 },
+  imagePickerText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 13, marginLeft: 8 },
+  
+  previewImage: { width: 100, height: 100, borderRadius: 12, marginBottom: 20, alignSelf: "center", borderWidth: 1, borderColor: "#334155" },
+  
+  submitReviewBtn: { backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10, marginBottom: 20 },
+  submitReviewText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 }
 });
