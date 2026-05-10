@@ -375,8 +375,18 @@ const styles = StyleSheet.create({
   },
 
   // Banner
-  bannerSection: { marginBottom: 10 },
-  bannerWrapper: { width: width - 30, marginRight: 10, borderRadius: 16, overflow: "hidden" },
+  bannerSection: { marginBottom: 15 },
+  bannerWrapper: { 
+    width: width - 30, 
+    marginRight: 10, 
+    borderRadius: 20, 
+    overflow: "hidden",
+    shadowColor: "#38bdf8",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
   bannerImage: { width: "100%", height: (width - 30) * (9 / 16), resizeMode: "cover", backgroundColor: "#1e293b" },
 
   // Category Filter
@@ -415,13 +425,26 @@ const styles = StyleSheet.create({
   resultCount: { color: "#64748b", fontFamily: "Poppins_500Medium", fontSize: 12 },
 
   // Product Grid
-  row: { justifyContent: "space-between" },
-  card: { backgroundColor: "#1e293b", width: width * 0.44, borderRadius: 16, marginBottom: 16, overflow: "hidden", borderWidth: 1, borderColor: "#334155" },
-  image: { width: "100%", height: 160, backgroundColor: "#334155" },
-  info: { padding: 12 },
-  catName: { color: "#38bdf8", fontSize: 10, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 2 },
-  prodName: { color: "#fff", fontSize: 14, fontFamily: "Poppins_600SemiBold" },
-  price: { color: "#94a3b8", fontSize: 13, fontFamily: "Poppins_500Medium", marginTop: 4 },
+  row: { justifyContent: "space-between", paddingHorizontal: 4 },
+  card: { 
+    backgroundColor: "#1e293b", 
+    width: width * 0.43, 
+    borderRadius: 20, 
+    marginBottom: 20, 
+    overflow: "hidden", 
+    borderWidth: 1, 
+    borderColor: "#334155",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  image: { width: "100%", height: 170, backgroundColor: "#334155" },
+  info: { padding: 14 },
+  catName: { color: "#38bdf8", fontSize: 10, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 },
+  prodName: { color: "#fff", fontSize: 14, fontFamily: "Poppins_600SemiBold", marginBottom: 2 },
+  price: { color: "#94a3b8", fontSize: 13, fontFamily: "Poppins_500Medium", marginTop: 2 },
 
   // Empty State
   emptyContainer: { alignItems: "center", justifyContent: "center", paddingVertical: 60 },

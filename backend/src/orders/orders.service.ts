@@ -131,7 +131,7 @@ export class OrdersService {
 
     // Send Expo Push Notification if user has token and status is changed
     if (updatedOrder.pengguna?.expoPushToken && data.status && data.status !== order.status) {
-      const messages = [];
+      const messages: any[] = [];
       let title = "Status Pesanan Diperbarui";
       let body = `Pesanan Anda ORD-${id.substring(0, 6).toUpperCase()} sekarang berstatus: ${data.status.replace('_', ' ')}`;
 
