@@ -84,7 +84,7 @@ export default function CatalogScreen() {
     setSavingProfile(true);
     try {
       const res = await api.put(`/auth/profile?userId=${userData.id}`, {
-        noTelepon: noTelepon,
+        noTelp: noTelepon,
         alamat: alamat,
       });
 

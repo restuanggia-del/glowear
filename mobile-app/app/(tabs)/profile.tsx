@@ -72,9 +72,9 @@ export default function ProfileScreen() {
     setSaving(true);
     try {
       // 1. Tembak API untuk update data di Database/CMS
-      await api.put(`/users/${userData.id}`, {
+      await api.patch(`/users/${userData.id}`, {
         nama: form.nama,
-        noTelepon: form.noTelepon,
+        noTelp: form.noTelepon,
         alamat: form.alamat
       });
 

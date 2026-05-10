@@ -18,7 +18,9 @@ export default function MyOrdersScreen() {
     { id: "SEMUA", label: "Semua" },
     { id: "PENDING", label: "Belum Bayar" },
     { id: "DIPROSES", label: "Diproses" },
-    { id: "DIKIRIM", label: "Dikirim" }
+    { id: "DIKIRIM", label: "Dikirim" },
+    { id: "SELESAI", label: "Selesai" },
+    { id: "DIBATALKAN", label: "Dibatalkan" }
   ];
 
   useEffect(() => {
@@ -53,10 +55,11 @@ export default function MyOrdersScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "BELUM_BAYAR": return "#f59e0b"; // Amber
+      case "PENDING": return "#f59e0b"; // Amber
       case "DIPROSES": return "#3b82f6"; // Blue
       case "DIKIRIM": return "#10b981"; // Emerald
-      case "SELESAI": return "#64748b"; // Slate
+      case "SELESAI": return "#8b5cf6"; // Violet
+      case "DIBATALKAN": return "#ef4444"; // Red
       default: return "#94a3b8";
     }
   };
@@ -161,7 +164,8 @@ export default function MyOrdersScreen() {
                 </View>
               </View>
 
-              {/* {item.status === "BELUM_BAYAR" && ( */}
+              {/* Tombol kontekstual berdasarkan status */}
+              {item.status === "PENDING" && (
                 <TouchableOpacity 
                   style={styles.payButton} 
                   onPress={() => router.push({ 
@@ -171,7 +175,22 @@ export default function MyOrdersScreen() {
                 >
                   <Text style={styles.payButtonText}>Cara Pembayaran</Text>
                 </TouchableOpacity>
-              {/* )} */}
+              )}
+              {item.status === "DIKIRIM" && item.nomorResi && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(16, 185, 129, 0.1)", borderColor: "#10b981" }]}>
+                  <Text style={[styles.payButtonText, { color: "#10b981" }]}>Paket sedang dalam perjalanan</Text>
+                </View>
+              )}
+              {item.status === "SELESAI" && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(139, 92, 246, 0.1)", borderColor: "#8b5cf6" }]}>
+                  <Text style={[styles.payButtonText, { color: "#8b5cf6" }]}>Pesanan Selesai ✓</Text>
+                </View>
+              )}
+              {item.status === "DIBATALKAN" && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(239, 68, 68, 0.1)", borderColor: "#ef4444" }]}>
+                  <Text style={[styles.payButtonText, { color: "#ef4444" }]}>Pesanan Dibatalkan</Text>
+                </View>
+              )}
             </View>
           )}
         />
