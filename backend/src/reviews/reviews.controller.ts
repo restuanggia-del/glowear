@@ -22,13 +22,21 @@ export class ReviewsController {
     @Body() body: { orderId: string, userId: string, rating: string, komentar: string },
     @UploadedFile() file: Express.Multer.File
   ) {
-    return this.reviewsService.createReview(
-      body.orderId,
-      body.userId,
-      Number(body.rating),
-      body.komentar,
-      file ? file.filename : undefined
-    );
+    try {
+      console.log('Received Review Body:', body);
+      console.log('Received File:', file ? file.filename : 'No file');
+      
+      return await this.reviewsService.createReview(
+        body.orderId,
+        body.userId,
+        Number(body.rating),
+        body.komentar,
+        file ? file.filename : undefined
+      );
+    } catch (error) {
+      console.error('Error creating review:', error);
+      throw error;
+    }
   }
 
   @Get('order/:orderId')

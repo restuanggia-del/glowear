@@ -101,7 +101,7 @@ export class OrdersService {
     });
   }
 
-  async updateStatus(id: string, data: { status: any, statusPembayaran: any, dpAmount?: number, nomorResi?: string }) {
+  async updateStatus(id: string, data: { status: any, statusPembayaran: any, dpAmount?: number, kurir?: any, nomorResi?: any }) {
     const order = await this.prisma.order.findUnique({ where: { id } });
     if (!order) throw new NotFoundException('Pesanan tidak ditemukan');
 

@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ReviewsService {
+  constructor(private prisma: PrismaService) {}
+
   async createReview(orderId: string, userId: string, rating: number, komentar: string, foto?: string) {
     // Pastikan order ada
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
     if (!order) {
       throw new NotFoundException('Pesanan tidak ditemukan');
     }
 
     // Buat ulasan dan ubah status pesanan secara transaksional
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // 1. Buat ulasan
       const review = await tx.review.create({
         data: {
@@ -38,7 +38,7 @@ export class ReviewsService {
   }
 
   async getReviewsByOrder(orderId: string) {
-    return prisma.review.findUnique({
+    return this.prisma.review.findUnique({
       where: { orderId },
       include: { pengguna: true },
     });
