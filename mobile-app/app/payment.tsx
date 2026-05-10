@@ -10,27 +10,41 @@ export default function PaymentScreen() {
   const { orderId, totalHarga } = useLocalSearchParams();
   const router = useRouter();
 
-  // State untuk menyimpan gambar bukti transfer
-  const [receiptImage, setReceiptImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
+
+  // Fetch settings saat mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get("/settings");
+        setSettings(data);
+      } catch (error) {
+        console.log("Error fetching settings:", error);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const formatRupiah = (number: any) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(Number(number));
   };
 
   const copyToClipboard = async (text: string, bank: string) => {
+    if (!text) return;
     await Clipboard.setStringAsync(text);
     Alert.alert("Tersalin!", `Nomor rekening ${bank} berhasil disalin ke papan klip.`);
   };
 
   // Fungsi untuk membuka Galeri HP
   const pickImage = async () => {
-    // Meminta izin akses galeri (otomatis diurus oleh Expo)
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Hanya gambar
-      allowsEditing: true, // Izinkan potong gambar
-      aspect: [3, 4], // Rasio standar struk
-      quality: 0.8, // Kompresi sedikit agar tidak berat
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 0.8,
     });
 
     if (!result.canceled) {
@@ -46,32 +60,25 @@ export default function PaymentScreen() {
 
     setUploading(true);
     try {
-      // 1. Siapkan 'Paket' File Gambar
       const formData = new FormData();
-      
-      // Ambil ekstensi file (misal: .jpg atau .png)
       const fileExt = receiptImage.split('.').pop() || 'jpeg';
       const fileName = `struk-${orderId}.${fileExt}`;
 
-      // Membungkus file agar dikenali oleh NestJS (Multer)
       formData.append('struk', {
         uri: receiptImage,
         name: fileName,
         type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`
       } as any);
 
-      // 2. Kirim File Gambar ke Endpoint Upload Backend
       await api.post(`/orders/${orderId}/upload-receipt`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // 3. (Opsional) Beri tahu backend untuk mengubah status jadi DIPROSES / MENUNGGU VERIFIKASI
-      // Agar pesanan pindah dari tab "Belum Bayar" di aplikasi mobile
       await api.put(`/orders/${orderId}/status`, { 
         status: "DIPROSES", 
-        statusPembayaran: "BELUM_BAYAR" // Tetap belum bayar sampai Admin mengecek struknya di CMS
+        statusPembayaran: "BELUM_BAYAR" 
       });
 
       Alert.alert(
@@ -80,13 +87,22 @@ export default function PaymentScreen() {
         [{ text: "Tutup", onPress: () => router.push("/(tabs)/profile") }]
       );
       
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error Upload:", error.response?.data || error.message);
       Alert.alert("Gagal", "Gagal mengupload bukti transfer. Pastikan koneksi lancar.");
     } finally {
       setUploading(false);
     }
   };
+
+  if (loadingSettings) {
+    return (
+      <View style={[styles.safeArea, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#38bdf8" />
+        <Text style={{ color: "#94a3b8", marginTop: 10 }}>Memuat informasi pembayaran...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -101,47 +117,42 @@ export default function PaymentScreen() {
           <Text style={styles.orderIdText}>Order ID: {orderId}</Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Pilih Metode Transfer</Text>
+        <Text style={styles.sectionTitle}>Metode Transfer</Text>
 
-        {/* Rekening BCA */}
+        {/* Rekening Bank Dinamis dari CMS */}
         <View style={styles.bankCard}>
           <View style={styles.bankHeader}>
             <View style={styles.bankLogoPlaceholder}>
-              <Text style={styles.bankLogoText}>BCA</Text>
+              <Ionicons name="card" size={24} color="#fff" />
             </View>
             <View style={styles.bankInfo}>
-              <Text style={styles.bankName}>Bank Central Asia</Text>
-              <Text style={styles.bankOwner}>a.n. Glowear Official</Text>
+              <Text style={styles.bankName}>{settings?.namaBank || "Bank Transfer"}</Text>
+              <Text style={styles.bankOwner}>a.n. {settings?.atasNamaBank || "Pemilik Toko"}</Text>
             </View>
           </View>
           <View style={styles.accountRow}>
-            <Text style={styles.accountNumber}>1234 5678 9012</Text>
-            <TouchableOpacity style={styles.copyBtn} onPress={() => copyToClipboard("123456789012", "BCA")}>
-              <Ionicons name="copy-outline" size={18} color="#38bdf8" />
-              <Text style={styles.copyBtnText}>Salin</Text>
-            </TouchableOpacity>
+            <Text style={styles.accountNumber}>{settings?.nomorRekening || "Belum diatur"}</Text>
+            {settings?.nomorRekening && (
+              <TouchableOpacity style={styles.copyBtn} onPress={() => copyToClipboard(settings.nomorRekening, settings.namaBank)}>
+                <Ionicons name="copy-outline" size={18} color="#38bdf8" />
+                <Text style={styles.copyBtnText}>Salin</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
-        {/* Rekening Mandiri */}
-        <View style={styles.bankCard}>
-          <View style={styles.bankHeader}>
-            <View style={[styles.bankLogoPlaceholder, { backgroundColor: '#fcd34d' }]}>
-              <Text style={[styles.bankLogoText, { color: '#0f172a' }]}>MDR</Text>
+        {/* Syarat & Ketentuan dari CMS */}
+        {settings?.syaratKetentuan && (
+          <View style={[styles.bankCard, { borderStyle: 'dashed', borderColor: '#334155', backgroundColor: 'transparent' }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              <Ionicons name="information-circle" size={18} color="#94a3b8" />
+              <Text style={{ color: '#fff', fontFamily: 'Poppins_600SemiBold', fontSize: 13, marginLeft: 8 }}>Syarat & Ketentuan</Text>
             </View>
-            <View style={styles.bankInfo}>
-              <Text style={styles.bankName}>Bank Mandiri</Text>
-              <Text style={styles.bankOwner}>a.n. Glowear Official</Text>
-            </View>
+            <Text style={{ color: '#94a3b8', fontFamily: 'Poppins_400Regular', fontSize: 12, lineHeight: 18 }}>
+              {settings.syaratKetentuan}
+            </Text>
           </View>
-          <View style={styles.accountRow}>
-            <Text style={styles.accountNumber}>0987 6543 2109</Text>
-            <TouchableOpacity style={styles.copyBtn} onPress={() => copyToClipboard("098765432109", "Mandiri")}>
-              <Ionicons name="copy-outline" size={18} color="#38bdf8" />
-              <Text style={styles.copyBtnText}>Salin</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        )}
 
         {/* SECTION UPLOAD BUKTI TRANSFER */}
         <Text style={[styles.sectionTitle, { marginTop: 10 }]}>Bukti Transfer</Text>

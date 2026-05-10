@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Linking } from "react-native";
 import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
@@ -187,11 +187,39 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Tombol Logout */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-          <Text style={styles.logoutText}>Keluar Akun</Text>
-        </TouchableOpacity>
+        {/* Tombol Hubungi CS & Logout */}
+        <View style={{ gap: 10, marginTop: 10 }}>
+          <TouchableOpacity 
+            style={[styles.logoutButton, { backgroundColor: "rgba(56, 189, 248, 0.1)", borderColor: "#38bdf8", borderWidth: 1 }]} 
+            onPress={async () => {
+              try {
+                const { data } = await api.get("/settings");
+                if (data?.whatsappCS) {
+                  const phone = data.whatsappCS.startsWith('0') ? '62' + data.whatsappCS.slice(1) : data.whatsappCS;
+                  const url = `whatsapp://send?phone=${phone}&text=Halo Glowear, saya ingin bertanya tentang pesanan saya.`;
+                  const supported = await Linking.canOpenURL(url);
+                  if (supported) {
+                    await Linking.openURL(url);
+                  } else {
+                    Alert.alert("Error", "WhatsApp tidak terinstal di perangkat Anda.");
+                  }
+                } else {
+                  Alert.alert("Informasi", "Nomor WhatsApp CS belum diatur oleh Admin.");
+                }
+              } catch (err) {
+                Alert.alert("Gagal", "Gagal menghubungi server.");
+              }
+            }}
+          >
+            <Ionicons name="logo-whatsapp" size={20} color="#38bdf8" />
+            <Text style={[styles.logoutText, { color: "#38bdf8" }]}>Hubungi Customer Service</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+            <Text style={styles.logoutText}>Keluar Akun</Text>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.versionText}>Glowear App v1.0.0</Text>
       </ScrollView>
