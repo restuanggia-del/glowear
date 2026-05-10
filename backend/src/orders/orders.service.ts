@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService
+  ) {}
   async getFinancialReport(month: number, year: number) {
     // Cari tanggal awal dan akhir bulan yang dipilih
     const startDate = new Date(year, month - 1, 1);
@@ -48,7 +52,7 @@ export class OrdersService {
     }
 
     // Format data untuk disimpan ke Prisma
-    return this.prisma.order.create({
+    const order = await this.prisma.order.create({
       data: {
         userId: data.userId,
         totalHarga: data.totalHarga,
@@ -70,6 +74,18 @@ export class OrdersService {
         },
       },
     });
+
+    // Buat notifikasi
+    if (order) {
+      await this.notificationsService.create({
+        judul: 'Pesanan Baru Masuk',
+        pesan: `Pesanan baru telah dibuat dengan total Rp ${order.totalHarga.toLocaleString('id-ID')}`,
+        tipe: 'ORDER',
+        orderId: order.id,
+      });
+    }
+
+    return order;
   }
 
   async findAll() {
@@ -158,10 +174,21 @@ async findByUser(userId: string) {
 
   // Fungsi untuk update data order secara umum (seperti nambah struk)
   async update(id: string, updateData: any) {
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id },
       data: updateData,
     });
+
+    if (updateData.buktiPembayaran) {
+      await this.notificationsService.create({
+        judul: 'Bukti Pembayaran Diunggah',
+        pesan: `Bukti pembayaran telah diunggah untuk pesanan ID: ${id.substring(0, 8)}...`,
+        tipe: 'PAYMENT',
+        orderId: id,
+      });
+    }
+
+    return updated;
   }
 
   remove(id: number) {

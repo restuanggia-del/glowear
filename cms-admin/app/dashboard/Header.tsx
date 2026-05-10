@@ -2,6 +2,7 @@
 
 import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
+import { api } from "@/app/services/api";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -43,12 +44,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [greeting, setGreeting] = useState("Selamat datang");
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.dibaca).length;
 
   const filteredSuggestions = searchQuery.length > 0
     ? SEARCH_SUGGESTIONS.filter((s) =>
@@ -64,10 +65,22 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     else return "Selamat malam,";
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const { data } = await api.get('/notifications');
+      setNotifications(data);
+    } catch (error) {
+      console.error('Failed to fetch notifications', error);
+    }
+  };
+
   useEffect(() => {
     setGreeting(getGreeting());
     setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+
+    fetchNotifications();
+    const notifTimer = setInterval(fetchNotifications, 10000); // Polling every 10s
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -85,6 +98,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       clearInterval(timer);
+      clearInterval(notifTimer);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
@@ -100,6 +114,11 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     const m = String(date.getMinutes()).padStart(2, "0");
     const s = String(date.getSeconds()).padStart(2, "0");
     return `${h}:${m}:${s}`;
+  };
+
+  const formatNotifTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return `${date.toLocaleDateString('id-ID')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
   const getPageTitle = () => {
@@ -125,14 +144,24 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     router.push(path);
   };
 
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const handleMarkAllRead = async () => {
+    try {
+      await api.post('/notifications/read-all');
+      setNotifications((prev) => prev.map((n) => ({ ...n, dibaca: true })));
+    } catch (error) {
+      console.error('Failed to mark all as read', error);
+    }
   };
 
-  const handleNotifRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const handleNotifRead = async (id: string) => {
+    try {
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, dibaca: true } : n))
+      );
+    } catch (error) {
+      console.error('Failed to mark as read', error);
+    }
   };
 
   const closeAll = () => {
@@ -267,26 +296,46 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                     )}
                   </div>
                   <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
-                    {notifications.map((notif) => (
-                      <button
-                        key={notif.id}
-                        onClick={() => handleNotifRead(notif.id)}
-                        className={`w-full flex gap-3 p-3.5 text-left hover:bg-slate-50 transition-colors ${!notif.read ? "bg-blue-50/30" : ""}`}
-                      >
-                        <div className={`flex-shrink-0 w-9 h-9 ${notif.color} rounded-xl flex items-center justify-center transition-colors`}>
-                          <span className="text-base">{notif.icon}</span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className={`text-sm line-clamp-1 ${!notif.read ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
-                            {notif.title}
-                          </p>
-                          <p className="text-xs text-slate-400 mt-0.5">{notif.time}</p>
-                        </div>
-                        {!notif.read && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
-                        )}
-                      </button>
-                    ))}
+                    {notifications.length === 0 ? (
+                      <p className="p-4 text-center text-sm text-slate-400">Tidak ada notifikasi baru</p>
+                    ) : (
+                      notifications.map((notif) => {
+                        let icon = "🔔";
+                        let color = "bg-slate-100 text-slate-600";
+                        if (notif.tipe === "ORDER") {
+                          icon = "📦";
+                          color = "bg-blue-100 hover:bg-blue-200";
+                        } else if (notif.tipe === "PAYMENT") {
+                          icon = "💰";
+                          color = "bg-emerald-100 hover:bg-emerald-200";
+                        } else if (notif.tipe === "DESIGN") {
+                          icon = "✏️";
+                          color = "bg-orange-100 hover:bg-orange-200";
+                        }
+
+                        return (
+                          <button
+                            key={notif.id}
+                            onClick={() => handleNotifRead(notif.id)}
+                            className={`w-full flex gap-3 p-3.5 text-left hover:bg-slate-50 transition-colors ${!notif.dibaca ? "bg-blue-50/30" : ""}`}
+                          >
+                            <div className={`flex-shrink-0 w-9 h-9 ${color} rounded-xl flex items-center justify-center transition-colors`}>
+                              <span className="text-base">{icon}</span>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className={`text-sm line-clamp-1 ${!notif.dibaca ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
+                                {notif.judul}
+                              </p>
+                              <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{notif.pesan}</p>
+                              <p className="text-[10px] text-slate-400 mt-1">{formatNotifTime(notif.waktuDibuat)}</p>
+                            </div>
+                            {!notif.dibaca && (
+                              <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                   <div className="p-3 border-t border-slate-100">
                     <button

@@ -173,3 +173,15 @@ model Portofolio {
 
   @@map("portofolio")
 }
+
+model Notifikasi {
+  id          String   @id @default(uuid())
+  judul       String
+  pesan       String   @db.Text
+  tipe        String   @default("ORDER") // ORDER, PAYMENT, DESIGN, SYSTEM
+  dibaca      Boolean  @default(false)
+  orderId     String?
+  waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
+
+  @@map("notifikasi")
+}
