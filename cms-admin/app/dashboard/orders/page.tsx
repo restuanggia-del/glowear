@@ -7,6 +7,7 @@ import {
   CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon
 } from "lucide-react";
 import Image from "next/image"; // Menggunakan Next Image untuk optimasi
+import { api } from "@/app/services/api";
 
 // ==========================================
 // CONFIGURASI & DATA MASTER
@@ -81,9 +82,13 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/orders`);
-      const data = await res.json();
-      setOrders(data);
+      const { data } = await api.get("/orders");
+      // Check if data is array before setting, to prevent filter error
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        setOrders([]);
+      }
     } catch (error) {
       showDialog('error', 'Koneksi Gagal', 'Tidak dapat mengambil data pesanan dari server.');
     } finally {
@@ -99,17 +104,13 @@ export default function OrdersPage() {
     showDialog('confirm', 'Konfirmasi Update', `Yakin ingin mengubah status pesanan ORD-${selectedOrder.id.substring(0, 6).toUpperCase()}?`, async () => {
       closeDialog();
       try {
-        const res = await fetch(`${API_BASE_URL}/orders/${selectedOrder.id}/status`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: updateForm.status,
-            statusPembayaran: updateForm.statusPembayaran,
-            dpAmount: Number(updateForm.dpAmount)
-          }),
+        const { status } = await api.put(`/orders/${selectedOrder.id}/status`, {
+          status: updateForm.status,
+          statusPembayaran: updateForm.statusPembayaran,
+          dpAmount: Number(updateForm.dpAmount)
         });
 
-        if (res.ok) {
+        if (status === 200 || status === 201) {
           setIsModalOpen(false);
           fetchOrders();
           showDialog('success', 'Berhasil!', 'Status pesanan berhasil diperbarui.');

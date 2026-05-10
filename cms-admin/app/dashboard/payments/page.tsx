@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Check, X, Eye, Banknote, Clock, User, Loader2, Image as ImageIcon, AlertCircle, CheckCircle2, Info } from "lucide-react";
+import { api } from "@/app/services/api";
 
 export default function PaymentVerificationPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -31,9 +32,12 @@ export default function PaymentVerificationPage() {
 
   const fetchPayments = async () => {
     try {
-      const res = await fetch("http://localhost:3001/orders/pending-verification");
-      const data = await res.json();
-      setOrders(data);
+      const { data } = await api.get("/orders/pending-verification");
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        setOrders([]);
+      }
     } catch (error) {
       showDialog('error', 'Koneksi Gagal', 'Tidak dapat mengambil data pembayaran dari server.');
     } finally {
@@ -47,18 +51,18 @@ export default function PaymentVerificationPage() {
 
   // Fungsi Terima Pembayaran (Dengan Custom Dialog)
   const handleVerify = async (orderId: string, status: "DP" | "LUNAS") => {
-    showDialog('confirm', 'Konfirmasi Pembayaran', `Terima pembayaran ini sebagai ${status}? Pesanan akan otomatis diteruskan ke antrean Produksi.`, async () => {
-      closeDialog(); // Tutup dialog konfirmasi
-      
+    showDialog('confirm', 'Verifikasi Pembayaran', `Apakah Anda yakin nominal transfer sudah sesuai dan ingin mengesahkan pembayaran untuk pesanan ${orderId.substring(0,6).toUpperCase()}?`, async () => {
+      closeDialog();
       try {
-        await fetch(`http://localhost:3001/orders/${orderId}/status`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ statusPembayaran: status, status: "DIPROSES" }),
+        const { status: resStatus } = await api.put(`/orders/${orderId}/status`, {
+          status: "DIPROSES",
+          statusPembayaran: status
         });
-        
-        showDialog('success', 'Berhasil!', `Pembayaran ${status} telah terverifikasi.`);
-        fetchPayments();
+
+        if (resStatus === 200 || resStatus === 201) {
+          showDialog('success', 'Berhasil', 'Pembayaran telah disahkan dan pesanan diteruskan ke tahap Produksi.');
+          fetchPayments();
+        }
       } catch (error) {
         showDialog('error', 'Gagal', 'Gagal memverifikasi pembayaran. Periksa koneksi server.');
       }
@@ -67,18 +71,18 @@ export default function PaymentVerificationPage() {
 
   // Fungsi Tolak Pembayaran (Dengan Custom Dialog)
   const handleReject = async (orderId: string) => {
-    showDialog('confirm', 'Tolak Bukti Transfer', 'Yakin ingin MENOLAK bukti transfer ini? Pelanggan harus mengunggah ulang bukti pembayaran yang valid.', async () => {
+    showDialog('confirm', 'Tolak Pembayaran', `Apakah Anda yakin ingin MENOLAK bukti pembayaran untuk pesanan ${orderId.substring(0,6).toUpperCase()}? Pelanggan harus mengunggah ulang bukti transfer.`, async () => {
       closeDialog();
-
       try {
-        await fetch(`http://localhost:3001/orders/${orderId}/status`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ statusPembayaran: "BELUM_BAYAR" }),
+        const { status: resStatus } = await api.put(`/orders/${orderId}/status`, {
+          status: "PENDING",
+          statusPembayaran: "BELUM_BAYAR"
         });
-        
-        showDialog('success', 'Ditolak', 'Bukti pembayaran berhasil ditolak.');
-        fetchPayments();
+
+        if (resStatus === 200 || resStatus === 201) {
+          showDialog('success', 'Ditolak', 'Pembayaran telah ditolak. Status pesanan dikembalikan ke Menunggu Pembayaran.');
+          fetchPayments();
+        }
       } catch (error) {
         showDialog('error', 'Gagal', 'Gagal menolak pembayaran.');
       }
