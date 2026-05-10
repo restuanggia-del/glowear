@@ -122,7 +122,11 @@ export default function MyOrdersScreen() {
           contentContainerStyle={{ padding: 15, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <View style={styles.orderCard}>
+            <TouchableOpacity
+              style={styles.orderCard}
+              activeOpacity={0.7}
+              onPress={() => router.push({ pathname: '/order-detail', params: { orderId: item.id } })}
+            >
               <View style={styles.orderHeader}>
                 {/* Membaca waktuDibuat atau createdAt dari backend */}
                 <Text style={styles.orderDate}>{formatDate(item.waktuDibuat || item.createdAt)}</Text>
@@ -191,7 +195,7 @@ export default function MyOrdersScreen() {
                   <Text style={[styles.payButtonText, { color: "#ef4444" }]}>Pesanan Dibatalkan</Text>
                 </View>
               )}
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}

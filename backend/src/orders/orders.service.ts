@@ -142,8 +142,18 @@ async findByUser(userId: string) {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        pengguna: { select: { nama: true, email: true, noTelp: true } },
+        items: {
+          include: { product: true }
+        }
+      }
+    });
+    if (!order) throw new NotFoundException('Pesanan tidak ditemukan');
+    return order;
   }
 
   // Fungsi untuk update data order secara umum (seperti nambah struk)
