@@ -25,6 +25,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        expoPushToken: true,
         waktuDibuat: true,
       },
     });
@@ -39,6 +40,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        expoPushToken: true,
         waktuDibuat: true,
       },
       orderBy: {
@@ -83,6 +85,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        expoPushToken: true,
       },
     });
   }

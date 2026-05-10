@@ -117,7 +117,7 @@ export class OrdersService {
       sisa = order.totalHarga;
     }
 
-    return this.prisma.order.update({
+    const updatedOrder = await this.prisma.order.update({
       where: { id },
       data: {
         status: data.status,
@@ -125,8 +125,51 @@ export class OrdersService {
         dpAmount: dp,
         sisaPembayaran: sisa,
         nomorResi: data.nomorResi
-      }
+      },
+      include: { pengguna: true }
     });
+
+    // Send Expo Push Notification if user has token and status is changed
+    if (updatedOrder.pengguna?.expoPushToken && data.status && data.status !== order.status) {
+      const messages = [];
+      let title = "Status Pesanan Diperbarui";
+      let body = `Pesanan Anda ORD-${id.substring(0, 6).toUpperCase()} sekarang berstatus: ${data.status.replace('_', ' ')}`;
+
+      if (data.status === 'DIKIRIM') {
+        title = "Pesanan Anda Sedang Dikirim! 🚚";
+        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang dalam perjalanan. ${data.nomorResi ? 'Resi: ' + data.nomorResi : ''}`;
+      } else if (data.status === 'DIPROSES') {
+        title = "Pesanan Diproses 📦";
+        body = `Hore! Pembayaran diterima dan pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang diproduksi.`;
+      } else if (data.status === 'SELESAI') {
+        title = "Pesanan Selesai ✅";
+        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} telah selesai. Terima kasih telah berbelanja di Glowear!`;
+      }
+
+      messages.push({
+        to: updatedOrder.pengguna.expoPushToken,
+        sound: 'default',
+        title,
+        body,
+        data: { orderId: id },
+      });
+
+      try {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messages),
+        });
+      } catch (err) {
+        console.error("Failed to send push notification:", err);
+      }
+    }
+
+    return updatedOrder;
   }
 
   async findPendingVerification() {
