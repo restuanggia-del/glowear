@@ -57,6 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await loginUser({email, kataSandi});
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
+      // Simpan JWT token
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+      }
     } catch (error) {
       console.error("Login failed", error);
       throw error;
@@ -72,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   const validate = async (): Promise<boolean> => {

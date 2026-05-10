@@ -28,7 +28,10 @@ const handleLogin = async () => {
       
       console.log("Login response:", res.data);
 
-      // Store user data (backend doesn't return token)
+      // Simpan JWT token & user data
+      if (res.data.access_token) {
+        await AsyncStorage.setItem("userToken", res.data.access_token);
+      }
       await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
       
       Alert.alert("Sukses", "Login berhasil!");
