@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../services/api";
 
 export default function PaymentScreen() {
@@ -12,6 +12,8 @@ export default function PaymentScreen() {
 
   const [settings, setSettings] = useState<any>(null);
   const [loadingSettings, setLoadingSettings] = useState(true);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Fetch settings saat mount
   useEffect(() => {

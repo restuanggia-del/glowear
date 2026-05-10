@@ -370,16 +370,35 @@ export default function OrderDetailScreen() {
           </View>
         )}
 
-        {/* TOMBOL PESANAN DITERIMA */}
-        {order.status === 'DIKIRIM' && (
-          <TouchableOpacity 
-            style={styles.receiveButton}
-            onPress={() => setIsReviewModalOpen(true)}
-          >
-            <Ionicons name="checkmark-done-circle" size={20} color="#0f172a" />
-            <Text style={styles.receiveButtonText}>Pesanan Diterima</Text>
-          </TouchableOpacity>
-        )}
+        {/* TOMBOL AKSI KONTEKSTUAL */}
+        <View style={{ marginTop: 10, gap: 12 }}>
+          {/* 1. Tombol Bayar (Jika belum lunas dan tidak dibatalkan) */}
+          {order.statusPembayaran !== 'LUNAS' && order.status !== 'DIBATALKAN' && (
+            <TouchableOpacity 
+              style={[styles.receiveButton, { backgroundColor: '#3b82f6' }]}
+              onPress={() => router.push({ 
+                pathname: '/payment', 
+                params: { orderId: order.id, totalHarga: order.totalHarga } 
+              })}
+            >
+              <Ionicons name="wallet-outline" size={20} color="#fff" />
+              <Text style={[styles.receiveButtonText, { color: '#fff' }]}>
+                {order.statusPembayaran === 'DP' ? 'Konfirmasi Pelunasan' : 'Bayar Sekarang'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* 2. Tombol Pesanan Diterima (Hanya jika status DIKIRIM) */}
+          {order.status === 'DIKIRIM' && (
+            <TouchableOpacity 
+              style={styles.receiveButton}
+              onPress={() => setIsReviewModalOpen(true)}
+            >
+              <Ionicons name="checkmark-done-circle" size={20} color="#0f172a" />
+              <Text style={styles.receiveButtonText}>Pesanan Diterima</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
       </ScrollView>
 

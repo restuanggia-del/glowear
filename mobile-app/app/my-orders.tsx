@@ -169,15 +169,17 @@ export default function MyOrdersScreen() {
               </View>
 
               {/* Tombol kontekstual berdasarkan status */}
-              {item.status === "PENDING" && (
+              {item.statusPembayaran !== "LUNAS" && item.status !== "DIBATALKAN" && (
                 <TouchableOpacity 
-                  style={styles.payButton} 
+                  style={[styles.payButton, { backgroundColor: "#3b82f6", borderColor: "#3b82f6" }]} 
                   onPress={() => router.push({ 
                     pathname: '/payment', 
                     params: { orderId: item.id, totalHarga: item.totalHarga } 
                   })}
                 >
-                  <Text style={styles.payButtonText}>Cara Pembayaran</Text>
+                  <Text style={[styles.payButtonText, { color: "#fff" }]}>
+                    {item.statusPembayaran === "DP" ? "Bayar Pelunasan" : "Bayar Sekarang"}
+                  </Text>
                 </TouchableOpacity>
               )}
               {item.status === "DIKIRIM" && item.nomorResi && (
