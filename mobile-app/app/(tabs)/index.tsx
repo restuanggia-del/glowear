@@ -1,16 +1,22 @@
 import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar} from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/config";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
 export default function CatalogScreen() {
   const [products, setProducts] = useState<any[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // State Filter & Pencarian
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Semua");
 
   // State untuk Modal Kelengkapan Data
   const [userData, setUserData] = useState<any>(null);
@@ -19,15 +25,17 @@ export default function CatalogScreen() {
   const [alamat, setAlamat] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // 1. Ambil data produk & Banner sekaligus
+  // 1. Ambil data produk, Banner, & Kategori sekaligus
   const fetchData = async () => {
     try {
-      const [resProducts, resBanners] = await Promise.all([
+      const [resProducts, resBanners, resCategories] = await Promise.all([
         api.get("/products"),
-        api.get("/banners")
+        api.get("/banners"),
+        api.get("/categories"),
       ]);
       setProducts(resProducts.data);
       setBanners(resBanners.data);
+      setCategories(resCategories.data);
     } catch (error) {
       console.error("Gagal ambil data:", error);
     } finally {
@@ -108,8 +116,50 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  // 4. FILTER + SEARCH logic (useMemo agar tidak re-kalkulasi tiap render)
+  const filteredProducts = useMemo(() => {
+    let result = products;
+
+    // Filter berdasarkan kategori
+    if (activeCategory !== "Semua") {
+      result = result.filter((p) => p.category?.namaKategori === activeCategory);
+    }
+
+    // Filter berdasarkan pencarian
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.namaProduk?.toLowerCase().includes(q) ||
+          p.category?.namaKategori?.toLowerCase().includes(q) ||
+          p.deskripsi?.toLowerCase().includes(q)
+      );
+    }
+
+    return result;
+  }, [products, activeCategory, searchQuery]);
+
   const renderHeader = () => (
     <View style={styles.headerContainer}>
+      {/* SEARCH BAR */}
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={18} color="#64748b" style={{ marginRight: 8 }} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Cari produk, kategori..."
+          placeholderTextColor="#64748b"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          returnKeyType="search"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery("")}>
+            <Ionicons name="close-circle" size={18} color="#64748b" />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* BANNER CAROUSEL */}
       {banners.length > 0 && (
         <View style={styles.bannerSection}>
           <FlatList
@@ -121,7 +171,6 @@ export default function CatalogScreen() {
             snapToAlignment="center"
             decelerationRate="fast"
             renderItem={({ item }) => (
-              // ✅ PERBAIKAN DI SINI: Kembalikan bentuk View biasa untuk Banner
               <View style={styles.bannerWrapper}>
                 <Image 
                   source={{ 
@@ -136,7 +185,41 @@ export default function CatalogScreen() {
           />
         </View>
       )}
-      <Text style={styles.headerTitle}>Koleksi Terbaik</Text>
+
+      {/* FILTER KATEGORI */}
+      <FlatList
+        data={[{ id: "all", namaKategori: "Semua" }, ...categories]}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        style={styles.categoryList}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.categoryChip,
+              activeCategory === item.namaKategori && styles.categoryChipActive,
+            ]}
+            onPress={() => setActiveCategory(item.namaKategori)}
+          >
+            <Text
+              style={[
+                styles.categoryChipText,
+                activeCategory === item.namaKategori && styles.categoryChipTextActive,
+              ]}
+            >
+              {item.namaKategori}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+
+      {/* JUDUL + JUMLAH HASIL */}
+      <View style={styles.resultRow}>
+        <Text style={styles.headerTitle}>
+          {activeCategory === "Semua" && !searchQuery ? "Koleksi Terbaik" : "Hasil Pencarian"}
+        </Text>
+        <Text style={styles.resultCount}>{filteredProducts.length} produk</Text>
+      </View>
     </View>
   );
 
@@ -151,18 +234,34 @@ export default function CatalogScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={products}
+        data={filteredProducts}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={renderHeader} 
         contentContainerStyle={{ paddingBottom: 20 }}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="search-outline" size={52} color="#334155" />
+            <Text style={styles.emptyTitle}>Produk tidak ditemukan</Text>
+            <Text style={styles.emptyDesc}>
+              {searchQuery
+                ? `Tidak ada produk untuk "${searchQuery}"`
+                : `Belum ada produk di kategori ${activeCategory}`}
+            </Text>
+            <TouchableOpacity
+              style={styles.resetButton}
+              onPress={() => { setSearchQuery(""); setActiveCategory("Semua"); }}
+            >
+              <Text style={styles.resetButtonText}>Reset Filter</Text>
+            </TouchableOpacity>
+          </View>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.card}
             activeOpacity={0.8}
-            // ✅ NAVIGASI UNTUK PRODUK (Ini yang benar)
             onPress={() => router.push(`/product/${item.id}`)}
           >
             <Image 
@@ -254,10 +353,68 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a", paddingHorizontal: 15, paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
   loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
   headerContainer: { paddingTop: 15 },
+
+  // Search
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1e293b",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 2,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: "#334155",
+  },
+  searchInput: {
+    flex: 1,
+    color: "#fff",
+    fontFamily: "Poppins_500Medium",
+    fontSize: 14,
+    paddingVertical: 10,
+  },
+
+  // Banner
   bannerSection: { marginBottom: 10 },
   bannerWrapper: { width: width - 30, marginRight: 10, borderRadius: 16, overflow: "hidden" },
   bannerImage: { width: "100%", height: (width - 30) * (9 / 16), resizeMode: "cover", backgroundColor: "#1e293b" },
-  headerTitle: { fontSize: 24, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginVertical: 15 },
+
+  // Category Filter
+  categoryList: { marginBottom: 8 },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: "#1e293b",
+    borderWidth: 1,
+    borderColor: "#334155",
+  },
+  categoryChipActive: {
+    backgroundColor: "rgba(56, 189, 248, 0.15)",
+    borderColor: "#38bdf8",
+  },
+  categoryChipText: {
+    color: "#94a3b8",
+    fontFamily: "Poppins_500Medium",
+    fontSize: 13,
+  },
+  categoryChipTextActive: {
+    color: "#38bdf8",
+    fontFamily: "Poppins_700Bold",
+  },
+
+  // Result row
+  resultRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  headerTitle: { fontSize: 22, fontFamily: "Poppins_800ExtraBold", color: "#fff" },
+  resultCount: { color: "#64748b", fontFamily: "Poppins_500Medium", fontSize: 12 },
+
+  // Product Grid
   row: { justifyContent: "space-between" },
   card: { backgroundColor: "#1e293b", width: width * 0.44, borderRadius: 16, marginBottom: 16, overflow: "hidden", borderWidth: 1, borderColor: "#334155" },
   image: { width: "100%", height: 160, backgroundColor: "#334155" },
@@ -265,6 +422,15 @@ const styles = StyleSheet.create({
   catName: { color: "#38bdf8", fontSize: 10, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 2 },
   prodName: { color: "#fff", fontSize: 14, fontFamily: "Poppins_600SemiBold" },
   price: { color: "#94a3b8", fontSize: 13, fontFamily: "Poppins_500Medium", marginTop: 4 },
+
+  // Empty State
+  emptyContainer: { alignItems: "center", justifyContent: "center", paddingVertical: 60 },
+  emptyTitle: { color: "#94a3b8", fontFamily: "Poppins_700Bold", fontSize: 16, marginTop: 16 },
+  emptyDesc: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 13, marginTop: 6, textAlign: "center", paddingHorizontal: 30 },
+  resetButton: { marginTop: 20, backgroundColor: "rgba(56,189,248,0.12)", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: "#38bdf8" },
+  resetButtonText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 13 },
+
+  // Modal
   modalOverlay: { flex: 1, backgroundColor: "rgba(15, 23, 42, 0.9)", justifyContent: "center", alignItems: "center", padding: 20 },
   modalContent: { backgroundColor: "#1e293b", width: "100%", borderRadius: 24, padding: 24, borderWidth: 1, borderColor: "#334155", elevation: 10 },
   modalTitle: { fontSize: 22, fontFamily: "Poppins_800ExtraBold", color: "#fff", marginBottom: 8, textAlign: "center" },
