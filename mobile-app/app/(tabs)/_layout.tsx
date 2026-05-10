@@ -27,6 +27,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="portfolio"
+        options={{
+          title: "Galeri Hasil",
+          tabBarLabel: "Portfolio",
+          tabBarIcon: ({ color, size }) => <Ionicons name="images" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profil Saya",
