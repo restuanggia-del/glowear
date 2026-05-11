@@ -4,8 +4,10 @@ import { router, Stack } from "expo-router";
 import Animated, { FadeInDown, FadeOutRight } from "react-native-reanimated";
 import { useCartStore } from "../../store/cart-store";
 import { API_URL } from "../../constants/config";
+import { useAlert } from "../../components/CustomAlert";
 
 export default function CartScreen() {
+  const { showAlert } = useAlert();
   const { items, removeItem, updateQuantity, totalHarga, totalItems, clearCart } = useCartStore();
 
   const formatRupiah = (number: number) => {
@@ -13,10 +15,15 @@ export default function CartScreen() {
   };
 
   const handleRemove = (id: string) => {
-    Alert.alert("Hapus Produk", "Yakin ingin menghapus produk ini dari keranjang?", [
-      { text: "Batal", style: "cancel" },
-      { text: "Hapus", style: "destructive", onPress: () => removeItem(id) }
-    ]);
+    showAlert({
+      title: "Hapus Produk",
+      message: "Yakin ingin menghapus produk ini dari keranjang?",
+      showCancel: true,
+      confirmText: "Hapus",
+      cancelText: "Batal",
+      type: "warning",
+      onConfirm: () => removeItem(id)
+    });
   };
 
   const handleCheckout = () => {
@@ -25,25 +32,24 @@ export default function CartScreen() {
     // Untuk saat ini, karena checkout.tsx didesain per-produk, 
     // kita arahkan ke checkout produk pertama atau beri info.
     // IDEALNYA: Buat halaman CheckoutCart.tsx yang menghandle banyak item.
-    Alert.alert(
-      "Lanjut ke Pembayaran?",
-      "Anda akan melakukan pemesanan untuk " + items.length + " jenis produk.",
-      [
-        { text: "Batal", style: "cancel" },
-        { 
-          text: "Ya, Checkout", 
-          onPress: () => {
-            // Jika hanya 1 item, gunakan checkout yang sudah ada
-            if (items.length === 1) {
-                router.push({ pathname: '/checkout', params: { productId: items[0].productId } });
-            } else {
-                // Informasikan sementara untuk multi-item checkout
-                Alert.alert("Info", "Fitur checkout banyak produk sekaligus sedang dalam integrasi. Silakan pesan satu per satu sementara ini.");
-            }
-          } 
+    showAlert({
+      title: "Lanjut ke Pembayaran?",
+      message: "Anda akan melakukan pemesanan untuk " + items.length + " jenis produk.",
+      showCancel: true,
+      confirmText: "Ya, Checkout",
+      cancelText: "Batal",
+      onConfirm: () => {
+        if (items.length === 1) {
+            router.push({ pathname: '/checkout', params: { productId: items[0].productId } });
+        } else {
+            showAlert({
+              title: "Info",
+              message: "Fitur checkout banyak produk sekaligus sedang dalam integrasi. Silakan pesan satu per satu sementara ini.",
+              type: "info"
+            });
         }
-      ]
-    );
+      }
+    });
   };
 
   const renderItem = ({ item, index }: { item: any, index: number }) => (

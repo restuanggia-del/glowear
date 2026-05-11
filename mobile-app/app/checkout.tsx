@@ -6,8 +6,10 @@ import { API_URL } from "../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import { useAlert } from "../components/CustomAlert";
 
 export default function CheckoutScreen() {
+  const { showAlert } = useAlert();
   const { productId } = useLocalSearchParams();
   const router = useRouter();
   
@@ -43,8 +45,12 @@ export default function CheckoutScreen() {
         const res = await api.get(`/products/${productId}`);
         setProduct(res.data);
       } catch (error) {
-        Alert.alert("Error", "Gagal memuat data produk.");
-        router.back();
+        showAlert({
+          title: "Error",
+          message: "Gagal memuat data produk.",
+          type: "error",
+          onConfirm: () => router.back()
+        });
       } finally {
         setLoading(false);
       }
@@ -76,10 +82,18 @@ export default function CheckoutScreen() {
   const handleCheckout = async () => {
     // Validasi jenis sablon wajib dipilih
     if (!jenisSablon) {
-      return Alert.alert("Perhatian", "Silakan pilih jenis sablon terlebih dahulu.");
+      return showAlert({
+        title: "Perhatian",
+        message: "Silakan pilih jenis sablon terlebih dahulu.",
+        type: "warning"
+      });
     }
     if (!userData?.alamat) {
-      return Alert.alert("Perhatian", "Alamat pengiriman belum diisi. Silakan lengkapi profil Anda.");
+      return showAlert({
+        title: "Perhatian",
+        message: "Alamat pengiriman belum diisi. Silakan lengkapi profil Anda.",
+        type: "warning"
+      });
     }
 
     setSubmitting(true);
@@ -120,15 +134,20 @@ export default function CheckoutScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      Alert.alert(
-        "Pesanan Dibuat! 🎉",
-        `Pesanan ${product.namaProduk} (Ukuran ${size}) berhasil dibuat.\n\nSilakan lanjutkan pembayaran.`,
-        [{ text: "Lihat Pesanan", onPress: () => router.push("/my-orders") }]
-      );
+      showAlert({
+        title: "Pesanan Dibuat! 🎉",
+        message: `Pesanan ${product.namaProduk} (Ukuran ${size}) berhasil dibuat.\n\nSilakan lanjutkan pembayaran.`,
+        type: "success",
+        onConfirm: () => router.push("/my-orders")
+      });
 
     } catch (error) {
       console.log("Error Checkout:", error);
-      Alert.alert("Gagal", "Terjadi kesalahan saat membuat pesanan.");
+      showAlert({
+        title: "Gagal",
+        message: "Terjadi kesalahan saat membuat pesanan.",
+        type: "error"
+      });
     } finally {
       setSubmitting(false);
     }

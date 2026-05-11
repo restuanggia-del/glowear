@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
+import { useAlert } from "../components/CustomAlert";
 import { useState, useEffect } from "react";
 import { api } from "../services/api";
 import * as Haptics from 'expo-haptics';
@@ -10,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 const { width } = Dimensions.get("window");
 
 export default function PaymentScreen() {
+  const { showAlert } = useAlert();
   const { orderId, totalHarga } = useLocalSearchParams();
   const router = useRouter();
 
@@ -44,7 +46,11 @@ export default function PaymentScreen() {
     setCopied(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setTimeout(() => setCopied(false), 2000);
-    Alert.alert("Tersalin!", `Nomor rekening ${bank} berhasil disalin.`);
+    showAlert({
+      title: "Tersalin!",
+      message: `Nomor rekening ${bank} berhasil disalin.`,
+      type: "success"
+    });
   };
 
   const pickImage = async () => {
@@ -63,7 +69,11 @@ export default function PaymentScreen() {
 
   const handleConfirm = async () => {
     if (!receiptImage) {
-      return Alert.alert("Perhatian", "Silakan upload bukti transfer Anda terlebih dahulu.");
+      return showAlert({
+        title: "Perhatian",
+        message: "Silakan upload bukti transfer Anda terlebih dahulu.",
+        type: "warning"
+      });
     }
 
     setUploading(true);
@@ -84,15 +94,20 @@ export default function PaymentScreen() {
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert(
-        "Bukti Terkirim! ✅", 
-        "Bukti pembayaran Anda telah terkirim.\n\nAdmin akan memverifikasi dan memproses pesanan Anda segera.",
-        [{ text: "Lihat Pesanan", onPress: () => router.push("/my-orders") }]
-      );
+      showAlert({
+        title: "Bukti Terkirim! ✅",
+        message: "Bukti pembayaran Anda telah terkirim.\n\nAdmin akan memverifikasi dan memproses pesanan Anda segera.",
+        type: "success",
+        onConfirm: () => router.push("/my-orders")
+      });
       
     } catch (error: any) {
       console.log("Error Upload:", error.response?.data || error.message);
-      Alert.alert("Gagal", "Gagal mengupload bukti transfer. Pastikan koneksi internet Anda lancar.");
+      showAlert({
+        title: "Gagal",
+        message: "Gagal mengupload bukti transfer. Pastikan koneksi internet Anda lancar.",
+        type: "error"
+      });
     } finally {
       setUploading(false);
     }

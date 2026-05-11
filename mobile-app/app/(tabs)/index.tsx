@@ -1,5 +1,6 @@
 import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar } from "react-native";
 import { useEffect, useState, useMemo } from "react";
+import { useAlert } from "../../components/CustomAlert";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/config";
@@ -12,6 +13,7 @@ import { useCartStore } from "../../store/cart-store";
 const { width, height } = Dimensions.get("window");
 
 export default function CatalogScreen() {
+  const { showAlert } = useAlert();
   const [products, setProducts] = useState<any[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -97,7 +99,11 @@ export default function CatalogScreen() {
 
   const handleSaveProfile = async () => {
     if (!noTelepon || !alamat) {
-      return Alert.alert("Perhatian", "Nomor Telepon dan Alamat wajib diisi untuk keperluan pengiriman pesanan.");
+      return showAlert({
+        title: "Perhatian",
+        message: "Nomor Telepon dan Alamat wajib diisi untuk keperluan pengiriman pesanan.",
+        type: "warning"
+      });
     }
 
     setSavingProfile(true);
@@ -113,11 +119,19 @@ export default function CatalogScreen() {
         setUserData(updatedUser);
 
         setShowProfileModal(false);
-        Alert.alert("Sukses", "Data diri berhasil diperbarui!");
+        showAlert({
+          title: "Sukses",
+          message: "Data diri berhasil diperbarui!",
+          type: "success"
+        });
       }
     } catch (error) {
       console.log("Error update profil:", error);
-      Alert.alert("Gagal", "Terjadi kesalahan saat menyimpan data diri.");
+      showAlert({
+        title: "Gagal",
+        message: "Terjadi kesalahan saat menyimpan data diri.",
+        type: "error"
+      });
     } finally {
       setSavingProfile(false);
     }
@@ -133,7 +147,11 @@ export default function CatalogScreen() {
       jumlah: 1,
       ukuran: "L", // Default
     });
-    Alert.alert("Sukses", `${product.namaProduk} ditambahkan ke keranjang!`);
+    showAlert({
+      title: "Berhasil!",
+      message: `${product.namaProduk} ditambahkan ke keranjang!`,
+      type: "success"
+    });
   };
 
   const formatRupiah = (number: number) => {
