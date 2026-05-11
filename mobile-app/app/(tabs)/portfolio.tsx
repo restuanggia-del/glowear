@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { API_URL } from "../../constants/config";
 import { Ionicons } from "@expo/vector-icons";
+import Skeleton from "../../components/Skeleton";
 
 const { width } = Dimensions.get("window");
 const COLUMN_GAP = 8;
@@ -48,8 +49,27 @@ export default function PortfolioScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingArea}>
-        <ActivityIndicator size="large" color="#38bdf8" />
+      <View style={styles.container}>
+        <View style={{ padding: 15 }}>
+          {/* Skeleton Filter */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+            <Skeleton width={80} height={35} borderRadius={20} />
+            <Skeleton width={80} height={35} borderRadius={20} />
+            <Skeleton width={80} height={35} borderRadius={20} />
+          </View>
+          
+          {/* Skeleton Grid */}
+          <View style={styles.row}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Skeleton height={ITEM_WIDTH * 1.2} borderRadius={16} style={{ marginBottom: 8 }} />
+              <Skeleton height={ITEM_WIDTH * 1.4} borderRadius={16} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Skeleton height={ITEM_WIDTH * 1.4} borderRadius={16} style={{ marginBottom: 8 }} />
+              <Skeleton height={ITEM_WIDTH * 1.2} borderRadius={16} />
+            </View>
+          </View>
+        </View>
       </View>
     );
   }

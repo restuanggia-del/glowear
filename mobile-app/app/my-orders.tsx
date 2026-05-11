@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, Platform, StatusBar, RefreshControl, Alert } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Platform, StatusBar, RefreshControl, Alert } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import { api } from "../services/api";
 import { API_URL } from "../constants/config";
+import Skeleton from "../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -117,9 +118,36 @@ export default function MyOrdersScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingArea}>
+      <View style={styles.container}>
         <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }} />
-        <ActivityIndicator size="large" color="#38bdf8" />
+        <View style={{ padding: 20 }}>
+          {/* Skeleton Tabs */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+            <Skeleton width={100} height={40} borderRadius={20} />
+            <Skeleton width={100} height={40} borderRadius={20} />
+            <Skeleton width={100} height={40} borderRadius={20} />
+          </View>
+          
+          {/* Skeleton Cards */}
+          <View style={{ gap: 15 }}>
+            {[1, 2, 3].map(i => (
+              <View key={i} style={{ backgroundColor: '#1e293b', borderRadius: 16, padding: 15, borderWidth: 1, borderColor: '#334155' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
+                  <Skeleton width={120} height={20} borderRadius={5} />
+                  <Skeleton width={80} height={20} borderRadius={10} />
+                </View>
+                <View style={{ flexDirection: 'row', gap: 15 }}>
+                  <Skeleton width={80} height={80} borderRadius={10} />
+                  <View style={{ flex: 1, justifyContent: 'center', gap: 10 }}>
+                    <Skeleton width="90%" height={16} borderRadius={5} />
+                    <Skeleton width="60%" height={14} borderRadius={5} />
+                    <Skeleton width="40%" height={16} borderRadius={5} />
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
       </View>
     );
   }

@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "../../constants/config";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import Skeleton from "../../components/Skeleton";
 
 const { width } = Dimensions.get("window");
 
@@ -225,8 +226,28 @@ export default function CatalogScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingArea}>
-        <ActivityIndicator size="large" color="#38bdf8" />
+      <View style={styles.container}>
+        <View style={{ padding: 20 }}>
+          <Skeleton height={40} borderRadius={10} style={{ marginBottom: 20 }} />
+          <Skeleton height={150} borderRadius={15} style={{ marginBottom: 20 }} />
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+            <Skeleton width={80} height={30} borderRadius={15} />
+            <Skeleton width={80} height={30} borderRadius={15} />
+            <Skeleton width={80} height={30} borderRadius={15} />
+          </View>
+          <View style={styles.row}>
+            <View style={{ flex: 1, marginRight: 10 }}>
+              <Skeleton height={180} borderRadius={15} style={{ marginBottom: 10 }} />
+              <Skeleton height={20} width="80%" style={{ marginBottom: 5 }} />
+              <Skeleton height={20} width="50%" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Skeleton height={180} borderRadius={15} style={{ marginBottom: 10 }} />
+              <Skeleton height={20} width="80%" style={{ marginBottom: 5 }} />
+              <Skeleton height={20} width="50%" />
+            </View>
+          </View>
+        </View>
       </View>
     );
   }

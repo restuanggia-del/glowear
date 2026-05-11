@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   // 1. Buat instance 'app' terlebih dahulu
@@ -22,7 +23,17 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
-  // 4. Jalankan server
+  // 4. Konfigurasi Swagger API Docs
+  const config = new DocumentBuilder()
+    .setTitle('Glowear API')
+    .setDescription('Dokumentasi lengkap REST API untuk sistem Glowear.')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // 5. Jalankan server
   await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }
 bootstrap();
