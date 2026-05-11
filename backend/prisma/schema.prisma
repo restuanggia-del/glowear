@@ -22,6 +22,7 @@ model Pengguna {
   role        Role     @default(PELANGGAN)
   noTelp      String?
   alamat      String?  @db.Text
+  fotoProfil  String?  @map("foto_profil")
   expoPushToken String? @map("expo_push_token")
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")

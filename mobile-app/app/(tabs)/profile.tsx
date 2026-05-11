@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Linking } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Linking, Image } from "react-native";
 import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { api } from "../../services/api";
 import { API_URL } from "../../constants/config";
 
@@ -12,6 +13,7 @@ export default function ProfileScreen() {
   // State untuk Fitur Edit Profil
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [form, setForm] = useState({
     nama: "",
     noTelepon: "",
@@ -95,6 +97,59 @@ export default function ProfileScreen() {
     }
   };
 
+  // Fungsi untuk Update Foto Profil
+  const handlePickPhoto = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert("Izin Ditolak", "Anda harus memberikan izin akses galeri untuk mengganti foto profil.");
+        return;
+      }
+
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+        const imageUri = pickerResult.assets[0].uri;
+        setUploadingPhoto(true);
+
+        const formData = new FormData();
+        const fileExt = imageUri.split('.').pop() || 'jpg';
+        formData.append('foto', {
+          uri: imageUri,
+          name: `profile-${userData.id}.${fileExt}`,
+          type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`
+        } as any);
+
+        const response = await api.post(`/users/${userData.id}/upload-photo`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        const newFotoProfil = response.data.fotoProfil;
+        const updatedUser = { ...userData, fotoProfil: newFotoProfil };
+        await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
+        setUserData(updatedUser);
+      }
+    } catch (error) {
+      console.log("Error Upload Photo:", error);
+      Alert.alert("Gagal", "Terjadi kesalahan saat mengunggah foto profil.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  // URL untuk foto profil
+  const getProfilePhotoUrl = () => {
+    if (userData?.fotoProfil) {
+      return `${API_URL}/uploads/profiles/${userData.fotoProfil}`;
+    }
+    return null;
+  };
+
   if (!userData) {
     return (
       <View style={styles.container}>
@@ -109,9 +164,20 @@ export default function ProfileScreen() {
 
         {/* Header Profil */}
         <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>{userData.nama?.charAt(0).toUpperCase() || "U"}</Text>
-          </View>
+          <TouchableOpacity style={styles.avatarContainer} onPress={handlePickPhoto} disabled={uploadingPhoto}>
+            {uploadingPhoto ? (
+              <ActivityIndicator size="large" color="#fff" />
+            ) : getProfilePhotoUrl() ? (
+              <View style={{ width: '100%', height: '100%', borderRadius: 50, overflow: 'hidden' }}>
+                <Image source={{ uri: getProfilePhotoUrl()! }} style={{ width: '100%', height: '100%' }} />
+              </View>
+            ) : (
+              <Text style={styles.avatarText}>{userData.nama?.charAt(0).toUpperCase() || "U"}</Text>
+            )}
+            <View style={styles.editAvatarBadge}>
+              <Ionicons name="camera" size={12} color="#fff" />
+            </View>
+          </TouchableOpacity>
           <Text style={styles.userName}>{userData.nama}</Text>
           <Text style={styles.userEmail}>{userData.email}</Text>
 
@@ -289,9 +355,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a" },
   header: { alignItems: "center", paddingVertical: 40, borderBottomWidth: 1, borderColor: "#1e293b", backgroundColor: "#0f172a" },
   avatarContainer: { 
-    width: 80, 
-    height: 80, 
-    borderRadius: 40, 
+    width: 100, 
+    height: 100, 
+    borderRadius: 50, 
     backgroundColor: "#38bdf8", 
     justifyContent: "center", 
     alignItems: "center", 
@@ -302,7 +368,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8 
   },
-  avatarText: { fontSize: 36, fontFamily: "Poppins_800ExtraBold", color: "#0f172a", marginTop: 4 },
+  editAvatarBadge: {
+    position: "absolute",
+    bottom: 0,
+    right: 5,
+    backgroundColor: "#0f172a",
+    padding: 6,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: "#1e293b",
+  },
+  avatarText: { fontSize: 40, fontFamily: "Poppins_800ExtraBold", color: "#0f172a", marginTop: 4 },
   userName: { fontSize: 22, fontFamily: "Poppins_700Bold", color: "#fff", textAlign: "center", paddingHorizontal: 20 },
   userEmail: { fontSize: 14, fontFamily: "Poppins_400Regular", color: "#94a3b8" },
   roleBadge: { marginTop: 10, backgroundColor: "rgba(56, 189, 248, 0.15)", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 },

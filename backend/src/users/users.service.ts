@@ -25,6 +25,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        fotoProfil: true,
         expoPushToken: true,
         waktuDibuat: true,
       },
@@ -40,6 +41,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        fotoProfil: true,
         expoPushToken: true,
         waktuDibuat: true,
       },
@@ -85,6 +87,7 @@ export class UsersService {
         role: true,
         noTelp: true,
         alamat: true,
+        fotoProfil: true,
         expoPushToken: true,
       },
     });
