@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Platform, View, StyleSheet } from "react-native";
 
 export default function TabLayout() {
@@ -11,7 +11,7 @@ export default function TabLayout() {
         tabBarShowLabel: true,
         tabBarLabelStyle: {
           fontFamily: "Poppins_600SemiBold",
-          fontSize: 9, // Diperkecil agar muat 6 tab
+          fontSize: 10,
           marginTop: 4,
           marginBottom: Platform.OS === "android" ? 8 : 0,
         },
@@ -42,7 +42,7 @@ export default function TabLayout() {
           tabBarLabel: "Home",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "home" : "home-outline"} size={20} color={color} />
+              <Ionicons name={focused ? "home" : "home-outline"} size={22} color={color} />
             </View>
           ),
         }}
@@ -53,20 +53,16 @@ export default function TabLayout() {
           tabBarLabel: "Studio",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "color-palette" : "color-palette-outline"} size={20} color={color} />
+              <Ionicons name={focused ? "color-palette" : "color-palette-outline"} size={22} color={color} />
             </View>
           ),
         }}
       />
+      {/* Tab cart dihapus karena dipindah ke bubble home */}
       <Tabs.Screen
         name="cart"
         options={{
-          tabBarLabel: "Keranjang",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
-            </View>
-          ),
+          href: null, // Sembunyikan dari tab bar
         }}
       />
       <Tabs.Screen
@@ -75,7 +71,7 @@ export default function TabLayout() {
           tabBarLabel: "Pesanan",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "receipt" : "receipt-outline"} size={20} color={color} />
+              <Ionicons name={focused ? "receipt" : "receipt-outline"} size={22} color={color} />
             </View>
           ),
         }}
@@ -86,7 +82,7 @@ export default function TabLayout() {
           tabBarLabel: "Galeri",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "images" : "images-outline"} size={20} color={color} />
+              <Ionicons name={focused ? "images" : "images-outline"} size={22} color={color} />
             </View>
           ),
         }}
@@ -97,7 +93,7 @@ export default function TabLayout() {
           tabBarLabel: "Profil",
           tabBarIcon: ({ color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
-              <Ionicons name={focused ? "person" : "person-outline"} size={20} color={color} />
+              <Ionicons name={focused ? "person" : "person-outline"} size={22} color={color} />
             </View>
           ),
         }}
@@ -108,11 +104,11 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 50, // Diperkecil dari 60 agar muat 6 tab
-    height: 30, // Diperkecil dari 32
+    width: 60,
+    height: 32,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 15,
+    borderRadius: 16,
   },
   activeIconContainer: {
     backgroundColor: "rgba(56, 189, 248, 0.15)",
