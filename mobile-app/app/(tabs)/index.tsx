@@ -17,7 +17,8 @@ export default function CatalogScreen() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const cartItemsCount = useCartStore((state) => state.totalItems());
+  const { addItem, totalItems } = useCartStore();
+  const cartItemsCount = totalItems();
 
   // State Filter & Pencarian
   const [searchQuery, setSearchQuery] = useState("");
@@ -120,6 +121,19 @@ export default function CatalogScreen() {
     } finally {
       setSavingProfile(false);
     }
+  };
+
+  const handleQuickAdd = (product: any) => {
+    addItem({
+      id: Math.random().toString(36).substring(7),
+      productId: product.id,
+      namaProduk: product.namaProduk,
+      harga: product.harga,
+      gambar: product.gambar,
+      jumlah: 1,
+      ukuran: "L", // Default
+    });
+    Alert.alert("Sukses", `${product.namaProduk} ditambahkan ke keranjang!`);
   };
 
   const formatRupiah = (number: number) => {
@@ -332,10 +346,13 @@ export default function CatalogScreen() {
                       <Ionicons name="star" size={12} color="#fbbf24" />
                       <Text style={styles.ratingText}>4.9</Text>
                    </View>
-                   <View style={styles.addBtn}>
+                    <TouchableOpacity 
+                        style={styles.addBtn}
+                        onPress={() => handleQuickAdd(item)}
+                    >
                       <Ionicons name="add" size={18} color="#0f172a" />
-                   </View>
-                </View>
+                    </TouchableOpacity>
+                 </View>
               </View>
             </TouchableOpacity>
           </Animated.View>
