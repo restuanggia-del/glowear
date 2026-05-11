@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, Platform, StatusBar } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, Platform, StatusBar, RefreshControl, Alert } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "../services/api";
 import { API_URL } from "../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,6 +12,8 @@ export default function MyOrdersScreen() {
   
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(initialStatus || "SEMUA");
 
   const tabs = [
@@ -23,29 +25,65 @@ export default function MyOrdersScreen() {
     { id: "DIBATALKAN", label: "Dibatalkan" }
   ];
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const userString = await AsyncStorage.getItem("userData");
-        if (userString) {
-          const user = JSON.parse(userString);
-          const res = await api.get(`/orders/user/${user.id}`);
-          setOrders(res.data);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil pesanan:", error);
-      } finally {
-        setLoading(false);
+  const fetchOrders = async () => {
+    try {
+      const userString = await AsyncStorage.getItem("userData");
+      if (userString) {
+        const user = JSON.parse(userString);
+        const res = await api.get(`/orders/user/${user.id}`);
+        setOrders(res.data);
       }
-    };
+    } catch (error) {
+      console.error("Gagal mengambil pesanan:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
     fetchOrders();
   }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchOrders();
+  }, []);
+
+  const handleCancelOrder = (orderId: string) => {
+    Alert.alert(
+      "Batalkan Pesanan?",
+      "Pesanan yang dibatalkan tidak dapat dikembalikan. Stok produk akan otomatis dikembalikan.\n\nYakin ingin membatalkan pesanan ini?",
+      [
+        { text: "Tidak, Kembali", style: "cancel" },
+        {
+          text: "Ya, Batalkan",
+          style: "destructive",
+          onPress: async () => {
+            setCancellingId(orderId);
+            try {
+              // PATCH sesuai endpoint backend: PATCH /orders/:id/cancel
+              await api.patch(`/orders/${orderId}/cancel`);
+              Alert.alert(
+                "Pesanan Dibatalkan ✓",
+                "Pesanan Anda telah berhasil dibatalkan.",
+                [{ text: "OK" }]
+              );
+              fetchOrders(); // Refresh daftar pesanan
+            } catch (error: any) {
+              const msg = error?.response?.data?.message || "Gagal membatalkan pesanan. Coba lagi.";
+              Alert.alert("Gagal Membatalkan", msg);
+            } finally {
+              setCancellingId(null);
+            }
+          }
+    ]);
+  };
 
   const formatRupiah = (number: number) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
-  // Fungsi Format Tanggal yang Aman
   const formatDate = (dateString: any) => {
     if (!dateString) return "Tanggal tidak tersedia";
     const date = new Date(dateString);
@@ -55,19 +93,18 @@ export default function MyOrdersScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PENDING": return "#f59e0b"; // Amber
-      case "DIPROSES": return "#3b82f6"; // Blue
-      case "DIKIRIM": return "#10b981"; // Emerald
-      case "SELESAI": return "#8b5cf6"; // Violet
-      case "DIBATALKAN": return "#ef4444"; // Red
+      case "PENDING": return "#f59e0b";
+      case "DIPROSES": return "#3b82f6";
+      case "DIKIRIM": return "#10b981";
+      case "SELESAI": return "#8b5cf6";
+      case "DIBATALKAN": return "#ef4444";
       default: return "#94a3b8";
     }
   };
 
-  // Fungsi aman untuk mengambil URL Gambar
   const getImageUrl = (item: any) => {
     const imgName = item.items?.[0]?.product?.gambar;
-    if (!imgName) return "https://via.placeholder.com/150"; // Gambar fallback jika kosong
+    if (!imgName) return "https://via.placeholder.com/150";
     if (imgName.startsWith('http')) return imgName;
     return `${API_URL}/uploads/${imgName}`;
   };
@@ -89,7 +126,6 @@ export default function MyOrdersScreen() {
     <View style={styles.container}>
       <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff", headerTitleStyle: { fontFamily: "Poppins_700Bold" } }} />
 
-      {/* Tabs Filter */}
       <View style={styles.tabContainer}>
         <FlatList
           data={tabs}
@@ -109,7 +145,6 @@ export default function MyOrdersScreen() {
         />
       </View>
 
-      {/* Daftar Pesanan */}
       {filteredOrders.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="receipt-outline" size={64} color="#334155" />
@@ -121,6 +156,7 @@ export default function MyOrdersScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 15, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38bdf8" />}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.orderCard}
@@ -128,9 +164,7 @@ export default function MyOrdersScreen() {
               onPress={() => router.push({ pathname: '/order-detail', params: { orderId: item.id } })}
             >
               <View style={styles.orderHeader}>
-                {/* Membaca waktuDibuat atau createdAt dari backend */}
                 <Text style={styles.orderDate}>{formatDate(item.waktuDibuat || item.createdAt)}</Text>
-                
                 <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
                   <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
                     {item.status.replace("_", " ")}
@@ -148,39 +182,39 @@ export default function MyOrdersScreen() {
               )}
 
               <View style={styles.productRow}>
-                {/* Mengambil gambar menggunakan fungsi pengaman */}
                 <Image 
                   source={{ uri: getImageUrl(item) }} 
                   style={styles.productImage} 
                 />
                 <View style={styles.productInfo}>
-                  {/* Membaca nama produk dari relasi items */}
                   <Text style={styles.productName} numberOfLines={1}>
                     {item.items?.[0]?.product?.namaProduk || "Produk Custom / Dihapus"}
                   </Text>
-                  
-                  {/* Membaca jumlah (qty) dan sablon */}
                   <Text style={styles.productDetail}>
                     Qty: {item.items?.[0]?.jumlah || 0} Pcs {item.items?.[0]?.jenisSablon ? `| ${item.items[0].jenisSablon}` : ''}
                   </Text>
-                  
                   <Text style={styles.totalPrice}>{formatRupiah(item.totalHarga)}</Text>
                 </View>
               </View>
 
-              {/* Tombol kontekstual berdasarkan status */}
-              {item.statusPembayaran !== "LUNAS" && item.status !== "DIBATALKAN" && (
-                <TouchableOpacity 
-                  style={[styles.payButton, { backgroundColor: "#3b82f6", borderColor: "#3b82f6" }]} 
-                  onPress={() => router.push({ 
-                    pathname: '/payment', 
-                    params: { orderId: item.id, totalHarga: item.totalHarga } 
-                  })}
-                >
-                  <Text style={[styles.payButtonText, { color: "#fff" }]}>
-                    {item.statusPembayaran === "DP" ? "Bayar Pelunasan" : "Bayar Sekarang"}
-                  </Text>
-                </TouchableOpacity>
+              {item.status === "PENDING" && item.statusPembayaran !== "LUNAS" && (
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity 
+                    style={[styles.payButton, { flex: 2, backgroundColor: "#3b82f6", borderColor: "#3b82f6" }]} 
+                    onPress={() => router.push({ 
+                      pathname: '/payment', 
+                      params: { orderId: item.id, totalHarga: item.totalHarga } 
+                    })}
+                  >
+                    <Text style={[styles.payButtonText, { color: "#fff" }]}>Bayar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.payButton, { flex: 1, backgroundColor: "transparent", borderColor: "#ef4444" }]} 
+                    onPress={() => handleCancelOrder(item.id)}
+                  >
+                    <Text style={[styles.payButtonText, { color: "#ef4444" }]}>Batalkan</Text>
+                  </TouchableOpacity>
+                </View>
               )}
               {item.status === "DIKIRIM" && item.nomorResi && (
                 <View style={[styles.payButton, { backgroundColor: "rgba(16, 185, 129, 0.1)", borderColor: "#10b981" }]}>

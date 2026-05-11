@@ -51,31 +51,60 @@ export class OrdersService {
       throw new Error('Pesanan gagal dibuat: Item barang tidak boleh kosong.');
     }
 
-    // Format data untuk disimpan ke Prisma
-    const order = await this.prisma.order.create({
-      data: {
-        userId: data.userId,
-        totalHarga: data.totalHarga,
-        alamatPengiriman: data.alamatPengiriman,
-        catatanCustom: data.catatanCustom,
-        statusPembayaran: 'BELUM_BAYAR',
-        status: 'PENDING',
-        // Jika Anda punya kolom 'desain' di database, buka komentar di bawah ini:
-        // desain: data.desain, 
-        
-        // Simpan data item ke tabel berelasi (OrderItems)
-        items: {
-          create: data.items.map((item: any) => ({
-            productId: item.productId,
-            jumlah: item.jumlah,
-            hargaSatuan: item.hargaSatuan,
-            jenisSablon: item.jenisSablon,
-          })),
+    // ======= VALIDASI STOK =======
+    for (const item of data.items) {
+      const product = await this.prisma.product.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (!product) {
+        throw new BadRequestException(`Produk dengan ID ${item.productId} tidak ditemukan.`);
+      }
+
+      if (product.stok < item.jumlah) {
+        throw new BadRequestException(
+          `Stok produk "${product.namaProduk}" tidak mencukupi. ` +
+          `Stok tersedia: ${product.stok} pcs, Anda memesan: ${item.jumlah} pcs.`
+        );
+      }
+    }
+    // ==============================
+
+    // Gunakan transaksi Prisma agar pembuatan order & pengurangan stok bersifat atomik
+    const order = await this.prisma.$transaction(async (tx) => {
+      // 1. Buat pesanan beserta item-itemnya
+      const newOrder = await tx.order.create({
+        data: {
+          userId: data.userId,
+          totalHarga: data.totalHarga,
+          alamatPengiriman: data.alamatPengiriman,
+          catatanCustom: data.catatanCustom,
+          statusPembayaran: 'BELUM_BAYAR',
+          status: 'PENDING',
+          items: {
+            create: data.items.map((item: any) => ({
+              productId: item.productId,
+              jumlah: item.jumlah,
+              hargaSatuan: item.hargaSatuan,
+              jenisSablon: item.jenisSablon,
+              deskripsiDesain: item.deskripsiDesain,
+            })),
+          },
         },
-      },
+      });
+
+      // 2. Kurangi stok untuk setiap item yang dipesan
+      for (const item of data.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stok: { decrement: item.jumlah } },
+        });
+      }
+
+      return newOrder;
     });
 
-    // Buat notifikasi
+    // Buat notifikasi setelah transaksi berhasil
     if (order) {
       await this.notificationsService.create({
         judul: 'Pesanan Baru Masuk',
@@ -242,4 +271,61 @@ async findByUser(userId: string) {
   remove(id: number) {
     return `This action removes a #${id} order`;
   }
+
+  // ======= BATALKAN PESANAN OLEH PELANGGAN =======
+  async cancelByUser(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Pesanan tidak ditemukan.');
+    }
+
+    // Hanya boleh dibatalkan jika masih PENDING dan belum bayar
+    if (order.status !== 'PENDING') {
+      throw new BadRequestException(
+        'Pesanan tidak dapat dibatalkan. ' +
+        'Pesanan hanya bisa dibatalkan saat status masih PENDING (belum diproses admin).'
+      );
+    }
+
+    if (order.statusPembayaran !== 'BELUM_BAYAR') {
+      throw new BadRequestException(
+        'Pesanan tidak dapat dibatalkan karena pembayaran sudah diproses. ' +
+        'Silakan hubungi Customer Service.'
+      );
+    }
+
+    // Gunakan transaksi: batalkan order + kembalikan stok
+    const cancelled = await this.prisma.$transaction(async (tx) => {
+      // 1. Update status order menjadi DIBATALKAN
+      const updatedOrder = await tx.order.update({
+        where: { id },
+        data: { status: 'DIBATALKAN' },
+      });
+
+      // 2. Kembalikan stok produk untuk setiap item
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stok: { increment: item.jumlah } },
+        });
+      }
+
+      return updatedOrder;
+    });
+
+    // Buat notifikasi untuk admin
+    await this.notificationsService.create({
+      judul: 'Pesanan Dibatalkan oleh Pelanggan',
+      pesan: `Pesanan ID: ${id.substring(0, 8)}... telah dibatalkan oleh pelanggan.`,
+      tipe: 'ORDER',
+      orderId: id,
+    });
+
+    return cancelled;
+  }
+  // =================================================
 }

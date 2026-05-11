@@ -90,14 +90,18 @@ export default function CheckoutScreen() {
       formData.append('userId', userData.id);
       formData.append('totalHarga', (product.harga * qty).toString());
       formData.append('alamatPengiriman', userData.alamat);
-      formData.append('catatanCustom', catatan);
 
-      // Data Items dengan jenisSablon yang dipilih user
+      // Gabungkan ukuran dengan catatan tambahan agar admin bisa melihat ukuran yang dipilih
+      const catatanLengkap = `Ukuran: ${size}${catatan ? `\n${catatan}` : ''}`;
+      formData.append('catatanCustom', catatanLengkap);
+
+      // Data Items dengan jenisSablon & deskripsiDesain (menyimpan ukuran)
       const itemsData = [{
         productId: product.id,
         jumlah: qty,
         hargaSatuan: product.harga,
-        jenisSablon: jenisSablon
+        jenisSablon: jenisSablon,
+        deskripsiDesain: `Ukuran: ${size}`,  // simpan ukuran di field deskripsi desain
       }];
       formData.append('items', JSON.stringify(itemsData));
 
@@ -116,9 +120,11 @@ export default function CheckoutScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      Alert.alert("Berhasil!", "Pesanan Anda telah dibuat.", [
-        { text: "OK", onPress: () => router.push("/(tabs)/profile") }
-      ]);
+      Alert.alert(
+        "Pesanan Dibuat! 🎉",
+        `Pesanan ${product.namaProduk} (Ukuran ${size}) berhasil dibuat.\n\nSilakan lanjutkan pembayaran.`,
+        [{ text: "Lihat Pesanan", onPress: () => router.push("/my-orders") }]
+      );
 
     } catch (error) {
       console.log("Error Checkout:", error);
@@ -168,6 +174,13 @@ export default function CheckoutScreen() {
                 <Text style={[styles.sizeText, size === item && styles.sizeTextActive]}>{item}</Text>
               </TouchableOpacity>
             ))}
+          </View>
+          {/* Indikator ukuran yang terpilih */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <Ionicons name="checkmark-circle" size={14} color="#10b981" />
+            <Text style={{ color: '#10b981', fontFamily: 'Poppins_500Medium', fontSize: 12, marginLeft: 5 }}>
+              Ukuran <Text style={{ fontFamily: 'Poppins_700Bold' }}>{size}</Text> akan disertakan dalam pesanan
+            </Text>
           </View>
 
           {/* PILIHAN JENIS SABLON */}
@@ -238,6 +251,9 @@ export default function CheckoutScreen() {
             numberOfLines={3}
             textAlignVertical="top"
           />
+          <Text style={{ color: '#475569', fontFamily: 'Poppins_400Regular', fontSize: 11, marginTop: -12, marginBottom: 4 }}>
+            * Ukuran {size} otomatis disertakan dalam catatan pesanan
+          </Text>
         </View>
 
         {/* 3. Info Pengiriman */}

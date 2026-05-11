@@ -109,6 +109,12 @@ export class OrdersController {
     return this.ordersService.findOne(id);
   }
 
+  // Endpoint batalkan pesanan oleh pelanggan (hanya PENDING + BELUM_BAYAR)
+  @Patch(':id/cancel')
+  cancelByUser(@Param('id') id: string) {
+    return this.ordersService.cancelByUser(id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);

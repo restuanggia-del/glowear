@@ -78,25 +78,21 @@ export default function PaymentScreen() {
         type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`
       } as any);
 
+      // Hanya upload bukti pembayaran — admin yang akan memverifikasi & mengubah status
       await api.post(`/orders/${orderId}/upload-receipt`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      await api.put(`/orders/${orderId}/status`, { 
-        status: "DIPROSES", 
-        statusPembayaran: "BELUM_BAYAR" 
-      });
-
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert(
-        "Berhasil!", 
-        "Bukti pembayaran Anda telah terkirim dan sedang menunggu verifikasi Admin.",
-        [{ text: "Tutup", onPress: () => router.push("/(tabs)/profile") }]
+        "Bukti Terkirim! ✅", 
+        "Bukti pembayaran Anda telah terkirim.\n\nAdmin akan memverifikasi dan memproses pesanan Anda segera.",
+        [{ text: "Lihat Pesanan", onPress: () => router.push("/my-orders") }]
       );
       
     } catch (error: any) {
       console.log("Error Upload:", error.response?.data || error.message);
-      Alert.alert("Gagal", "Gagal mengupload bukti transfer. Pastikan koneksi lancar.");
+      Alert.alert("Gagal", "Gagal mengupload bukti transfer. Pastikan koneksi internet Anda lancar.");
     } finally {
       setUploading(false);
     }
