@@ -69,7 +69,7 @@ export default function AdminAccountPage() {
   return (
     <div className="font-sans max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Manajemen Akun Admin</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Manajemen Akun Sistem</h1>
         <p className="text-sm text-gray-500 mt-1">Kelola data pribadi dan kredensial login Anda di sini.</p>
       </div>
 

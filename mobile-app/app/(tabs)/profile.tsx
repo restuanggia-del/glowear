@@ -3,8 +3,8 @@ import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { api } from "../services/api";
-import { API_URL } from "../constants/config";
+import { api } from "../../services/api";
+import { API_URL } from "../../constants/config";
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState<any>(null);
