@@ -77,7 +77,9 @@ export default function MyOrdersScreen() {
               setCancellingId(null);
             }
           }
-    ]);
+        }
+      ]
+    );
   };
 
   const formatRupiah = (number: number) => {
