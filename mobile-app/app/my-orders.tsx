@@ -18,7 +18,9 @@ export default function MyOrdersScreen() {
     { id: "SEMUA", label: "Semua" },
     { id: "PENDING", label: "Belum Bayar" },
     { id: "DIPROSES", label: "Diproses" },
-    { id: "DIKIRIM", label: "Dikirim" }
+    { id: "DIKIRIM", label: "Dikirim" },
+    { id: "SELESAI", label: "Selesai" },
+    { id: "DIBATALKAN", label: "Dibatalkan" }
   ];
 
   useEffect(() => {
@@ -53,10 +55,11 @@ export default function MyOrdersScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "BELUM_BAYAR": return "#f59e0b"; // Amber
+      case "PENDING": return "#f59e0b"; // Amber
       case "DIPROSES": return "#3b82f6"; // Blue
       case "DIKIRIM": return "#10b981"; // Emerald
-      case "SELESAI": return "#64748b"; // Slate
+      case "SELESAI": return "#8b5cf6"; // Violet
+      case "DIBATALKAN": return "#ef4444"; // Red
       default: return "#94a3b8";
     }
   };
@@ -119,7 +122,11 @@ export default function MyOrdersScreen() {
           contentContainerStyle={{ padding: 15, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <View style={styles.orderCard}>
+            <TouchableOpacity
+              style={styles.orderCard}
+              activeOpacity={0.7}
+              onPress={() => router.push({ pathname: '/order-detail', params: { orderId: item.id } })}
+            >
               <View style={styles.orderHeader}>
                 {/* Membaca waktuDibuat atau createdAt dari backend */}
                 <Text style={styles.orderDate}>{formatDate(item.waktuDibuat || item.createdAt)}</Text>
@@ -161,18 +168,36 @@ export default function MyOrdersScreen() {
                 </View>
               </View>
 
-              {/* {item.status === "BELUM_BAYAR" && ( */}
+              {/* Tombol kontekstual berdasarkan status */}
+              {item.statusPembayaran !== "LUNAS" && item.status !== "DIBATALKAN" && (
                 <TouchableOpacity 
-                  style={styles.payButton} 
+                  style={[styles.payButton, { backgroundColor: "#3b82f6", borderColor: "#3b82f6" }]} 
                   onPress={() => router.push({ 
                     pathname: '/payment', 
                     params: { orderId: item.id, totalHarga: item.totalHarga } 
                   })}
                 >
-                  <Text style={styles.payButtonText}>Cara Pembayaran</Text>
+                  <Text style={[styles.payButtonText, { color: "#fff" }]}>
+                    {item.statusPembayaran === "DP" ? "Bayar Pelunasan" : "Bayar Sekarang"}
+                  </Text>
                 </TouchableOpacity>
-              {/* )} */}
-            </View>
+              )}
+              {item.status === "DIKIRIM" && item.nomorResi && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(16, 185, 129, 0.1)", borderColor: "#10b981" }]}>
+                  <Text style={[styles.payButtonText, { color: "#10b981" }]}>Paket sedang dalam perjalanan</Text>
+                </View>
+              )}
+              {item.status === "SELESAI" && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(139, 92, 246, 0.1)", borderColor: "#8b5cf6" }]}>
+                  <Text style={[styles.payButtonText, { color: "#8b5cf6" }]}>Pesanan Selesai ✓</Text>
+                </View>
+              )}
+              {item.status === "DIBATALKAN" && (
+                <View style={[styles.payButton, { backgroundColor: "rgba(239, 68, 68, 0.1)", borderColor: "#ef4444" }]}>
+                  <Text style={[styles.payButtonText, { color: "#ef4444" }]}>Pesanan Dibatalkan</Text>
+                </View>
+              )}
+            </TouchableOpacity>
           )}
         />
       )}
@@ -190,14 +215,34 @@ const styles = StyleSheet.create({
   
   tabContainer: { paddingVertical: 10, borderBottomWidth: 1, borderColor: "#1e293b", paddingLeft: 10 },
   tabButton: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, marginRight: 10, backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155" },
-  tabButtonActive: { backgroundColor: "rgba(56, 189, 248, 0.15)", borderColor: "#38bdf8" },
+  tabButtonActive: { 
+    backgroundColor: "rgba(56, 189, 248, 0.15)", 
+    borderColor: "#38bdf8",
+    shadowColor: "#38bdf8",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   tabText: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 13 },
   tabTextActive: { color: "#38bdf8", fontFamily: "Poppins_700Bold" },
 
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", paddingBottom: 50 },
   emptyText: { color: "#64748b", fontFamily: "Poppins_500Medium", marginTop: 15 },
 
-  orderCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 15, marginBottom: 15, borderWidth: 1, borderColor: "#334155" },
+  orderCard: { 
+    backgroundColor: "#1e293b", 
+    borderRadius: 20, 
+    padding: 16, 
+    marginBottom: 20, 
+    borderWidth: 1, 
+    borderColor: "#334155",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
   orderHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderBottomWidth: 1, borderColor: "#334155", paddingBottom: 10, marginBottom: 15 },
   orderDate: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 12 },
   statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },

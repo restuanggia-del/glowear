@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Search, ShieldAlert, ShieldCheck, User, Loader2, Users, AlertCircle, CheckCircle2, X, Info, ChevronDown, ChevronUp, Edit, Trash2, Mail, Phone, MapPin, Lock } from "lucide-react";
+import Image from "next/image";
+import { api } from "@/app/services/api";
+
+const API_BASE_URL = "http://localhost:3001";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -43,9 +47,12 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:3001/users");
-      const data = await res.json();
-      setUsers(data);
+      const { data } = await api.get("/users");
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        setUsers([]);
+      }
     } catch (error) {
       showDialog('error', 'Koneksi Gagal', 'Gagal mengambil data pengguna dari server.');
     } finally {
@@ -89,13 +96,9 @@ export default function UsersPage() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3001/users/${selectedUser.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const { status } = await api.put(`/users/${selectedUser.id}`, payload);
 
-      if (res.ok) {
+      if (status === 200 || status === 201) {
         setIsEditUserModalOpen(false);
         fetchUsers();
         showDialog('success', 'Update Berhasil', 'Data profil pengguna telah berhasil diperbarui.');
@@ -112,11 +115,9 @@ export default function UsersPage() {
     showDialog('confirm', 'Hapus Pengguna', `Apakah Anda yakin ingin menghapus akun ${userName} secara permanen? Semua data yang terkait mungkin akan hilang.`, async () => {
       closeDialog();
       try {
-        const res = await fetch(`http://localhost:3001/users/${userId}`, {
-          method: "DELETE",
-        });
+        const { status } = await api.delete(`/users/${userId}`);
 
-        if (res.ok) {
+        if (status === 200 || status === 201 || status === 204) {
           fetchUsers();
           showDialog('success', 'Terhapus', `Akun ${userName} berhasil dihapus dari sistem.`);
         } else {
@@ -135,13 +136,9 @@ export default function UsersPage() {
     showDialog('confirm', 'Ubah Hak Akses', `Apakah Anda yakin ingin ${actionText} pengguna ${userName}?`, async () => {
       closeDialog();
       try {
-        const res = await fetch(`http://localhost:3001/users/${userId}/role`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ role: newRole }),
-        });
+        const { status } = await api.patch(`/users/${userId}/role`, { role: newRole });
 
-        if (res.ok) {
+        if (status === 200 || status === 201) {
           showDialog('success', 'Akses Diperbarui!', `Hak akses untuk ${userName} berhasil diubah menjadi ${newRole}.`);
           fetchUsers();
         } else {

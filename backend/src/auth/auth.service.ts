@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -7,7 +8,10 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   // tambah user / registrasi
   async register(data: RegisterDto) {
@@ -37,11 +41,16 @@ export class AuthService {
 
     return {
       message: 'Register berhasil',
-      user,
+      user: {
+        id: user.id,
+        nama: user.nama,
+        email: user.email,
+        role: user.role,
+      },
     };
   }
 
-  // login session
+  // login session — sekarang return JWT token
   async login(data: LoginDto) {
     const user = await this.prisma.pengguna.findUnique({
       where: { email: data.email },
@@ -60,8 +69,18 @@ export class AuthService {
       throw new BadRequestException('Password salah');
     }
 
+    // Generate JWT token
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      nama: user.nama,
+    };
+    const access_token = this.jwtService.sign(payload);
+
     return {
       message: 'Login berhasil',
+      access_token,
       user: {
         id: user.id,
         nama: user.nama,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Store, Phone, CreditCard, FileText, Save, Info, Loader2, AlertCircle, CheckCircle2, X } from "lucide-react";
+import { api } from "@/app/services/api";
 
 export default function SettingsPage() {
   const [formData, setFormData] = useState({
@@ -36,8 +37,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("http://localhost:3001/settings");
-        const data = await res.json();
+        const { data } = await api.get("/settings");
         if (data) {
           setFormData({
             namaToko: data.namaToko || "",
@@ -65,13 +65,9 @@ export default function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch("http://localhost:3001/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const { data } = await api.put("/settings", formData);
 
-      if (res.ok) {
+      if (data) {
         showDialog('success', 'Berhasil Disimpan', 'Semua pengaturan toko telah diperbarui dan langsung terhubung ke Aplikasi Mobile.');
       } else {
         showDialog('error', 'Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan pengaturan ke database.');

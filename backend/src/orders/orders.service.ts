@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService
+  ) {}
   async getFinancialReport(month: number, year: number) {
     // Cari tanggal awal dan akhir bulan yang dipilih
     const startDate = new Date(year, month - 1, 1);
@@ -48,7 +52,7 @@ export class OrdersService {
     }
 
     // Format data untuk disimpan ke Prisma
-    return this.prisma.order.create({
+    const order = await this.prisma.order.create({
       data: {
         userId: data.userId,
         totalHarga: data.totalHarga,
@@ -70,6 +74,18 @@ export class OrdersService {
         },
       },
     });
+
+    // Buat notifikasi
+    if (order) {
+      await this.notificationsService.create({
+        judul: 'Pesanan Baru Masuk',
+        pesan: `Pesanan baru telah dibuat dengan total Rp ${order.totalHarga.toLocaleString('id-ID')}`,
+        tipe: 'ORDER',
+        orderId: order.id,
+      });
+    }
+
+    return order;
   }
 
   async findAll() {
@@ -78,13 +94,14 @@ export class OrdersService {
         // Ambil detail barang yang dipesan beserta produk polosnya
         items: {
           include: { product: true }
-        }
+        },
+        review: true
       },
       orderBy: { waktuDibuat: 'desc' }
     });
   }
 
-  async updateStatus(id: string, data: { status: any, statusPembayaran: any, dpAmount?: number, nomorResi?: string }) {
+  async updateStatus(id: string, data: { status: any, statusPembayaran: any, dpAmount?: number, kurir?: any, nomorResi?: any }) {
     const order = await this.prisma.order.findUnique({ where: { id } });
     if (!order) throw new NotFoundException('Pesanan tidak ditemukan');
 
@@ -101,16 +118,61 @@ export class OrdersService {
       sisa = order.totalHarga;
     }
 
-    return this.prisma.order.update({
+    const updatedOrder = await this.prisma.order.update({
       where: { id },
       data: {
         status: data.status,
         statusPembayaran: data.statusPembayaran,
         dpAmount: dp,
         sisaPembayaran: sisa,
+        kurir: data.kurir,
         nomorResi: data.nomorResi
-      }
+      },
+      include: { pengguna: true }
     });
+
+    // Send Expo Push Notification if user has token and status is changed
+    if (updatedOrder.pengguna?.expoPushToken && data.status && data.status !== order.status) {
+      const messages: any[] = [];
+      let title = "Status Pesanan Diperbarui";
+      let body = `Pesanan Anda ORD-${id.substring(0, 6).toUpperCase()} sekarang berstatus: ${data.status.replace('_', ' ')}`;
+
+      if (data.status === 'DIKIRIM') {
+        title = "Pesanan Anda Sedang Dikirim! 🚚";
+        const kurirName = data.kurir ? ` via ${data.kurir}` : '';
+        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang dalam perjalanan${kurirName}. ${data.nomorResi ? 'Resi: ' + data.nomorResi : ''}`;
+      } else if (data.status === 'DIPROSES') {
+        title = "Pesanan Diproses 📦";
+        body = `Hore! Pembayaran diterima dan pesanan ORD-${id.substring(0, 6).toUpperCase()} sedang diproduksi.`;
+      } else if (data.status === 'SELESAI') {
+        title = "Pesanan Selesai ✅";
+        body = `Pesanan ORD-${id.substring(0, 6).toUpperCase()} telah selesai. Terima kasih telah berbelanja di Glowear!`;
+      }
+
+      messages.push({
+        to: updatedOrder.pengguna.expoPushToken,
+        sound: 'default',
+        title,
+        body,
+        data: { orderId: id },
+      });
+
+      try {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messages),
+        });
+      } catch (err) {
+        console.error("Failed to send push notification:", err);
+      }
+    }
+
+    return updatedOrder;
   }
 
   async findPendingVerification() {
@@ -136,22 +198,45 @@ async findByUser(userId: string) {
       include: { 
         items: {
           include: { product: true }
-        } 
+        },
+        review: true 
       }, 
       orderBy: { waktuDibuat: 'desc' }
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        pengguna: { select: { nama: true, email: true, noTelp: true } },
+        items: {
+          include: { product: true }
+        },
+        review: true
+      }
+    });
+    if (!order) throw new NotFoundException('Pesanan tidak ditemukan');
+    return order;
   }
 
   // Fungsi untuk update data order secara umum (seperti nambah struk)
   async update(id: string, updateData: any) {
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id },
       data: updateData,
     });
+
+    if (updateData.buktiPembayaran) {
+      await this.notificationsService.create({
+        judul: 'Bukti Pembayaran Diunggah',
+        pesan: `Bukti pembayaran telah diunggah untuk pesanan ID: ${id.substring(0, 8)}...`,
+        tipe: 'PAYMENT',
+        orderId: id,
+      });
+    }
+
+    return updated;
   }
 
   remove(id: number) {

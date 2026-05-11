@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { api } from "../services/api"; // Pastikan path ini benar
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { registerForPushNotificationsAsync } from "../services/notifications";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -28,9 +29,27 @@ const handleLogin = async () => {
       
       console.log("Login response:", res.data);
 
-      // Store user data (backend doesn't return token)
+      // Simpan JWT token & user data
+      if (res.data.access_token) {
+        await AsyncStorage.setItem("userToken", res.data.access_token);
+      }
       await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
       
+      // Minta izin Push Notifications & dapatkan token
+      const pushToken = await registerForPushNotificationsAsync();
+      
+      // Jika berhasil mendapatkan token, kirim ke backend untuk disimpan
+      if (pushToken && res.data.user?.id) {
+        try {
+          await api.put(`/users/${res.data.user.id}`, { expoPushToken: pushToken });
+          // Update local storage user data agar punya expoPushToken
+          res.data.user.expoPushToken = pushToken;
+          await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
+        } catch (pushErr) {
+          console.log("Failed to save push token to backend:", pushErr);
+        }
+      }
+
       Alert.alert("Sukses", "Login berhasil!");
       router.replace("./(tabs)");
     } catch (err: any) {

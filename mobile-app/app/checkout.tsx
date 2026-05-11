@@ -19,9 +19,19 @@ export default function CheckoutScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Pilihan Jenis Sablon (sesuai enum backend)
+  const JENIS_SABLON = [
+    { value: "PLASTISOL", label: "Plastisol", desc: "Warna terang, tahan lama" },
+    { value: "RUBBER", label: "Rubber", desc: "Elastis, cocok kain stretch" },
+    { value: "DISCHARGE", label: "Discharge", desc: "Efek vintage, menyatu serat" },
+    { value: "DTF", label: "DTF", desc: "Detail foto, full color" },
+    { value: "DTG", label: "DTG", desc: "Print langsung di kain" },
+  ];
+
   // Form State
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState("L");
+  const [jenisSablon, setJenisSablon] = useState("");
   const [catatan, setCatatan] = useState("");
 
   useEffect(() => {
@@ -64,22 +74,30 @@ export default function CheckoutScreen() {
 
   // Fungsi Checkout menggunakan FormData (Bisa ngirim teks + gambar)
   const handleCheckout = async () => {
+    // Validasi jenis sablon wajib dipilih
+    if (!jenisSablon) {
+      return Alert.alert("Perhatian", "Silakan pilih jenis sablon terlebih dahulu.");
+    }
+    if (!userData?.alamat) {
+      return Alert.alert("Perhatian", "Alamat pengiriman belum diisi. Silakan lengkapi profil Anda.");
+    }
+
     setSubmitting(true);
     try {
       const formData = new FormData();
-      
+
       // Data Dasar
       formData.append('userId', userData.id);
       formData.append('totalHarga', (product.harga * qty).toString());
       formData.append('alamatPengiriman', userData.alamat);
       formData.append('catatanCustom', catatan);
-      
-      // Data Items diubah ke string
+
+      // Data Items dengan jenisSablon yang dipilih user
       const itemsData = [{
         productId: product.id,
         jumlah: qty,
         hargaSatuan: product.harga,
-        jenisSablon: "DTF"
+        jenisSablon: jenisSablon
       }];
       formData.append('items', JSON.stringify(itemsData));
 
@@ -148,6 +166,34 @@ export default function CheckoutScreen() {
                 onPress={() => setSize(item)}
               >
                 <Text style={[styles.sizeText, size === item && styles.sizeTextActive]}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* PILIHAN JENIS SABLON */}
+          <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Jenis Sablon <Text style={{ color: "#ef4444", fontSize: 14 }}>*</Text></Text>
+          <View style={styles.sablonContainer}>
+            {JENIS_SABLON.map((item) => (
+              <TouchableOpacity
+                key={item.value}
+                style={[
+                  styles.sablonButton,
+                  jenisSablon === item.value && styles.sablonButtonActive
+                ]}
+                onPress={() => setJenisSablon(item.value)}
+              >
+                <Text style={[
+                  styles.sablonLabel,
+                  jenisSablon === item.value && styles.sablonLabelActive
+                ]}>
+                  {item.label}
+                </Text>
+                <Text style={[
+                  styles.sablonDesc,
+                  jenisSablon === item.value && styles.sablonDescActive
+                ]}>
+                  {item.desc}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -249,6 +295,15 @@ const styles = StyleSheet.create({
   sizeButtonActive: { backgroundColor: "rgba(56, 189, 248, 0.15)", borderColor: "#38bdf8" },
   sizeText: { color: "#94a3b8", fontFamily: "Poppins_600SemiBold" },
   sizeTextActive: { color: "#38bdf8", fontFamily: "Poppins_800ExtraBold" },
+
+  // Jenis Sablon
+  sablonContainer: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  sablonButton: { width: "30%", minWidth: 90, flexGrow: 1, paddingVertical: 12, paddingHorizontal: 8, backgroundColor: "#1e293b", borderRadius: 10, borderWidth: 1, borderColor: "#334155", alignItems: "center" },
+  sablonButtonActive: { backgroundColor: "rgba(56, 189, 248, 0.12)", borderColor: "#38bdf8", borderWidth: 1.5 },
+  sablonLabel: { color: "#94a3b8", fontFamily: "Poppins_700Bold", fontSize: 13 },
+  sablonLabelActive: { color: "#38bdf8" },
+  sablonDesc: { color: "#475569", fontFamily: "Poppins_400Regular", fontSize: 10, textAlign: "center", marginTop: 3 },
+  sablonDescActive: { color: "#7dd3fc" },
 
   qtyContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#1e293b", alignSelf: "flex-start", borderRadius: 12, borderWidth: 1, borderColor: "#334155" },
   qtyBtn: { padding: 10, paddingHorizontal: 15 },

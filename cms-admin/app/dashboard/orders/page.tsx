@@ -7,6 +7,7 @@ import {
   CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon
 } from "lucide-react";
 import Image from "next/image"; // Menggunakan Next Image untuk optimasi
+import { api } from "@/app/services/api";
 
 // ==========================================
 // CONFIGURASI & DATA MASTER
@@ -76,14 +77,20 @@ export default function OrdersPage() {
   const [updateForm, setUpdateForm] = useState({
     status: "",
     statusPembayaran: "",
-    dpAmount: 0
+    dpAmount: 0,
+    kurir: "",
+    nomorResi: ""
   });
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/orders`);
-      const data = await res.json();
-      setOrders(data);
+      const { data } = await api.get("/orders");
+      // Check if data is array before setting, to prevent filter error
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        setOrders([]);
+      }
     } catch (error) {
       showDialog('error', 'Koneksi Gagal', 'Tidak dapat mengambil data pesanan dari server.');
     } finally {
@@ -99,17 +106,15 @@ export default function OrdersPage() {
     showDialog('confirm', 'Konfirmasi Update', `Yakin ingin mengubah status pesanan ORD-${selectedOrder.id.substring(0, 6).toUpperCase()}?`, async () => {
       closeDialog();
       try {
-        const res = await fetch(`${API_BASE_URL}/orders/${selectedOrder.id}/status`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: updateForm.status,
-            statusPembayaran: updateForm.statusPembayaran,
-            dpAmount: Number(updateForm.dpAmount)
-          }),
+        const { status } = await api.put(`/orders/${selectedOrder.id}/status`, {
+          status: updateForm.status,
+          statusPembayaran: updateForm.statusPembayaran,
+          dpAmount: Number(updateForm.dpAmount),
+          kurir: updateForm.kurir,
+          nomorResi: updateForm.nomorResi
         });
 
-        if (res.ok) {
+        if (status === 200 || status === 201) {
           setIsModalOpen(false);
           fetchOrders();
           showDialog('success', 'Berhasil!', 'Status pesanan berhasil diperbarui.');
@@ -128,6 +133,7 @@ export default function OrdersPage() {
       status: order.status,
       statusPembayaran: order.statusPembayaran,
       dpAmount: order.dpAmount || 0,
+      kurir: order.kurir || "",
       nomorResi: order.nomorResi || ""
     });
     setIsStatusDropdownOpen(false);
@@ -390,6 +396,37 @@ export default function OrdersPage() {
                     ))}
                   </div>
                 </section>
+
+                {/* Bagian Review Pelanggan */}
+                {selectedOrder.review && (
+                  <section>
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2.5 flex items-center gap-2">
+                      <CheckCircle size={14} className="text-emerald-500"/> Ulasan Pelanggan
+                    </h3>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-5">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <svg key={star} className={`w-5 h-5 ${star <= selectedOrder.review.rating ? 'text-amber-400' : 'text-slate-200'}`} fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                          <span className="ml-2 font-bold text-slate-700">{selectedOrder.review.rating}.0</span>
+                        </div>
+                        <p className="text-sm text-slate-600 italic">
+                          "{selectedOrder.review.komentar || 'Tidak ada teks ulasan.'}"
+                        </p>
+                      </div>
+                      {selectedOrder.review.foto && (
+                        <div className="w-24 h-24 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden relative cursor-pointer group"
+                             onClick={() => openPreview(`${API_BASE_URL}/uploads/${selectedOrder.review.foto}`)}>
+                          <Image src={`${API_BASE_URL}/uploads/${selectedOrder.review.foto}`} alt="Foto Review" fill className="object-cover group-hover:scale-110 transition-transform" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={16}/></div>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                )}
               </div>
               
               <div className="p-5 border-t border-slate-100 bg-white flex justify-end flex-shrink-0 relative z-10">
@@ -538,19 +575,34 @@ export default function OrdersPage() {
                 )}
 
                 {updateForm.status === 'DIKIRIM' && (
-                  <div className="p-5 bg-purple-50 rounded-2xl border border-purple-100 shadow-inner mt-4">
-                    <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Truck size={14} /> Nomor Resi Pengiriman
-                    </label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="Contoh: JNE123456789"
-                      value={updateForm.nomorResi} 
-                      onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
-                      className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
-                    />
-                    <p className="text-[10px] text-purple-600 mt-2 font-medium italic">*Nomor ini akan langsung terlihat oleh pelanggan di aplikasi HP mereka.</p>
+                  <div className="p-5 bg-purple-50 rounded-2xl border border-purple-100 shadow-inner mt-4 space-y-4">
+                    <div>
+                      <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <Package size={14} /> Nama Ekspedisi / Kurir
+                      </label>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Contoh: JNE, J&T, SiCepat"
+                        value={updateForm.kurir} 
+                        onChange={(e) => setUpdateForm({...updateForm, kurir: e.target.value})} 
+                        className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <Truck size={14} /> Nomor Resi Pengiriman
+                      </label>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Contoh: JNE123456789"
+                        value={updateForm.nomorResi} 
+                        onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
+                        className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
+                      />
+                      <p className="text-[10px] text-purple-600 mt-2 font-medium italic">*Kurir dan Nomor ini akan langsung terlihat oleh pelanggan di aplikasi HP mereka.</p>
+                    </div>
                   </div>
                 )}
 
