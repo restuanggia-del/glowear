@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar} from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar } from "react-native";
 import { useEffect, useState, useMemo } from "react";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -55,7 +55,7 @@ export default function CatalogScreen() {
       const dataString = await AsyncStorage.getItem("userData");
       if (dataString) {
         const localUser = JSON.parse(dataString);
-        
+
         try {
           const response = await api.get(`/auth/profile?userId=${localUser.id}`);
           const currentUser = response.data;
@@ -82,8 +82,8 @@ export default function CatalogScreen() {
     }
   };
 
-  useEffect(() => { 
-    fetchData(); 
+  useEffect(() => {
+    fetchData();
     checkUserProfile();
   }, []);
 
@@ -111,7 +111,7 @@ export default function CatalogScreen() {
         const updatedUser = { ...userData, noTelepon, alamat };
         await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
         setUserData(updatedUser);
-        
+
         setShowProfileModal(false);
         Alert.alert("Sukses", "Data diri berhasil diperbarui!");
       }
@@ -198,17 +198,17 @@ export default function CatalogScreen() {
             decelerationRate="fast"
             renderItem={({ item }) => (
               <View style={styles.bannerWrapper}>
-                <Image 
-                  source={{ 
-                    uri: item.gambar?.startsWith('http') 
-                      ? item.gambar 
-                      : `${API_URL}/uploads/banners/${item.gambar}` 
-                  }} 
-                  style={styles.bannerImage} 
+                <Image
+                  source={{
+                    uri: item.gambar?.startsWith('http')
+                      ? item.gambar
+                      : `${API_URL}/uploads/banners/${item.gambar}`
+                  }}
+                  style={styles.bannerImage}
                 />
                 <View style={styles.bannerOverlay}>
-                   <Text style={styles.bannerTitle}>{item.judul || "Kualitas Terbaik"}</Text>
-                   <Text style={styles.bannerSubtitle}>{item.deskripsi || "Hubungi admin untuk custom design"}</Text>
+                  <Text style={styles.bannerTitle}>{item.judul || "Kualitas Terbaik"}</Text>
+                  <Text style={styles.bannerSubtitle}>{item.deskripsi || "Hubungi admin untuk custom design"}</Text>
                 </View>
               </View>
             )}
@@ -295,7 +295,7 @@ export default function CatalogScreen() {
         numColumns={2}
         columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderHeader} 
+        ListHeaderComponent={renderHeader}
         contentContainerStyle={{ paddingBottom: 150 }}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -315,44 +315,44 @@ export default function CatalogScreen() {
           </View>
         }
         renderItem={({ item, index }) => (
-          <Animated.View 
+          <Animated.View
             entering={FadeInDown.delay(index * 100)}
             style={styles.cardContainer}
           >
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.card}
               activeOpacity={0.9}
               onPress={() => router.push(`/product/${item.id}`)}
             >
               <View style={styles.imageContainer}>
-                <Image 
-                  source={{ 
-                    uri: item.gambar?.startsWith('http') 
-                      ? item.gambar 
-                      : `${API_URL}/uploads/${item.gambar}` 
-                  }} 
-                  style={styles.image} 
+                <Image
+                  source={{
+                    uri: item.gambar?.startsWith('http')
+                      ? item.gambar
+                      : `${API_URL}/uploads/${item.gambar}`
+                  }}
+                  style={styles.image}
                 />
                 <View style={styles.priceTag}>
-                   <Text style={styles.priceText}>{formatRupiah(item.harga)}</Text>
+                  <Text style={styles.priceText}>{formatRupiah(item.harga)}</Text>
                 </View>
               </View>
               <View style={styles.info}>
                 <Text style={styles.catName}>{item.category?.namaKategori || "Lainnya"}</Text>
                 <Text style={styles.prodName} numberOfLines={2}>{item.namaProduk}</Text>
-                
+
                 <View style={styles.cardFooter}>
-                   <View style={styles.ratingRow}>
-                      <Ionicons name="star" size={12} color="#fbbf24" />
-                      <Text style={styles.ratingText}>4.9</Text>
-                   </View>
-                    <TouchableOpacity 
-                        style={styles.addBtn}
-                        onPress={() => handleQuickAdd(item)}
-                    >
-                      <Ionicons name="add" size={18} color="#0f172a" />
-                    </TouchableOpacity>
-                 </View>
+                  <View style={styles.ratingRow}>
+                    <Ionicons name="star" size={12} color="#fbbf24" />
+                    <Text style={styles.ratingText}>4.9</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.addBtn}
+                    onPress={() => handleQuickAdd(item)}
+                  >
+                    <Ionicons name="add" size={18} color="#0f172a" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -361,8 +361,8 @@ export default function CatalogScreen() {
 
       {/* FLOATING CART BUBBLE */}
       <Animated.View entering={BounceIn.delay(800)} style={styles.fabContainer}>
-        <TouchableOpacity 
-          style={styles.fab} 
+        <TouchableOpacity
+          style={styles.fab}
           activeOpacity={0.8}
           onPress={() => router.push("/cart")}
         >
@@ -382,11 +382,11 @@ export default function CatalogScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalIndicator} />
             <View style={styles.modalHeader}>
-               <View style={styles.modalIconBox}><Ionicons name="person-add" size={24} color="#38bdf8" /></View>
-               <View style={{ flex: 1, marginLeft: 15 }}>
-                  <Text style={styles.modalTitle}>Lengkapi Data Diri</Text>
-                  <Text style={styles.modalSubtitle}>Halo {userData?.nama}, yuk isi alamat & no. telp untuk pengiriman!</Text>
-               </View>
+              <View style={styles.modalIconBox}><Ionicons name="person-add" size={24} color="#38bdf8" /></View>
+              <View style={{ flex: 1, marginLeft: 15 }}>
+                <Text style={styles.modalTitle}>Lengkapi Data Diri</Text>
+                <Text style={styles.modalSubtitle}>Halo {userData?.nama}, yuk isi alamat & no. telp untuk pengiriman!</Text>
+              </View>
             </View>
             <View style={styles.modalBody}>
               <View style={styles.inputGroup}>
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   emptyDesc: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginTop: 8, textAlign: "center", lineHeight: 20 },
   resetButton: { marginTop: 25, backgroundColor: "rgba(56,189,248,0.1)", paddingHorizontal: 25, paddingVertical: 12, borderRadius: 14, borderWidth: 1, borderColor: "#38bdf8" },
   resetButtonText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
-  
+
   fabContainer: { position: 'absolute', bottom: 100, right: 20, zIndex: 99 },
   fab: { width: 64, height: 64, borderRadius: 32, backgroundColor: "#38bdf8", justifyContent: "center", alignItems: "center", shadowColor: "#38bdf8", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.4, shadowRadius: 15, elevation: 12 },
   badge: { position: 'absolute', top: -5, right: -5, backgroundColor: "#ef4444", minWidth: 24, height: 24, borderRadius: 12, justifyContent: "center", alignItems: "center", borderWidth: 2, borderColor: "#0f172a" },

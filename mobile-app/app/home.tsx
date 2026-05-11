@@ -22,13 +22,13 @@ export default function Home() {
     await AsyncStorage.removeItem("userToken");
     await AsyncStorage.removeItem("userData");
     // Kembali ke halaman login
-    router.replace("/login"); 
+    router.replace("/login");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Selamat Datang!</Text>
-      
+
       {userData ? (
         <Text style={styles.subtitle}>Halo, {userData.nama}</Text>
       ) : (
