@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, Platform, StatusBar, TouchableOpacity, Alert, Linking, Modal, TextInput } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useAlert } from "../components/CustomAlert";
 import { api } from "../services/api";
 import { API_URL } from "../constants/config";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,6 +10,8 @@ import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OrderDetailScreen() {
+  const router = useRouter();
+  const { showAlert } = useAlert();
   const { orderId } = useLocalSearchParams();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -66,14 +69,22 @@ export default function OrderDetailScreen() {
 
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert("Tersalin", "Nomor resi berhasil disalin ke clipboard!");
+    showAlert({
+      title: "Tersalin",
+      message: "Nomor resi berhasil disalin ke clipboard!",
+      type: "success"
+    });
   };
 
   const openTracking = (kurir: string, resi: string) => {
     // Sebagai fallback, kita bisa arahkan ke cekresi.com
     const url = `https://cekresi.com/?noresi=${resi}`;
     Linking.openURL(url).catch(() => {
-      Alert.alert("Error", "Gagal membuka browser.");
+      showAlert({
+        title: "Error",
+        message: "Gagal membuka browser.",
+        type: "error"
+      });
     });
   };
 
@@ -120,7 +131,11 @@ export default function OrderDetailScreen() {
       const userString = await AsyncStorage.getItem("userData");
       const user = userString ? JSON.parse(userString) : null;
       if (!user) {
-        Alert.alert("Error", "Sesi login tidak valid.");
+        showAlert({
+          title: "Error",
+          message: "Sesi login tidak valid.",
+          type: "error"
+        });
         return;
       }
 
@@ -143,14 +158,22 @@ export default function OrderDetailScreen() {
         },
       });
 
-      Alert.alert("Berhasil", "Terima kasih atas ulasan Anda!");
+      showAlert({
+        title: "Berhasil",
+        message: "Terima kasih atas ulasan Anda!",
+        type: "success"
+      });
       setIsReviewModalOpen(false);
       
       // Update local state to hide button
       setOrder({...order, status: 'SELESAI'});
     } catch (error) {
       console.error("Gagal mengirim ulasan:", error);
-      Alert.alert("Gagal", "Terjadi kesalahan saat mengirim ulasan.");
+      showAlert({
+        title: "Gagal",
+        message: "Terjadi kesalahan saat mengirim ulasan.",
+        type: "error"
+      });
     } finally {
       setSubmittingReview(false);
     }
