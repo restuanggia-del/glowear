@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { 
   Search, Edit, Truck, Package, CheckCircle, Clock, Banknote, 
   Eye, X, MapPin, FileText, CalendarDays, AlertCircle, 
-  CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon
+  CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon, Printer
 } from "lucide-react";
 import Image from "next/image"; // Menggunakan Next Image untuk optimasi
 import { api } from "@/app/services/api";
+import Invoice from "@/app/components/Invoice";
 
 // ==========================================
 // CONFIGURASI & DATA MASTER
@@ -42,6 +43,15 @@ export default function OrdersPage() {
   // ==========================================
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+
+  // State Baru: Invoice (Print)
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [invoiceOrder, setInvoiceOrder] = useState<any>(null);
+
+  const openInvoice = (order: any) => {
+    setInvoiceOrder(order);
+    setIsInvoiceOpen(true);
+  };
 
   const openPreview = (url: string) => {
     setPreviewImageUrl(url);
@@ -241,6 +251,9 @@ export default function OrdersPage() {
                       <button onClick={() => openUpdateModal(order)} className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-lg transition-all bg-blue-50 border border-blue-100 shadow-sm" title="Update Status">
                         <Edit size={16} />
                       </button>
+                      <button onClick={() => openInvoice(order)} className="p-2 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg transition-all bg-emerald-50 border border-emerald-100 shadow-sm" title="Cetak Struk">
+                        <Printer size={16} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -430,8 +443,11 @@ export default function OrdersPage() {
               </div>
               
               <div className="p-5 border-t border-slate-100 bg-white flex justify-end flex-shrink-0 relative z-10">
-                <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/20">
-                  Tutup Detail
+                <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-2.5 bg-slate-100 text-slate-600 rounded-full font-bold text-sm hover:bg-slate-200 transition-all mr-3">
+                  Tutup
+                </button>
+                <button onClick={() => openInvoice(selectedOrder)} className="px-6 py-2.5 bg-emerald-600 text-white rounded-full font-bold text-sm hover:bg-emerald-700 transition-all active:scale-95 shadow-md shadow-emerald-600/20 flex items-center gap-2">
+                  <Printer size={18} /> Cetak Struk PDF
                 </button>
               </div>
             </div>
@@ -658,6 +674,13 @@ export default function OrdersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* =========================================
+          MODAL INVOICE (PRINTABLE)
+      ========================================= */}
+      {isInvoiceOpen && (
+        <Invoice order={invoiceOrder} onClose={() => setIsInvoiceOpen(false)} />
       )}
 
     </div>
