@@ -338,29 +338,39 @@ export default function ProductsPage() {
       {/* =========================================
           MODAL TAMBAH PRODUK (Tengah Sempurna & Scrollable)
       ========================================= */}
-{isModalOpen && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+      {/* =========================================
+          MODAL TAMBAH PRODUK (PREMIUM OVERHAUL)
+      ========================================= */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsModalOpen(false)}></div>
+          
+          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[90vh]">
             
-            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl text-left flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100 overflow-hidden">
-            
-            {/* Header (Menempel di Atas) */}
-            <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
-              <h3 className="text-xl font-black text-slate-800">Tambah Produk Baru</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
-                <X size={18} />
+            {/* Header Modern */}
+            <div className="p-8 pb-4 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
+                   <Plus size={24} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 leading-none">Tambah Produk</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Katalog Baru Glowear</p>
+                </div>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
+                <X size={20} />
               </button>
             </div>
             
-            {/* Isi Form (Bisa di-scroll) */}
-            <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
-              <form id="addForm" onSubmit={handleAddSubmit} className="p-6 space-y-6">
+            {/* Form Content (Scrollable) */}
+            <div className="overflow-y-auto custom-scrollbar flex-1 px-8 py-4">
+              <form id="addForm" onSubmit={handleAddSubmit} className="space-y-8">
                 
-                {/* Area Upload Gambar */}
-                <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Foto Produk</label>
-                  <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-8 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
+                {/* Modern Image Upload */}
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Galeri Produk (Maks. 5)</label>
+                  <div className="relative border-2 border-dashed border-slate-200 rounded-[2rem] p-10 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
                     <input 
                       type="file" 
                       accept="image/*"
@@ -378,91 +388,100 @@ export default function ProductsPage() {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
                     {selectedFiles.length > 0 ? (
-                      <div className="flex flex-wrap gap-2 justify-center z-0">
+                      <div className="flex flex-wrap gap-3 justify-center z-0 relative">
                         {selectedFiles.map((file, i) => (
-                          <div key={i} className="relative w-16 h-16 bg-blue-100 rounded-xl overflow-hidden border border-blue-200">
+                          <div key={i} className="relative w-20 h-20 bg-white rounded-2xl overflow-hidden border-2 border-white shadow-lg rotate-2 even:-rotate-2 hover:rotate-0 transition-transform">
                              <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
                           </div>
                         ))}
-                        <div className="w-full text-center mt-2">
-                           <p className="text-sm font-bold text-slate-800">{selectedFiles.length} Gambar Terpilih</p>
-                           <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider bg-blue-50 py-1 px-3 rounded-full inline-block mt-1">Ganti Semua</p>
+                        <div className="w-full text-center mt-6">
+                           <p className="text-[13px] font-black text-slate-800 tracking-tight">{selectedFiles.length} Gambar Terpilih</p>
+                           <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 py-1.5 px-4 rounded-full inline-block mt-2 border border-blue-100">Klik untuk ganti semua</p>
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
-                        <div className="w-16 h-16 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-3 transition-colors"><Upload size={28} /></div>
-                        <p className="text-sm font-bold text-slate-700">Pilih hingga 5 gambar</p>
-                        <p className="text-xs font-medium text-slate-400 mt-1">Format: JPG, PNG (Maks. 5 File)</p>
+                        <div className="w-20 h-20 bg-white text-slate-300 group-hover:text-blue-500 group-hover:scale-110 rounded-[1.5rem] flex items-center justify-center mb-4 transition-all shadow-sm border border-slate-100"><Upload size={32} /></div>
+                        <p className="text-sm font-black text-slate-700">Tarik gambar ke sini</p>
+                        <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Atau klik untuk browse</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nama Produk</label>
-                    <input type="text" required value={formData.namaProduk} placeholder="Contoh: Kaos Polos Heavyweight" className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm placeholder:text-slate-400 placeholder:font-medium" onChange={(e) => setFormData({...formData, namaProduk: e.target.value})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Nama Produk</label>
+                    <input type="text" required value={formData.namaProduk} placeholder="Contoh: Heavy Cotton T-Shirt 24s" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, namaProduk: e.target.value})} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Kategori</label>
-                    <select required value={formData.categoryId} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Pilih Kategori</label>
+                    <select required value={formData.categoryId} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all appearance-none" onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
                       <option value="">-- Pilih Kategori --</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.namaKategori}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Harga (Rp)</label>
-                    <input type="number" required value={formData.harga || ""} placeholder="0" className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setFormData({...formData, harga: Number(e.target.value)})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Harga Satuan (Rp)</label>
+                    <input type="number" required value={formData.harga || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-blue-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, harga: Number(e.target.value)})} />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Stok (Pcs)</label>
-                    <input type="number" required value={formData.stok || ""} placeholder="0" className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Persediaan Stok</label>
+                    <input type="number" required value={formData.stok || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Deskripsi Produk</label>
-                    <textarea required value={formData.deskripsi} placeholder="Jelaskan detail bahan, ukuran, dan fitur..." className="w-full border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm custom-scrollbar" rows={3} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}></textarea>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Deskripsi Lengkap</label>
+                    <textarea required value={formData.deskripsi} placeholder="Spesifikasi bahan, ukuran, dll..." className="w-full border-2 border-slate-100 rounded-[1.5rem] p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}></textarea>
                   </div>
                 </div>
               </form>
             </div>
 
-            {/* Footer (Menempel di Bawah) */}
-            <div className="p-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-              <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
-              <button type="submit" form="addForm" className="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Produk</button>
+            {/* Footer Modern */}
+            <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
+              <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-white text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all">
+                Batal
+              </button>
+              <button type="submit" form="addForm" className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all active:scale-95">
+                Simpan Katalog
+              </button>
             </div>
           </div>
         </div>
-        </div>
       )}
-
       {/* =========================================
-          MODAL EDIT PRODUK (Tengah Sempurna & Scrollable)
+          MODAL EDIT PRODUK (PREMIUM OVERHAUL)
       ========================================= */}
-{isEditModalOpen && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-xl w-full mx-auto">
-        <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsEditModalOpen(false)}></div>
+          
+          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[90vh]">
             
-            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl text-left flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100 overflow-hidden">
-            
-            {/* Header (Menempel di Atas) */}
-            <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
-              <h3 className="text-xl font-black text-slate-800">Edit Data Produk</h3>
-              <button onClick={() => setIsEditModalOpen(false)} className="p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
-                <X size={18} />
+            {/* Header Modern */}
+            <div className="p-8 pb-4 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 border border-amber-100">
+                   <Edit size={24} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 leading-none">Edit Produk</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Perbarui Katalog Glowear</p>
+                </div>
+              </div>
+              <button onClick={() => setIsEditModalOpen(false)} className="p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
+                <X size={20} />
               </button>
             </div>
             
-            {/* Isi Form (Bisa di-scroll) */}
-            <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
-              <form id="editForm" onSubmit={handleEditSubmit} className="p-6 space-y-6">
+            {/* Form Content (Scrollable) */}
+            <div className="overflow-y-auto custom-scrollbar flex-1 px-8 py-4">
+              <form id="editForm" onSubmit={handleEditSubmit} className="space-y-8">
                 
-                {/* Area Upload Gambar */}
-                <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Ganti Foto Produk <span className="normal-case tracking-normal font-medium text-slate-400">(Opsional)</span></label>
-                  <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
+                {/* Modern Image Upload */}
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Ganti Galeri <span className="normal-case tracking-normal font-medium text-slate-300">(Opsional)</span></label>
+                  <div className="relative border-2 border-dashed border-slate-200 rounded-[2rem] p-6 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-amber-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
                     <input 
                       type="file" 
                       accept="image/*"
@@ -479,101 +498,100 @@ export default function ProductsPage() {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
                     {editSelectedFiles.length > 0 ? (
-                      <div className="flex flex-wrap gap-2 justify-center z-0">
+                      <div className="flex flex-wrap gap-2 justify-center z-0 relative">
                         {editSelectedFiles.map((file, i) => (
-                           <div key={i} className="relative w-12 h-12 bg-blue-100 rounded-lg overflow-hidden border border-blue-200">
-                              <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
-                           </div>
+                          <div key={i} className="relative w-16 h-16 bg-white rounded-xl overflow-hidden border border-white shadow-md">
+                             <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                          </div>
                         ))}
-                        <div className="w-full text-center mt-1">
-                           <p className="text-xs font-bold text-blue-600">{editSelectedFiles.length} Gambar Terpilih</p>
+                        <div className="w-full text-center mt-3">
+                           <p className="text-[13px] font-black text-slate-800 tracking-tight">{editSelectedFiles.length} Gambar Baru</p>
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
-                        <Upload size={24} className="mb-2 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                        <p className="text-sm font-bold text-slate-600">Ganti semua gambar (Opsional)</p>
+                        <Upload size={24} className="mb-2 text-slate-300 group-hover:text-amber-500 group-hover:scale-110 transition-all" />
+                        <p className="text-xs font-black text-slate-600 uppercase tracking-widest">Unggah untuk ganti semua foto</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Nama Produk</label>
-                    <input type="text" required value={editFormData.namaProduk} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setEditFormData({...editFormData, namaProduk: e.target.value})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Nama Produk</label>
+                    <input type="text" required value={editFormData.namaProduk} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, namaProduk: e.target.value})} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Kategori</label>
-                    <select required value={editFormData.categoryId} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setEditFormData({...editFormData, categoryId: e.target.value})}>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Pilih Kategori</label>
+                    <select required value={editFormData.categoryId} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all appearance-none" onChange={(e) => setEditFormData({...editFormData, categoryId: e.target.value})}>
                       <option value="">-- Pilih Kategori --</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.namaKategori}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Harga (Rp)</label>
-                    <input type="number" required value={editFormData.harga} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setEditFormData({...editFormData, harga: Number(e.target.value)})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Harga Satuan (Rp)</label>
+                    <input type="number" required value={editFormData.harga} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-amber-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, harga: Number(e.target.value)})} />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Stok (Pcs)</label>
-                    <input type="number" required value={editFormData.stok} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" onChange={(e) => setEditFormData({...editFormData, stok: Number(e.target.value)})} />
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Persediaan Stok</label>
+                    <input type="number" required value={editFormData.stok} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, stok: Number(e.target.value)})} />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Deskripsi Produk</label>
-                    <textarea required value={editFormData.deskripsi} className="w-full border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm custom-scrollbar" rows={3} onChange={(e) => setEditFormData({...editFormData, deskripsi: e.target.value})}></textarea>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Deskripsi Lengkap</label>
+                    <textarea required value={editFormData.deskripsi} className="w-full border-2 border-slate-100 rounded-[1.5rem] p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setEditFormData({...editFormData, deskripsi: e.target.value})}></textarea>
                   </div>
                 </div>
               </form>
             </div>
 
-            {/* Footer (Menempel di Bawah) */}
-            <div className="p-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFiles([]); }} className="w-full sm:w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
-              <button type="submit" form="editForm" className="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Perubahan</button>
+            {/* Footer Modern */}
+            <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
+              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFiles([]); }} className="flex-1 py-4 bg-white text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all">
+                Batal
+              </button>
+              <button type="submit" form="editForm" className="flex-1 py-4 bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-700 shadow-xl shadow-amber-600/30 transition-all active:scale-95">
+                Update Produk
+              </button>
             </div>
           </div>
-        </div>
         </div>
       )}
 
       {/* =========================================
           CUSTOM DIALOG SYSTEM
       ========================================= */}
+            {/* =========================================
+          DIALOG KONFIRMASI (PREMIUM ALERT)
+      ========================================= */}
       {dialog.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={closeDialog}></div>
           
-          <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 border border-slate-100">
-            
-            <div className={`mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-5 shadow-inner
-              ${dialog.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 
-                dialog.type === 'error' ? 'bg-rose-100 text-rose-500' : 
-                dialog.type === 'confirm' ? 'bg-amber-100 text-amber-500' : 
-                'bg-blue-100 text-blue-500'}`}
-            >
-              {dialog.type === 'success' && <CheckCircle2 size={32} />}
-              {dialog.type === 'error' && <X size={32} />}
-              {dialog.type === 'confirm' && <AlertCircle size={32} />}
-              {dialog.type === 'info' && <Info size={32} />}
+          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 p-8 text-center">
+            <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 ${dialog.type === 'confirm' ? 'bg-amber-50 text-amber-500 border border-amber-100' : 'bg-emerald-50 text-emerald-500 border border-emerald-100'}`}>
+              {dialog.type === 'confirm' ? <AlertCircle size={40} /> : <CheckCircle2 size={40} />}
             </div>
-
-            <h3 className="text-xl font-black text-slate-800 mb-2">{dialog.title}</h3>
-            <p className="text-sm font-medium text-slate-500 leading-relaxed mb-8">{dialog.message}</p>
-
-            {dialog.type === 'confirm' ? (
-              <div className="flex gap-3">
-                <button onClick={closeDialog} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                  Batal
+            
+            <h3 className="text-2xl font-black text-slate-900 leading-tight mb-2">{dialog.title}</h3>
+            <p className="text-slate-500 font-medium text-[13px] mb-8 leading-relaxed px-2">{dialog.message}</p>
+            
+            <div className="flex flex-col gap-3">
+              {dialog.type === 'confirm' ? (
+                <>
+                  <button onClick={dialog.onConfirm} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 shadow-xl shadow-slate-900/20 transition-all active:scale-95">
+                    Ya, Lanjutkan
+                  </button>
+                  <button onClick={closeDialog} className="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-200 transition-all">
+                    Batalkan
+                  </button>
+                </>
+              ) : (
+                <button onClick={closeDialog} className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all active:scale-95">
+                  Selesai
                 </button>
-                <button onClick={dialog.onConfirm} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
-                  Ya, Lanjutkan
-                </button>
-              </div>
-            ) : (
-              <button onClick={closeDialog} className="w-full py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
-                Mengerti
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}

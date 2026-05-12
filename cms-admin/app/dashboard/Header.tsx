@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User, Star } from "lucide-react";
+import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User, Star, ChevronDown } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
 import { api } from "@/app/services/api";
 import { useState, useEffect, useRef } from "react";
@@ -174,67 +174,73 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <>
       {/* ===== HEADER ===== */}
-      <header className="bg-white border-b border-gray-200 h-16 md:h-20 px-3 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm gap-2">
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 h-20 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm gap-4 transition-all duration-300">
 
         {/* LEFT: Burger + Breadcrumb */}
-        <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-shrink-0">
+        <div className="flex items-center gap-3 md:gap-5 min-w-0 flex-shrink-0">
           <button
             onClick={onMenuClick}
             aria-label="Toggle Sidebar"
-            className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden shadow-sm transition-all flex-shrink-0"
+            className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden shadow-sm transition-all flex-shrink-0 active:scale-95"
           >
             <Menu size={20} />
           </button>
 
-          <div className="hidden md:flex items-center gap-2 text-sm min-w-0">
-            <span className="text-slate-600 font-bold px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 uppercase tracking-widest text-[10px] flex-shrink-0">
-              GLOMED
-            </span>
+          <div className="hidden md:flex items-center gap-3 text-sm min-w-0 bg-slate-50/50 px-4 py-2 rounded-2xl border border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px] flex-shrink-0">
+                ADMINISTRATION
+              </span>
+            </div>
             <ChevronRight size={14} className="text-slate-300 flex-shrink-0" />
-            <span className="text-slate-800 font-black tracking-wide text-sm truncate">
+            <span className="text-slate-900 font-black tracking-tight text-sm truncate">
               {getPageTitle()}
             </span>
           </div>
 
           {/* Mobile: Page title only */}
-          <span className="md:hidden text-slate-800 font-bold text-sm truncate max-w-[120px]">
+          <span className="md:hidden text-slate-900 font-black text-sm truncate max-w-[140px]">
             {getPageTitle()}
           </span>
         </div>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-1.5 md:gap-3 lg:gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
 
           {/* Desktop Search */}
-          <div className="hidden lg:flex relative w-64 xl:w-80 group">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
+          <div className="hidden lg:flex relative w-72 xl:w-96 group">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
-              placeholder="Cari halaman... (Ctrl+K)"
-              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl pl-9 pr-20 py-2 text-sm outline-none transition-all placeholder:text-slate-400"
+              placeholder="Quick search... (Ctrl+K)"
+              className="w-full bg-slate-100/50 border border-slate-200/60 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-2xl pl-11 pr-24 py-2.5 text-[13px] outline-none transition-all placeholder:text-slate-400 font-medium"
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchOpen(true)}
-              onBlur={() => setTimeout(() => setIsSearchOpen(false), 150)}
+              onBlur={() => setTimeout(() => setIsSearchOpen(false), 200)}
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
-              <kbd className="bg-white border border-slate-200 text-slate-400 text-[9px] font-bold px-1 py-0.5 rounded shadow-sm">Ctrl</kbd>
-              <kbd className="bg-white border border-slate-200 text-slate-400 text-[9px] font-bold px-1 py-0.5 rounded shadow-sm">K</kbd>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-60 pointer-events-none">
+              <kbd className="bg-white border border-slate-200 text-slate-500 text-[10px] font-bold px-1.5 py-0.5 rounded-lg shadow-sm font-sans">⌘</kbd>
+              <kbd className="bg-white border border-slate-200 text-slate-500 text-[10px] font-bold px-1.5 py-0.5 rounded-lg shadow-sm font-sans">K</kbd>
             </div>
 
             {/* Desktop Search Dropdown */}
             {isSearchOpen && filteredSuggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-50">
-                <div className="py-1">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 p-2 animate-in fade-in zoom-in-95 duration-200">
+                <div className="space-y-0.5">
                   {filteredSuggestions.map((item) => (
                     <button
                       key={item.path}
                       onMouseDown={() => handleSearch(item.path)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 text-left transition-colors"
+                      className="w-full flex items-center gap-4 px-4 py-3 hover:bg-blue-50 rounded-xl text-left transition-all group"
                     >
-                      <span className="text-base">{item.icon}</span>
-                      <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                      <div className="w-10 h-10 bg-slate-50 group-hover:bg-white rounded-xl flex items-center justify-center transition-colors border border-transparent group-hover:border-blue-100">
+                        {item.icon}
+                      </div>
+                      <span className="text-[13px] font-bold text-slate-700 group-hover:text-blue-600">{item.label}</span>
+                      <ChevronRight size={14} className="ml-auto text-slate-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                     </button>
                   ))}
                 </div>
@@ -246,105 +252,98 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <button
             aria-label="Buka Pencarian"
             onClick={() => { setIsSearchOpen(true); closeAll(); }}
-            className="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 shadow-sm transition-all"
+            className="lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 shadow-sm transition-all active:scale-95"
           >
-            <Search size={18} />
+            <Search size={20} />
           </button>
-
-          {/* Live Clock — hidden on small screens */}
-          <div className="hidden xl:flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-600 cursor-default shrink-0 shadow-sm">
-            <Clock size={16} className="text-blue-500 animate-pulse" />
-            <div className="flex flex-col leading-none text-center">
-              <span className="text-xs font-black font-mono tracking-widest text-slate-700">
-                {currentTime ? formatTimeStr(currentTime) : "--:--:--"}
-              </span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase">WIB</span>
-            </div>
-          </div>
-
-          {/* Separator */}
-          <div className="h-7 w-px bg-slate-200 hidden sm:block shrink-0" />
 
           {/* Notification Bell */}
           <div className="relative shrink-0">
             <button
               onClick={() => { setIsNotifOpen(!isNotifOpen); setIsProfileOpen(false); }}
-              aria-label={`Notifikasi, ${unreadCount} belum dibaca`}
-              className="relative p-2 rounded-xl border bg-white border-slate-200 text-slate-500 hover:bg-slate-50 shadow-sm transition-all group"
+              className="relative p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 shadow-sm transition-all group active:scale-95"
             >
-              <Bell size={18} className="group-hover:rotate-12 transition-transform" />
+              <Bell size={20} className="group-hover:animate-bounce transition-transform" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm" />
+                <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-lg animate-pulse" />
               )}
             </button>
 
             {isNotifOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)} />
-                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden"
-                  style={{ animation: "dropIn 0.15s ease-out" }}>
-                  <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0">
-                    <div className="flex items-center gap-2">
-                      <Bell size={16} className="text-blue-500" />
-                      <h3 className="text-sm font-bold text-slate-800">Notifikasi</h3>
-                      {unreadCount > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{unreadCount}</span>
-                      )}
+                <div className="absolute right-0 top-full mt-3 w-80 sm:w-[400px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                  <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                        <Bell size={18} className="text-blue-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-slate-900">Notifikasi</h3>
+                        <p className="text-[11px] text-slate-400 font-medium">Anda memiliki {unreadCount} pesan baru</p>
+                      </div>
                     </div>
                     {unreadCount > 0 && (
-                      <button onClick={handleMarkAllRead} className="text-[11px] text-blue-500 hover:text-blue-700 font-semibold transition-colors">
-                        Tandai semua dibaca
+                      <button onClick={handleMarkAllRead} className="text-[11px] bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                        Baca Semua
                       </button>
                     )}
                   </div>
-                  <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
+                  <div className="divide-y divide-slate-50 max-h-[400px] overflow-y-auto custom-scrollbar p-2">
                     {notifications.length === 0 ? (
-                      <p className="p-4 text-center text-sm text-slate-400">Tidak ada notifikasi baru</p>
+                      <div className="py-12 flex flex-col items-center justify-center text-slate-300">
+                        <Bell size={40} className="opacity-20 mb-3" />
+                        <p className="text-sm font-bold">Tidak ada aktivitas baru</p>
+                      </div>
                     ) : (
                       notifications.map((notif) => {
                         let icon = "🔔";
                         let color = "bg-slate-100 text-slate-600";
                         if (notif.tipe === "ORDER") {
                           icon = "📦";
-                          color = "bg-blue-100 hover:bg-blue-200";
+                          color = "bg-blue-50 text-blue-600";
                         } else if (notif.tipe === "PAYMENT") {
                           icon = "💰";
-                          color = "bg-emerald-100 hover:bg-emerald-200";
+                          color = "bg-emerald-50 text-emerald-600";
                         } else if (notif.tipe === "DESIGN") {
                           icon = "✏️";
-                          color = "bg-orange-100 hover:bg-orange-200";
+                          color = "bg-orange-50 text-orange-600";
                         }
 
                         return (
                           <button
                             key={notif.id}
                             onClick={() => handleNotifRead(notif.id)}
-                            className={`w-full flex gap-3 p-3.5 text-left hover:bg-slate-50 transition-colors ${!notif.dibaca ? "bg-blue-50/30" : ""}`}
+                            className={`w-full flex gap-4 p-4 text-left rounded-2xl transition-all duration-200 mb-1 ${!notif.dibaca ? "bg-slate-50/80 hover:bg-slate-100" : "hover:bg-slate-50 opacity-70"}`}
                           >
-                            <div className={`flex-shrink-0 w-9 h-9 ${color} rounded-xl flex items-center justify-center transition-colors`}>
-                              <span className="text-base">{icon}</span>
+                            <div className={`flex-shrink-0 w-12 h-12 ${color} rounded-2xl flex items-center justify-center text-xl shadow-sm`}>
+                              {icon}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className={`text-sm line-clamp-1 ${!notif.dibaca ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
-                                {notif.judul}
-                              </p>
-                              <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{notif.pesan}</p>
-                              <p className="text-[10px] text-slate-400 mt-1">{formatNotifTime(notif.waktuDibuat)}</p>
+                              <div className="flex justify-between items-start mb-1">
+                                <p className={`text-[13px] line-clamp-1 ${!notif.dibaca ? "font-black text-slate-900" : "font-bold text-slate-700"}`}>
+                                  {notif.judul}
+                                </p>
+                                <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap ml-2">
+                                  {formatNotifTime(notif.waktuDibuat).split(' ')[1]}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{notif.pesan}</p>
                             </div>
                             {!notif.dibaca && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
+                              <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-2 ring-4 ring-blue-500/10 flex-shrink-0" />
                             )}
                           </button>
                         );
                       })
                     )}
                   </div>
-                  <div className="p-3 border-t border-slate-100">
+                  <div className="p-4 bg-slate-50/50">
                     <button
                       onClick={() => { setIsNotifOpen(false); router.push("/dashboard/orders"); }}
-                      className="w-full text-center text-xs font-semibold text-blue-500 hover:text-blue-700 py-1 transition-colors"
+                      className="w-full bg-white border border-slate-200 text-slate-600 py-2.5 rounded-xl text-xs font-black hover:bg-slate-50 transition-all shadow-sm"
                     >
-                      Lihat semua aktivitas →
+                      LIHAT SEMUA AKTIVITAS
                     </button>
                   </div>
                 </div>
@@ -352,61 +351,75 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             )}
           </div>
 
-          {/* Profile */}
+          {/* Profile Section */}
           <div className="relative shrink-0">
             <button
               onClick={() => { setIsProfileOpen(!isProfileOpen); setIsNotifOpen(false); }}
-              aria-label="Menu Profil"
-              className="flex items-center gap-2 p-1.5 rounded-full bg-white border-2 border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group"
+              className="flex items-center gap-3 pl-2 pr-4 py-1.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group"
             >
-              <div className="hidden sm:flex flex-col text-right items-end mr-0.5">
-                <span className="text-[10px] font-semibold text-slate-400 leading-tight">{greeting}</span>
-                <span className="text-xs font-black text-slate-900 leading-tight max-w-[80px] truncate">{user?.nama || "Admin"}</span>
-              </div>
-              <div className="relative w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl flex items-center justify-center shadow-md border-2 border-white group-hover:scale-105 transition-transform">
-                <span className="text-sm font-black text-white">
+              <div className="relative w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-950 rounded-[14px] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-105 transition-transform overflow-hidden">
+                {/* Subtle Glow behind Initial */}
+                <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity blur-md"></div>
+                <span className="relative z-10 text-[15px] font-black text-white">
                   {user?.nama?.charAt(0)?.toUpperCase() || "A"}
                 </span>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full" />
+                <div className="absolute bottom-1 right-1 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-sm" />
               </div>
+              <div className="hidden sm:flex flex-col text-left">
+                <span className="text-[13px] font-black text-slate-900 leading-none group-hover:text-blue-600 transition-colors">{user?.nama || "Admin"}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Super Admin</span>
+              </div>
+              <ChevronDown size={14} className={`text-slate-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isProfileOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
-                  style={{ animation: "dropIn 0.15s ease-out" }}>
-                  {/* User Info */}
-                  <div className="p-4 border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-                        <span className="text-base font-black text-white">
+                <div className="absolute right-0 top-full mt-3 w-64 bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
+                  {/* User Profile Header in Dropdown */}
+                  <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-12 h-12 bg-white/10 rounded-2xl border border-white/20 flex items-center justify-center shadow-inner">
+                        <span className="text-xl font-black text-white">
                           {user?.nama?.charAt(0)?.toUpperCase() || "A"}
                         </span>
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-slate-900 text-sm truncate">{user?.nama || "Admin Glowear"}</p>
-                        <p className="text-xs text-slate-400 font-medium">{user?.role || "Administrator"}</p>
+                        <p className="font-black text-white text-base truncate leading-none">{user?.nama || "Admin Glowear"}</p>
+                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-2">{user?.role || "Administrator"}</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Menu Items */}
-                  <div className="py-1">
-                    <a
-                      href="/dashboard/account"
-                      onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors text-sm font-medium"
+                  <div className="p-2">
+                    <button
+                      onClick={() => { setIsProfileOpen(false); router.push("/dashboard/account"); }}
+                      className="w-full flex items-center justify-between px-4 py-3 text-slate-700 hover:bg-blue-50 rounded-xl transition-all group"
                     >
-                      <Settings size={16} className="text-slate-400" />
-                      Pengaturan Akun
-                    </a>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                          <Settings size={16} className="text-slate-500 group-hover:text-blue-600" />
+                        </div>
+                        <span className="text-sm font-bold">Pengaturan Akun</span>
+                      </div>
+                      <ChevronRight size={14} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                    </button>
+
+                    <div className="h-px bg-slate-50 my-1 mx-2"></div>
+
                     <button
                       onClick={() => { setIsProfileOpen(false); logout(); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-rose-600 hover:bg-rose-50 transition-colors text-sm font-medium"
+                      className="w-full flex items-center justify-between px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl transition-all group"
                     >
-                      <LogOut size={16} />
-                      Keluar
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-rose-100/50 flex items-center justify-center group-hover:bg-rose-100 transition-colors">
+                          <LogOut size={16} />
+                        </div>
+                        <span className="text-sm font-black">Keluar Sistem</span>
+                      </div>
+                      <ChevronRight size={14} className="text-rose-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                     </button>
                   </div>
                 </div>

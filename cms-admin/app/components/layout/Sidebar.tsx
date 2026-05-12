@@ -62,177 +62,239 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
 
       {/* Sidebar Container Utama */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 bg-slate-900 text-slate-300 flex flex-col shadow-2xl transition-all duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 bg-[#0f172a] text-slate-300 flex flex-col shadow-2xl transition-all duration-300 ease-in-out
         lg:static lg:translate-x-0
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
-        ${isMinimized ? "w-24" : "w-72"} 
+        ${isMinimized ? "w-24" : "w-[290px]"} 
       `}>
         
         {/* Tombol Minimize (Hanya Desktop) */}
         <button
           onClick={() => setIsMinimized(!isMinimized)}
-          className="hidden lg:flex absolute -right-3 top-7 bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-full p-1.5 z-50 shadow-md transition-all hover:scale-110"
+          className="hidden lg:flex absolute -right-3 top-7 bg-[#1e293b] border border-slate-700 text-slate-400 hover:text-white rounded-full p-1.5 z-50 shadow-lg transition-all hover:scale-110 active:scale-90"
         >
           {isMinimized ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
 
-        {/* Header Logo Glomed & Glowear */}
-        <div className={`flex items-center ${isMinimized ? 'justify-center px-0' : 'justify-between px-6'} h-20 border-b border-slate-800 bg-slate-950 shrink-0 relative overflow-hidden transition-all duration-300`}>
-          {/* Aksen Warna Belakang */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+        {/* Header Logo Area */}
+        <div className={`flex items-center ${isMinimized ? 'justify-center px-0' : 'justify-between px-7'} h-24 shrink-0 relative overflow-hidden transition-all duration-300`}>
+          {/* Aksen Gradasi Premium */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-[80px] -mr-10 -mt-10"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-600/5 rounded-full blur-[60px] -ml-5 -mb-5"></div>
           
           {isMinimized ? (
-            // LOGO SAAT MINIMIZE
-            <div className="relative z-10 w-10 h-10 flex items-center justify-center animate-fade-in">
-              <Image src="/logoglomed.png" alt="Glomed" fill className="object-contain" priority />
+            <div className="relative z-10 w-11 h-11 flex items-center justify-center p-2 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+              <Image src="/logoglomed.png" alt="Glomed" width={40} height={40} className="object-contain" priority />
             </div>
           ) : (
-            // TEXT + LOGO SAAT TERBUKA
-            <div className="relative z-10 flex items-center justify-between w-full animate-fade-in">
-              <div>
-                <h1 className="text-2xl font-black text-white tracking-wider flex items-center gap-1">
-                  GLO<span className="text-blue-500">WEAR.</span>
-                </h1>
-                <p className="text-[9px] text-slate-400 font-bold tracking-widest uppercase mt-0.5">
-                  By Glomed Konveksi
-                </p>
-              </div>
-              <div className="relative w-8 h-8 ml-2">
-                <Image src="/logoglomed.png" alt="Glomed Logo" fill sizes="100px" className="object-contain" priority />
+            <div className="relative z-10 flex items-center justify-between w-full animate-in fade-in slide-in-from-left-2 duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 relative bg-white/10 rounded-2xl p-2 border border-white/10 flex items-center justify-center">
+                  <Image src="/logoglomed.png" alt="Glomed Logo" fill className="object-contain p-2" priority />
+                </div>
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-1 leading-none">
+                    GLO<span className="text-blue-500">WEAR</span>
+                  </h1>
+                  <p className="text-[10px] text-slate-500 font-bold tracking-[0.2em] uppercase mt-1">
+                    ADMIN PANEL
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Tombol Tutup Mobile */}
-          <button onClick={() => setIsOpen(false)} className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white lg:hidden absolute right-4">
+          <button onClick={() => setIsOpen(false)} className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white lg:hidden absolute right-4">
             <X size={20} />
           </button>
         </div>
 
         {/* ================= AREA MENU ================= */}
-        <nav className={`flex-1 py-6 space-y-6 overflow-y-auto custom-scrollbar ${isMinimized ? 'px-3' : 'px-4'}`}>
+        <nav className={`flex-1 py-4 space-y-6 overflow-y-auto custom-scrollbar ${isMinimized ? 'px-3' : 'px-5'}`}>
           
-          {/* BLOK 1: AREA ADMIN */}
-          <div className="space-y-4">
-            {/* Judul Area Admin */}
-{isMinimized ? (
-              <div className="w-full flex justify-center mb-4"><div className="w-8 h-px bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div></div>
-            ) : (
-              <div className="px-4 mb-4">
-                <p className="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">Admin Dashboard</p>
-              </div>
+          {/* BLOK 1: CORE NAVIGATION */}
+          <div className="space-y-1.5">
+            {!isMinimized && (
+              <p className="px-4 mb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Navigation</p>
             )}
 
-            <Link href="/dashboard" onClick={handleLinkClick} title="Dashboard" className={`flex items-center ${isMinimized ? 'justify-center p-3.5' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${pathname === '/dashboard' ? "bg-blue-600 text-white shadow-md shadow-blue-900/20" : "hover:bg-slate-800 hover:text-white"}`}>
-              <LayoutDashboard size={20} /> 
-              {!isMinimized && <span className="font-medium whitespace-nowrap">Dashboard</span>}
+            <Link 
+              href="/dashboard" 
+              onClick={handleLinkClick} 
+              className={`flex items-center ${isMinimized ? 'justify-center p-3.5' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 group ${pathname === '/dashboard' ? "bg-blue-600 text-white shadow-xl shadow-blue-900/40" : "hover:bg-white/5 hover:text-white"}`}
+            >
+              <LayoutDashboard size={20} className={pathname === '/dashboard' ? "text-white" : "text-slate-400 group-hover:text-blue-400"} /> 
+              {!isMinimized && <span className="font-semibold text-[14px]">Dashboard</span>}
             </Link>
 
-            {/* Transaksi */}
+            {/* Transaksi Section */}
             <div>
-{!isMinimized && <div className="px-4 mb-3">
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
-    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Orders</span>
-  </div>
-</div>}
-              <button title="Pemesanan" onClick={() => handleDropdownClick(setIsOrderOpen, isOrderOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isOrderActive && !isOrderOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <button 
+                onClick={() => handleDropdownClick(setIsOrderOpen, isOrderOpen)} 
+                className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-300 group ${isOrderActive ? "text-white" : "hover:bg-white/5 hover:text-white"}`}
+              >
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
-                  <ShoppingBag size={20} className={isOrderActive ? "text-blue-500" : ""} />
-                  {!isMinimized && <span className="font-medium whitespace-nowrap">Transaksi</span>}
+                  <ShoppingBag size={20} className={isOrderActive ? "text-blue-500" : "text-slate-400 group-hover:text-blue-400"} />
+                  {!isMinimized && <span className="font-semibold text-[14px]">Transaksi</span>}
                 </div>
-                {!isMinimized && (isOrderOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                {!isMinimized && (
+                  <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isOrderOpen ? 'rotate-180' : ''}`} />
+                )}
               </button>
               
-              <div className={`overflow-hidden transition-all duration-300 ${!isMinimized && isOrderOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-                <div className="pl-11 pr-2 space-y-1">
-                  <Link href="/dashboard/orders" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/orders') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><BanknoteArrowUp size={18} /> Pesanan Masuk</Link>
-                  <Link href="/dashboard/payments" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/payments') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><HandCoins size={18} /> Verifikasi Bayar</Link>
-                  <Link href="/dashboard/custom-designs" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/custom-designs') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Shirt size={18} /> Custom Design</Link>
-                  <Link href="/dashboard/reports" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/reports') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><SquareLibrary size={18} /> Laporan</Link>
+              {!isMinimized && (
+                <div className={`overflow-hidden transition-all duration-300 ${isOrderOpen ? "max-h-[300px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+                  <div className="pl-4 space-y-1">
+                    {[
+                      { label: 'Pesanan Masuk', href: '/dashboard/orders', icon: BanknoteArrowUp },
+                      { label: 'Verifikasi Bayar', href: '/dashboard/payments', icon: HandCoins },
+                      { label: 'Custom Design', href: '/dashboard/custom-designs', icon: Shirt },
+                      { label: 'Laporan Pendapatan', href: '/dashboard/reports', icon: SquareLibrary },
+                    ].map((sub) => (
+                      <Link 
+                        key={sub.href}
+                        href={sub.href} 
+                        onClick={handleLinkClick} 
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] transition-all duration-200 group ${pathname.includes(sub.href) ? "text-blue-400 bg-blue-400/5 font-bold" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"}`}
+                      >
+                        <sub.icon size={16} className={pathname.includes(sub.href) ? "text-blue-500" : "text-slate-600 group-hover:text-slate-400"} />
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Katalog */}
+            {/* Katalog Section */}
             <div>
-{!isMinimized && <div className="px-4 mb-3">
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
-    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Catalog</span>
-  </div>
-</div>}
-              <button title="Katalog" onClick={() => handleDropdownClick(setIsCatalogOpen, isCatalogOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isCatalogActive && !isCatalogOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <button 
+                onClick={() => handleDropdownClick(setIsCatalogOpen, isCatalogOpen)} 
+                className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-300 group ${isCatalogActive ? "text-white" : "hover:bg-white/5 hover:text-white"}`}
+              >
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
-                  <FolderTree size={20} className={isCatalogActive ? "text-blue-500" : ""} />
-                  {!isMinimized && <span className="font-medium whitespace-nowrap">Katalog</span>}
+                  <FolderTree size={20} className={isCatalogActive ? "text-emerald-500" : "text-slate-400 group-hover:text-emerald-400"} />
+                  {!isMinimized && <span className="font-semibold text-[14px]">Katalog</span>}
                 </div>
-                {!isMinimized && (isCatalogOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                {!isMinimized && (
+                  <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isCatalogOpen ? 'rotate-180' : ''}`} />
+                )}
               </button>
 
-              <div className={`overflow-hidden transition-all duration-300 ${!isMinimized && isCatalogOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-                <div className="pl-11 pr-2 space-y-1">
-                  <Link href="/dashboard/categories" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/categories') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Layers size={18} /> Kategori</Link>
-                  <Link href="/dashboard/products" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/products') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Package size={18} /> Produk</Link>
-                  <Link href="/dashboard/reviews" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/reviews') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Star size={18} /> Ulasan Pelanggan</Link>
+              {!isMinimized && (
+                <div className={`overflow-hidden transition-all duration-300 ${isCatalogOpen ? "max-h-[300px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+                  <div className="pl-4 space-y-1">
+                    {[
+                      { label: 'Semua Produk', href: '/dashboard/products', icon: Package },
+                      { label: 'Kategori Produk', href: '/dashboard/categories', icon: Layers },
+                      { label: 'Ulasan Pembeli', href: '/dashboard/reviews', icon: Star },
+                    ].map((sub) => (
+                      <Link 
+                        key={sub.href}
+                        href={sub.href} 
+                        onClick={handleLinkClick} 
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] transition-all duration-200 group ${pathname.includes(sub.href) ? "text-emerald-400 bg-emerald-400/5 font-bold" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"}`}
+                      >
+                        <sub.icon size={16} className={pathname.includes(sub.href) ? "text-emerald-500" : "text-slate-600 group-hover:text-slate-400"} />
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Sistem Web */}
+            {/* Sistem Web Section */}
             <div>
-{!isMinimized && <div className="px-4 mb-3">
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
-    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">System</span>
-  </div>
-</div>}
-              <button title="Sistem Web" onClick={() => handleDropdownClick(setIsSystemOpen, isSystemOpen)} className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-200 ${isSystemActive && !isSystemOpen ? "text-blue-400 font-medium" : "hover:bg-slate-800 hover:text-white"}`}>
+              <button 
+                onClick={() => handleDropdownClick(setIsSystemOpen, isSystemOpen)} 
+                className={`w-full flex items-center ${isMinimized ? 'justify-center p-3.5' : 'justify-between gap-3 px-4 py-3'} rounded-xl transition-all duration-300 group ${isSystemActive ? "text-white" : "hover:bg-white/5 hover:text-white"}`}
+              >
                 <div className={`flex items-center ${isMinimized ? 'justify-center' : 'gap-3'}`}>
-                  <MonitorSmartphone size={20} className={isSystemActive ? "text-blue-500" : ""} />
-                  {!isMinimized && <span className="font-medium whitespace-nowrap">Sistem Web</span>}
+                  <MonitorSmartphone size={20} className={isSystemActive ? "text-indigo-500" : "text-slate-400 group-hover:text-indigo-400"} />
+                  {!isMinimized && <span className="font-semibold text-[14px]">Sistem App</span>}
                 </div>
-                {!isMinimized && (isSystemOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                {!isMinimized && (
+                  <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isSystemOpen ? 'rotate-180' : ''}`} />
+                )}
               </button>
 
-              <div className={`overflow-hidden transition-all duration-300 ${!isMinimized && isSystemOpen ? "max-h-60 opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
-                <div className="pl-11 pr-2 space-y-1">
-                  <Link href="/dashboard/users" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/users') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Users size={18} /> Pengguna</Link>
-                  <Link href="/dashboard/banners" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/banners') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Flag size={18} /> Banner Promo</Link>
-                  <Link href="/dashboard/portfolio" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/portfolio') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><ChartCandlestick size={18} /> Portofolio</Link>
-                  <Link href="/dashboard/settings" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/settings') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Settings size={18} /> Toko & Kontak</Link>
+              {!isMinimized && (
+                <div className={`overflow-hidden transition-all duration-300 ${isSystemOpen ? "max-h-[300px] opacity-100 mt-1" : "max-h-0 opacity-0"}`}>
+                  <div className="pl-4 space-y-1">
+                    {[
+                      { label: 'Manajemen User', href: '/dashboard/users', icon: Users },
+                      { label: 'Banner Beranda', href: '/dashboard/banners', icon: Flag },
+                      { label: 'Katalog Portfolio', href: '/dashboard/portfolio', icon: ChartCandlestick },
+                      { label: 'Konfigurasi Toko', href: '/dashboard/settings', icon: Settings },
+                    ].map((sub) => (
+                      <Link 
+                        key={sub.href}
+                        href={sub.href} 
+                        onClick={handleLinkClick} 
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] transition-all duration-200 group ${pathname.includes(sub.href) ? "text-indigo-400 bg-indigo-400/5 font-bold" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"}`}
+                      >
+                        <sub.icon size={16} className={pathname.includes(sub.href) ? "text-indigo-500" : "text-slate-600 group-hover:text-slate-400"} />
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* BLOK 2: SIMULASI PELANGGAN */}
-          <div className="pt-6 border-t border-slate-700/50 mt-8">
-            {isMinimized ? (
-              <div className="w-full flex justify-center mb-4"><div className="w-6 h-px bg-slate-700"></div></div>
-            ) : (
-              <p className="px-4 text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2 whitespace-nowrap">📱 Simulasi Mobile App</p>
+          {/* BLOK 2: SIMULASI PELANGGAN (PREMIUM CARD STYLE) */}
+          <div className="pt-4 border-t border-white/5 mt-4">
+            {!isMinimized && (
+              <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Development Tools</p>
             )}
             
-            <div className={`bg-slate-800/30 rounded-xl border border-slate-700/50 space-y-1 ${isMinimized ? 'p-1.5' : 'p-2'}`}>
-              <Link href="/dashboard/pelanggan/beranda" title="Beranda App" onClick={handleLinkClick} className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/beranda' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
-                <Smartphone size={isMinimized ? 20 : 18} /> {!isMinimized && <span className="whitespace-nowrap">Beranda App</span>}
-              </Link>
-              <Link href="/dashboard/pelanggan/katalog" title="Katalog App" onClick={handleLinkClick} className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/katalog' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
-                <Store size={isMinimized ? 20 : 18} /> {!isMinimized && <span className="whitespace-nowrap">Pilih Baju Polos</span>}
-              </Link>
-              <Link href="/dashboard/pelanggan/pesan" title="Studio Custom" onClick={handleLinkClick} className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/pesan' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
-                <Palette size={isMinimized ? 20 : 18} /> {!isMinimized && <span className="whitespace-nowrap">Studio Custom</span>}
-              </Link>
-              <Link href="/dashboard/pelanggan/tagihan" title="Tagihan" onClick={handleLinkClick} className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/tagihan' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
-                <Clock4 size={isMinimized ? 20 : 18} /> {!isMinimized && <span className="whitespace-nowrap">Tagihan & Struk</span>}
-              </Link>
-              <Link href="/dashboard/pelanggan/lacak" title="Lacak Pesanan" onClick={handleLinkClick} className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 ${pathname === '/dashboard/pelanggan/lacak' ? "bg-emerald-600/20 text-emerald-400 font-bold" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800"}`}>
-                <Truck size={isMinimized ? 20 : 18} /> {!isMinimized && <span className="whitespace-nowrap">Lacak Pesanan</span>}
-              </Link>
+            <div className={`bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl border border-white/5 overflow-hidden ${isMinimized ? 'p-1' : 'p-3'}`}>
+              {!isMinimized && (
+                <div className="flex items-center gap-2 px-2 mb-3">
+                  <Smartphone size={14} className="text-emerald-500" />
+                  <span className="text-[11px] font-bold text-white tracking-wide">MOBILE SIMULATION</span>
+                </div>
+              )}
+              <div className="space-y-1">
+                {[
+                  { label: 'Beranda App', href: '/dashboard/pelanggan/beranda', icon: LayoutDashboard },
+                  { label: 'Studio Custom', href: '/dashboard/pelanggan/pesan', icon: Palette },
+                  { label: 'Lacak Paket', href: '/dashboard/pelanggan/lacak', icon: Truck },
+                ].map((app) => (
+                  <Link 
+                    key={app.href}
+                    href={app.href} 
+                    title={app.label}
+                    onClick={handleLinkClick} 
+                    className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-3 py-2'} rounded-xl text-[12px] transition-all duration-200 ${pathname === app.href ? "bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20" : "text-slate-400 hover:text-white hover:bg-white/5"}`}
+                  >
+                    <app.icon size={isMinimized ? 20 : 16} /> 
+                    {!isMinimized && <span>{app.label}</span>}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </nav>
+
+        {/* Footer Area (User Quick Info) */}
+        {!isMinimized && (
+          <div className="p-5 border-t border-white/5 bg-black/20">
+             <button 
+               onClick={logout}
+               className="w-full flex items-center justify-between px-4 py-3 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-300 group border border-red-500/10"
+             >
+                <div className="flex items-center gap-3">
+                   <LogOut size={18} />
+                   <span className="font-bold text-[13px]">Keluar Akun</span>
+                </div>
+                <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+             </button>
+          </div>
+        )}
       </aside>
     </>
   );

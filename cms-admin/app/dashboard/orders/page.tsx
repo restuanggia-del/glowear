@@ -264,191 +264,200 @@ export default function OrdersPage() {
       </div>
 
       {/* =========================================
-          MODAL DETAIL PESANAN (Overhauled Layout)
+          MODAL DETAIL PESANAN (PREMIUM OVERHAUL)
       ========================================= */}
-{isDetailModalOpen && selectedOrder && (
-        <div className="fixed inset-0 overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 z-[60]">
-          <div className="flex min-h-full items-center justify-center p-4 text-center max-w-6xl w-full">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
+      {isDetailModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
             
-            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
+            <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20">
               
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white flex-shrink-0 z-10 relative">
-                <div>
-                  <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                    <Package className="text-blue-600"/> Detail Pesanan 
-                    <span className="font-mono text-slate-400 font-bold text-lg bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">ORD-{selectedOrder.id.substring(0, 6).toUpperCase()}</span>
-                  </h2>
-                  <p className="text-sm text-slate-500 mt-2 font-medium flex items-center gap-1.5">
-                    <CalendarDays size={14}/> Dibuat pada {formatDate(selectedOrder.waktuDibuat)}
-                  </p>
+              {/* Modern Header dengan Gradients */}
+              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-8 text-white relative overflow-hidden flex-shrink-0">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 bg-white/10 rounded-3xl border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner">
+                      <ShoppingBag size={32} className="text-blue-400" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-3xl font-black tracking-tight">Detail Pesanan</h2>
+                        <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-blue-400/50 shadow-lg shadow-blue-900/40">
+                          #{selectedOrder.id.substring(0, 8).toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="text-slate-400 font-medium mt-1 flex items-center gap-2">
+                        <CalendarDays size={14} className="text-slate-500"/> Terdaftar pada {formatDate(selectedOrder.waktuDibuat)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col items-end gap-3">
+                    <div className={`px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 border shadow-lg ${getStatusStyle(selectedOrder.status)}`}>
+                       {selectedOrder.status}
+                    </div>
+                    <div className={`px-4 py-1.5 rounded-xl font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 bg-white/10 border border-white/10 text-white`}>
+                       Status Bayar: <span className="text-blue-400">{selectedOrder.statusPembayaran}</span>
+                    </div>
+                  </div>
                 </div>
-                <button onClick={() => setIsDetailModalOpen(false)} className="p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
-                  <X size={20} />
-                </button>
               </div>
 
-              {/* Area Content (Scrollable) */}
-              <div className="p-6 overflow-y-auto space-y-8 flex-1 bg-slate-50/50 custom-scrollbar relative z-0">
+              {/* Body Content */}
+              <div className="p-8 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar bg-slate-50/50">
                 
-                {/* Bagian Atas: Alamat, Catatan, Keuangan */}
+                {/* Section 1: Customer & Logistics Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <section className="md:col-span-1">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><MapPin size={12} className="text-rose-500"/> Alamat Pengiriman</h3>
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-slate-700 h-full flex items-center">
-                      <p className="text-sm font-medium leading-relaxed">{selectedOrder.alamatPengiriman || "Alamat tidak tersedia"}</p>
+                  <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <Users size={14} className="text-blue-500"/> Informasi Pelanggan
+                    </h3>
+                    <div className="space-y-3">
+                      <p className="text-base font-black text-slate-900 leading-none">{selectedOrder.pengguna?.nama || "Pelanggan Glowear"}</p>
+                      <p className="text-[13px] text-slate-500 font-medium flex items-center gap-2">
+                         <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.email}
+                      </p>
+                      <p className="text-[13px] text-slate-500 font-medium flex items-center gap-2">
+                         <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.noTelp}
+                      </p>
                     </div>
-                  </section>
-                  
-                  <section className="md:col-span-1">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><FileText size={12} className="text-amber-500"/> Catatan Utama</h3>
-                    <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 text-sm text-amber-900 italic font-medium shadow-sm h-full flex items-center">
-                      {selectedOrder.catatanCustom ? `"${selectedOrder.catatanCustom}"` : 'Tidak ada catatan tambahan.'}
-                    </div>
-                  </section>
+                  </div>
 
-                  <section className="md:col-span-1">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5"><Banknote size={12} className="text-emerald-500"/> Ringkasan Biaya</h3>
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3.5 text-sm text-slate-700 shadow-sm">
-                      <div className="flex justify-between items-center"><span className="font-medium text-slate-500">Total</span><span className="font-black text-lg text-slate-800">{formatRupiah(selectedOrder.totalHarga)}</span></div>
-                      <div className="flex justify-between items-center text-blue-700 bg-blue-50 px-2 py-1 rounded-md"><span className="font-bold">DP Paid</span><span className="font-black">{formatRupiah(selectedOrder.dpAmount)}</span></div>
-                      <div className="flex justify-between items-center text-rose-600 border-t border-slate-100 pt-2.5"><span className="font-bold uppercase tracking-wider text-[10px]">Sisa Pelunasan</span><span className="font-black text-base">{formatRupiah(selectedOrder.sisaPembayaran)}</span></div>
+                  <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <MapPin size={14} className="text-rose-500"/> Alamat Pengiriman
+                    </h3>
+                    <p className="text-[13px] text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 italic">
+                      {selectedOrder.alamatPengiriman || "Alamat tidak dicantumkan."}
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <Banknote size={14} className="text-emerald-500"/> Ringkasan Finansial
+                    </h3>
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl">
+                        <span className="text-xs font-bold text-slate-500">Total Tagihan</span>
+                        <span className="text-sm font-black text-slate-900">{formatRupiah(selectedOrder.totalHarga)}</span>
+                      </div>
+                      <div className="flex justify-between items-center bg-blue-50/50 px-4 py-2.5 rounded-xl border border-blue-100/50">
+                        <span className="text-xs font-bold text-blue-600">Terbayar (DP)</span>
+                        <span className="text-sm font-black text-blue-700">{formatRupiah(selectedOrder.dpAmount)}</span>
+                      </div>
+                      <div className="flex justify-between items-center bg-rose-50 px-4 py-2.5 rounded-xl border border-rose-100/50">
+                        <span className="text-xs font-bold text-rose-500">Sisa Pelunasan</span>
+                        <span className="text-sm font-black text-rose-700">{formatRupiah(selectedOrder.sisaPembayaran)}</span>
+                      </div>
                     </div>
-                  </section>
+                  </div>
                 </div>
 
-                {/* Bagian Bawah: Daftar Item Ber-Gambar (Overhauled) */}
+                {/* Section 2: Items Overhaul */}
                 <section>
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2.5 flex items-center gap-2">
-                    <Shirt size={14} className="text-blue-500"/> Daftar Barang Produksi ({selectedOrder.items?.length || 0})
-                  </h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                      <Shirt size={16} className="text-blue-500"/> Item Produksi ({selectedOrder.items?.length || 0})
+                    </h3>
+                    <div className="h-px flex-1 bg-slate-200 mx-6"></div>
+                  </div>
                   
                   <div className="space-y-6">
                     {selectedOrder.items?.map((item: any, idx: number) => (
-                      <div key={idx} className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row gap-6 p-6 transition-hover hover:shadow-md">
+                      <div key={idx} className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col md:flex-row gap-0 group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
                         
-                        {/* 1. Info Produk & Sablon (Kiri) */}
-                        <div className="flex-1 space-y-4">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-slate-100 p-3 rounded-xl border border-slate-200 text-blue-600"><Shirt size={20}/></div>
+                        {/* Area Info (Kiri) */}
+                        <div className="flex-1 p-8">
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300">
+                               <Shirt size={28}/>
+                            </div>
                             <div>
-                              <p className="font-black text-slate-900 text-base">{item.product?.namaProduk || "Produk Custom"}</p>
-                              <p className="text-xs font-bold text-slate-500 mt-0.5">{item.jumlah} Pcs x {formatRupiah(item.hargaSatuan)}</p>
+                              <p className="font-black text-slate-900 text-lg leading-none">{item.product?.namaProduk || "Produk Custom"}</p>
+                              <div className="flex items-center gap-3 mt-2">
+                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider">{item.jumlah} PCS</span>
+                                <span className="text-xs font-bold text-slate-400">@ {formatRupiah(item.hargaSatuan)}</span>
+                              </div>
                             </div>
                           </div>
                           
-                          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2.5">
-                            {item.jenisSablon && <p className="text-sm font-medium text-slate-600">Jenis Sablon: <span className="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md text-xs border border-blue-200">{item.jenisSablon}</span></p>}
-                            {item.deskripsiDesain && (
-                              <div>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Permintaan Desain:</p>
-                                <p className="text-sm text-slate-700 mt-1 font-medium leading-relaxed">{item.deskripsiDesain}</p>
-                              </div>
-                            )}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
+                              <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Pilihan Sablon</p>
+                              <p className="text-sm font-bold text-slate-700">{item.jenisSablon || "Tidak ditentukan"}</p>
+                            </div>
+                            <div className="bg-amber-50/50 p-5 rounded-2xl border border-amber-100/50">
+                              <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Catatan Desain</p>
+                              <p className="text-[13px] font-medium text-slate-700 italic line-clamp-2">
+                                {item.deskripsiDesain ? `"${item.deskripsiDesain}"` : "Tidak ada catatan."}
+                              </p>
+                            </div>
                           </div>
                         </div>
 
-                        {/* 2. AREA LAMPIRAN GAMBAR (Kanan) - SESUAI REFERENSI */}
-                        <div className="w-full md:w-80 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-5 md:pt-0 md:pl-6 space-y-4">
-                          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5"><Palette size={12} className="text-blue-500"/> Lampiran Desain Custom</h4>
+                        {/* Area Lampiran (Kanan) */}
+                        <div className="w-full md:w-[360px] bg-slate-50/80 p-8 border-t md:border-t-0 md:border-l border-slate-100">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Aset Desain Pelanggan</p>
                           
-                          {/* Grid Gambar */}
-                          <div className="grid grid-cols-2 gap-3">
-                            
-                            {/* Tampilan Desain Depan */}
-                            <div className="space-y-1.5">
-                              <p className="text-[10px] font-bold text-slate-500 text-center">Desain Depan</p>
-                              <div className="aspect-square bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer" 
-                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileDesainDepan}`)}
-                              >
-                                {item.fileDesainDepan ? (
-                                  <>
-                                    <Image src={`${API_BASE_URL}/${item.fileDesainDepan}`} alt="Depan" fill className="object-cover group-hover:scale-110 transition-transform duration-300"/>
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={20}/></div>
-                                  </>
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-1"><ImageIcon size={24}/><span className="text-[10px]">Polos</span></div>
-                                )}
+                          <div className="grid grid-cols-2 gap-4">
+                            {[
+                              { label: 'Depan', file: item.fileDesainDepan },
+                              { label: 'Belakang', file: item.fileDesainBelakang }
+                            ].map((design, i) => (
+                              <div key={i} className="space-y-2">
+                                <div 
+                                  className="aspect-square bg-white rounded-2xl border-2 border-slate-200 overflow-hidden relative group cursor-pointer shadow-sm hover:border-blue-400 transition-all duration-300" 
+                                  onClick={() => design.file && openPreview(`${API_BASE_URL}/${design.file}`)}
+                                >
+                                  {design.file ? (
+                                    <>
+                                      <Image src={`${API_BASE_URL}/${design.file}`} alt={design.label} fill className="object-cover group-hover:scale-110 transition-transform duration-500"/>
+                                      <div className="absolute inset-0 bg-blue-600/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white backdrop-blur-[2px]">
+                                        <Eye size={24} className="scale-75 group-hover:scale-100 transition-transform duration-300" />
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-1 bg-slate-50">
+                                      <ImageIcon size={24} className="opacity-40" />
+                                      <span className="text-[9px] font-bold uppercase tracking-widest">Polos</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-[10px] font-black text-slate-400 text-center uppercase tracking-widest">{design.label}</p>
                               </div>
-                            </div>
-
-                            {/* Tampilan Desain Belakang */}
-                            <div className="space-y-1.5">
-                              <p className="text-[10px] font-bold text-slate-500 text-center">Desain Belakang</p>
-                              <div className="aspect-square bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer"
-                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileDesainBelakang}`)}
-                              >
-                                {item.fileDesainBelakang ? (
-                                  <>
-                                    <Image src={`${API_BASE_URL}/${item.fileDesainBelakang}`} alt="Belakang" fill className="object-cover group-hover:scale-110 transition-transform duration-300"/>
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={20}/></div>
-                                  </>
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-1"><ImageIcon size={24}/><span className="text-[10px]">Polos</span></div>
-                                )}
-                              </div>
-                            </div>
-
+                            ))}
                           </div>
-                          
-                          {/* Gambar Referensi (Jika Ada) */}
-                          {item.fileGambarReferensi && (
-                            <div className="pt-2 border-t border-slate-100 space-y-1.5">
-                              <p className="text-[10px] font-bold text-slate-500">Gambar Referensi/Inspirasi</p>
-                              <div className="w-full h-20 bg-slate-50 rounded-xl border-2 border-slate-100 overflow-hidden relative group cursor-pointer"
-                                onClick={() => openPreview(`${API_BASE_URL}/${item.fileGambarReferensi}`)}
-                              >
-                                <Image src={`${API_BASE_URL}/${item.fileGambarReferensi}`} alt="Referensi" fill className="object-cover group-hover:scale-105 transition-transform duration-300"/>
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-2 text-xs font-bold"><Eye size={16}/> Zoom Ref</div>
-                              </div>
-                            </div>
-                          )}
-
                         </div>
                       </div>
                     ))}
                   </div>
                 </section>
-
-                {/* Bagian Review Pelanggan */}
-                {selectedOrder.review && (
-                  <section>
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2.5 flex items-center gap-2">
-                      <CheckCircle size={14} className="text-emerald-500"/> Ulasan Pelanggan
-                    </h3>
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-5">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <svg key={star} className={`w-5 h-5 ${star <= selectedOrder.review.rating ? 'text-amber-400' : 'text-slate-200'}`} fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                          <span className="ml-2 font-bold text-slate-700">{selectedOrder.review.rating}.0</span>
-                        </div>
-                        <p className="text-sm text-slate-600 italic">
-                          "{selectedOrder.review.komentar || 'Tidak ada teks ulasan.'}"
-                        </p>
-                      </div>
-                      {selectedOrder.review.foto && (
-                        <div className="w-24 h-24 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden relative cursor-pointer group"
-                             onClick={() => openPreview(`${API_BASE_URL}/uploads/${selectedOrder.review.foto}`)}>
-                          <Image src={`${API_BASE_URL}/uploads/${selectedOrder.review.foto}`} alt="Foto Review" fill className="object-cover group-hover:scale-110 transition-transform" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><Eye size={16}/></div>
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                )}
               </div>
               
-              <div className="p-5 border-t border-slate-100 bg-white flex justify-end flex-shrink-0 relative z-10">
-                <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-2.5 bg-slate-100 text-slate-600 rounded-full font-bold text-sm hover:bg-slate-200 transition-all mr-3">
-                  Tutup
-                </button>
-                <button onClick={() => openInvoice(selectedOrder)} className="px-6 py-2.5 bg-emerald-600 text-white rounded-full font-bold text-sm hover:bg-emerald-700 transition-all active:scale-95 shadow-md shadow-emerald-600/20 flex items-center gap-2">
-                  <Printer size={18} /> Cetak Struk PDF
-                </button>
+              {/* Modern Action Bar */}
+              <div className="p-8 bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0 relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+                  <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-3 bg-white text-slate-600 rounded-xl font-black text-xs hover:bg-slate-50 transition-all shadow-sm border border-slate-200 uppercase tracking-widest">
+                    Tutup
+                  </button>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                   <button 
+                     onClick={() => { setIsDetailModalOpen(false); openUpdateModal(selectedOrder); }}
+                     className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest border border-slate-700"
+                   >
+                     <Edit size={16} /> Update Status
+                   </button>
+                   <button 
+                     onClick={() => openInvoice(selectedOrder)} 
+                     className="px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-600/20 flex items-center gap-3 uppercase tracking-widest border border-emerald-500"
+                   >
+                     <Printer size={18} /> Cetak Struk
+                   </button>
+                </div>
               </div>
             </div>
           </div>
@@ -485,190 +494,183 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL UPDATE STATUS (Icon Dropdown & Centered)
       ========================================= */}
-{isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-md w-full mx-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+      {/* =========================================
+          MODAL UPDATE STATUS (PREMIUM CENTERED)
+      ========================================= */}
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsModalOpen(false)}></div>
+          
+          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
             
-            <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-md text-left overflow-visible animate-in fade-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
+            {/* Header dengan Icon Visual */}
+            <div className="p-8 pb-4 text-center">
+              <div className="w-20 h-20 bg-blue-50 rounded-[2rem] flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-inner">
+                <Edit size={32} className="text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900">Perbarui Pesanan</h3>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">ID: #{selectedOrder.id.substring(0, 8).toUpperCase()}</p>
+            </div>
+
+            <form onSubmit={handleUpdateSubmit} className="p-8 pt-4 space-y-6">
               
-              <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 rounded-t-[2rem]">
-                <div>
-                  <h3 className="text-xl font-black text-slate-800">Update Pesanan</h3>
-                  <p className="text-xs text-slate-500 font-bold font-mono bg-slate-100 px-2 py-0.5 rounded-md inline-block mt-1 border border-slate-200">ORD-{selectedOrder.id.substring(0, 6).toUpperCase()}</p>
-                </div>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
-                  <X size={18} />
+              {/* Dropdown Produksi */}
+              <div className="relative">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Tahap Produksi</label>
+                <button 
+                  type="button" 
+                  onClick={() => { setIsStatusDropdownOpen(!isStatusDropdownOpen); setIsPaymentDropdownOpen(false); }}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-800 flex justify-between items-center hover:bg-white hover:border-blue-400 transition-all shadow-sm"
+                >
+                  <span className="flex items-center gap-3">
+                    {(() => {
+                      const opt = STATUS_OPTIONS.find(o => o.value === updateForm.status);
+                      const Icon = opt?.icon || Clock;
+                      return <><div className={`w-8 h-8 rounded-lg ${opt?.color.replace('text', 'bg')}/10 flex items-center justify-center`}><Icon size={16} className={opt?.color} /></div> {opt?.label || "Pilih Status"}</>;
+                    })()}
+                  </span>
+                  <ChevronDown size={18} className={`text-slate-400 transition-transform duration-300 ${isStatusDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {isStatusDropdownOpen && (
+                  <div className="absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden p-2 animate-in fade-in slide-in-from-top-2">
+                    {STATUS_OPTIONS.map((opt) => (
+                      <button 
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setUpdateForm({...updateForm, status: opt.value}); setIsStatusDropdownOpen(false); }}
+                        className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 rounded-xl transition-all"
+                      >
+                        <div className={`w-8 h-8 rounded-lg ${opt.color.replace('text', 'bg')}/10 flex items-center justify-center`}><opt.icon size={16} className={opt.color} /></div>
+                        <span className="text-[13px] font-bold text-slate-700">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <form onSubmit={handleUpdateSubmit} className="p-6 space-y-5 bg-slate-50/50 rounded-b-[2rem]">
-                
-                {/* Custom Dropdown: Status Produksi */}
-                <div className="relative">
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Status Produksi</label>
-                  <button 
-                    type="button" 
-                    onClick={() => { setIsStatusDropdownOpen(!isStatusDropdownOpen); setIsPaymentDropdownOpen(false); }}
-                    className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white flex justify-between items-center focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      {(() => {
-                        const opt = STATUS_OPTIONS.find(o => o.value === updateForm.status);
-                        const Icon = opt?.icon || Clock;
-                        return <><Icon size={16} className={opt?.color || "text-slate-400"} /> {opt?.label || "Pilih Status"}</>;
-                      })()}
-                    </span>
-                    <ChevronDown size={16} className={`text-slate-400 transition-transform ${isStatusDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
+              {/* Dropdown Pembayaran */}
+              <div className="relative">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Status Keuangan</label>
+                <button 
+                  type="button" 
+                  onClick={() => { setIsPaymentDropdownOpen(!isPaymentDropdownOpen); setIsStatusDropdownOpen(false); }}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-800 flex justify-between items-center hover:bg-white hover:border-blue-400 transition-all shadow-sm"
+                >
+                  <span className="flex items-center gap-3">
+                    {(() => {
+                      const opt = PAYMENT_OPTIONS.find(o => o.value === updateForm.statusPembayaran);
+                      const Icon = opt?.icon || AlertCircle;
+                      return <><div className={`w-8 h-8 rounded-lg ${opt?.color.replace('text', 'bg')}/10 flex items-center justify-center`}><Icon size={16} className={opt?.color} /></div> {opt?.label || "Pilih Status"}</>;
+                    })()}
+                  </span>
+                  <ChevronDown size={18} className={`text-slate-400 transition-transform duration-300 ${isPaymentDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-                  {isStatusDropdownOpen && (
-                    <div className="absolute z-20 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
-                      {STATUS_OPTIONS.map((opt) => (
-                        <div 
-                          key={opt.value} 
-                          onClick={() => { setUpdateForm({...updateForm, status: opt.value}); setIsStatusDropdownOpen(false); }}
-                          className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-50 last:border-0"
-                        >
-                          <opt.icon size={16} className={opt.color} />
-                          <span className="text-sm font-bold text-slate-700">{opt.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {isPaymentDropdownOpen && (
+                  <div className="absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden p-2 animate-in fade-in slide-in-from-top-2">
+                    {PAYMENT_OPTIONS.map((opt) => (
+                      <button 
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setUpdateForm({...updateForm, statusPembayaran: opt.value}); setIsPaymentDropdownOpen(false); }}
+                        className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 rounded-xl transition-all"
+                      >
+                        <div className={`w-8 h-8 rounded-lg ${opt.color.replace('text', 'bg')}/10 flex items-center justify-center`}><opt.icon size={16} className={opt.color} /></div>
+                        <span className="text-[13px] font-bold text-slate-700">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-                {/* Custom Dropdown: Status Pembayaran */}
-                <div className="relative">
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Status Pembayaran</label>
-                  <button 
-                    type="button" 
-                    onClick={() => { setIsPaymentDropdownOpen(!isPaymentDropdownOpen); setIsStatusDropdownOpen(false); }}
-                    className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white flex justify-between items-center focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      {(() => {
-                        const opt = PAYMENT_OPTIONS.find(o => o.value === updateForm.statusPembayaran);
-                        const Icon = opt?.icon || AlertCircle;
-                        return <><Icon size={16} className={opt?.color || "text-slate-400"} /> {opt?.label || "Pilih Status"}</>;
-                      })()}
-                    </span>
-                    <ChevronDown size={16} className={`text-slate-400 transition-transform ${isPaymentDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {isPaymentDropdownOpen && (
-                    <div className="absolute z-20 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
-                      {PAYMENT_OPTIONS.map((opt) => (
-                        <div 
-                          key={opt.value} 
-                          onClick={() => { setUpdateForm({...updateForm, statusPembayaran: opt.value}); setIsPaymentDropdownOpen(false); }}
-                          className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-50 last:border-0"
-                        >
-                          <opt.icon size={16} className={opt.color} />
-                          <span className="text-sm font-bold text-slate-700">{opt.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Input DP */}
-                {updateForm.statusPembayaran === 'DP' && (
-                  <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-inner">
-                    <label className="block text-[11px] font-black text-blue-800 uppercase tracking-widest mb-2">Nominal DP Masuk (Rp)</label>
+              {/* Area Nominal DP */}
+              {updateForm.statusPembayaran === 'DP' && (
+                <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 animate-in slide-in-from-bottom-2">
+                  <label className="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3 px-1">Nominal Pembayaran (Rp)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-blue-400 text-lg">Rp</span>
                     <input 
                       type="number" 
                       required 
                       value={updateForm.dpAmount || ''} 
                       onChange={(e) => setUpdateForm({...updateForm, dpAmount: Number(e.target.value)})} 
-                      className="w-full border border-blue-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border-2 border-blue-100 focus:border-blue-500 outline-none font-black text-blue-900 transition-all text-xl"
+                      placeholder="0"
                     />
-                    <div className="text-xs font-medium text-blue-700 mt-3 space-y-1 bg-white/50 p-2 rounded-lg border border-blue-100/50">
-                      <p className="flex justify-between"><span>Tagihan:</span> <span className="font-bold">{formatRupiah(selectedOrder.totalHarga)}</span></p>
-                      <p className="flex justify-between text-rose-600"><span>Sisa Pelunasan:</span> <span className="font-bold">{formatRupiah(selectedOrder.totalHarga - updateForm.dpAmount)}</span></p>
-                    </div>
                   </div>
-                )}
-
-                {updateForm.status === 'DIKIRIM' && (
-                  <div className="p-5 bg-purple-50 rounded-2xl border border-purple-100 shadow-inner mt-4 space-y-4">
-                    <div>
-                      <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <Package size={14} /> Nama Ekspedisi / Kurir
-                      </label>
-                      <input 
-                        type="text" 
-                        required 
-                        placeholder="Contoh: JNE, J&T, SiCepat"
-                        value={updateForm.kurir} 
-                        onChange={(e) => setUpdateForm({...updateForm, kurir: e.target.value})} 
-                        className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-black text-purple-800 uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <Truck size={14} /> Nomor Resi Pengiriman
-                      </label>
-                      <input 
-                        type="text" 
-                        required 
-                        placeholder="Contoh: JNE123456789"
-                        value={updateForm.nomorResi} 
-                        onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
-                        className="w-full border border-purple-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-purple-500/30 transition-all"
-                      />
-                      <p className="text-[10px] text-purple-600 mt-2 font-medium italic">*Kurir dan Nomor ini akan langsung terlihat oleh pelanggan di aplikasi HP mereka.</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex gap-3 pt-6">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Update</button>
                 </div>
-              </form>
-            </div>
+              )}
+
+              {/* Area Pengiriman */}
+              {updateForm.status === 'DIKIRIM' && (
+                <div className="space-y-4 p-6 bg-indigo-50 rounded-3xl border border-indigo-100 animate-in slide-in-from-bottom-2">
+                  <div>
+                    <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 px-1">Kurir / Ekspedisi</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="Contoh: J&T Express"
+                      value={updateForm.kurir || ''} 
+                      onChange={(e) => setUpdateForm({...updateForm, kurir: e.target.value})} 
+                      className="w-full p-4 rounded-2xl bg-white border-2 border-indigo-100 focus:border-indigo-500 outline-none font-bold text-slate-800 transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 px-1">Nomor Resi</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="Masukkan resi pengiriman"
+                      value={updateForm.nomorResi || ''} 
+                      onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
+                      className="w-full p-4 rounded-2xl bg-white border-2 border-indigo-100 focus:border-indigo-500 outline-none font-black text-indigo-900 transition-all text-sm uppercase tracking-widest"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-1 py-4 flex-1 bg-slate-100 text-slate-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">
+                  Batal
+                </button>
+                <button type="submit" className="px-1 py-4 flex-1 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/30">
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
       {/* =========================================
-          CUSTOM DIALOG SYSTEM (Centered)
+          DIALOG KONFIRMASI (PREMIUM ALERT)
       ========================================= */}
-{dialog.isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 max-w-sm w-full mx-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
+      {dialog.isOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={closeDialog}></div>
+          
+          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 p-8 text-center">
+            <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 ${dialog.type === 'confirm' ? 'bg-amber-50 text-amber-500 border border-amber-100' : 'bg-emerald-50 text-emerald-500 border border-emerald-100'}`}>
+              {dialog.type === 'confirm' ? <AlertCircle size={40} /> : <CheckCircle2 size={40} />}
+            </div>
             
-            <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
-              
-              <div className={`mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-5 shadow-inner
-                ${dialog.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 
-                  dialog.type === 'error' ? 'bg-rose-100 text-rose-500' : 
-                  dialog.type === 'confirm' ? 'bg-amber-100 text-amber-500' : 
-                  'bg-blue-100 text-blue-500'}`}
-              >
-                {dialog.type === 'success' && <CheckCircle2 size={32} />}
-                {dialog.type === 'error' && <X size={32} />}
-                {dialog.type === 'confirm' && <AlertCircle size={32} />}
-                {dialog.type === 'info' && <Info size={32} />}
-              </div>
-
-              <h3 className="text-xl font-black text-slate-800 mb-2">{dialog.title}</h3>
-              <p className="text-sm font-medium text-slate-500 leading-relaxed mb-8">{dialog.message}</p>
-
+            <h3 className="text-2xl font-black text-slate-900 leading-tight mb-2">{dialog.title}</h3>
+            <p className="text-slate-500 font-medium text-[13px] mb-8 leading-relaxed px-2">{dialog.message}</p>
+            
+            <div className="flex flex-col gap-3">
               {dialog.type === 'confirm' ? (
-                <div className="flex gap-3">
-                  <button onClick={closeDialog} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                    Batal
-                  </button>
-                  <button onClick={dialog.onConfirm} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
+                <>
+                  <button onClick={dialog.onConfirm} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 shadow-xl shadow-slate-900/20 transition-all active:scale-95">
                     Ya, Lanjutkan
                   </button>
-                </div>
+                  <button onClick={closeDialog} className="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-200 transition-all">
+                    Batalkan
+                  </button>
+                </>
               ) : (
-                <button onClick={closeDialog} className="w-full py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
-                  Mengerti
+                <button onClick={closeDialog} className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all active:scale-95">
+                  Selesai
                 </button>
               )}
             </div>
