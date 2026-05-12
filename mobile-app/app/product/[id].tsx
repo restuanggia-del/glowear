@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Alert } from "react-native";
+import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Alert, FlatList } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
@@ -21,6 +21,7 @@ export default function ProductDetailScreen() {
   const [product, setProduct] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -133,14 +134,42 @@ export default function ProductDetailScreen() {
       />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        <Image 
-          source={{ 
-            uri: product.gambar?.startsWith('http') 
-              ? product.gambar 
-              : `${API_URL}/uploads/${product.gambar}` 
-          }} 
-          style={styles.imageFull} 
-        />
+        <View>
+          <FlatList 
+            data={getPhotoArray(product.gambar)}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={(e) => {
+              const x = e.nativeEvent.contentOffset.x;
+              setActiveIndex(Math.round(x / width));
+            }}
+            renderItem={({ item }) => (
+              <Image 
+                source={{ 
+                  uri: item?.startsWith('http') 
+                    ? item 
+                    : `${API_URL}/uploads/${item}` 
+                }} 
+                style={styles.imageFull} 
+              />
+            )}
+            keyExtractor={(_, index) => index.toString()}
+          />
+          {getPhotoArray(product.gambar).length > 1 && (
+            <View style={styles.pagination}>
+              {getPhotoArray(product.gambar).map((_, i) => (
+                <View 
+                  key={i} 
+                  style={[
+                    styles.dot, 
+                    { backgroundColor: i === activeIndex ? "#3b82f6" : "#cbd5e1", width: i === activeIndex ? 20 : 8 }
+                  ]} 
+                />
+              ))}
+            </View>
+          )}
+        </View>
 
         <Animated.View entering={FadeInDown.delay(200)} style={styles.content}>
           <View style={styles.categoryBadge}>
@@ -238,7 +267,18 @@ const styles = StyleSheet.create({
   
   backButton: { backgroundColor: "rgba(255, 255, 255, 0.9)", padding: 10, borderRadius: 100, marginLeft: 15, marginTop: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   
-  imageFull: { width: "100%", height: width * 1.1, backgroundColor: "#f1f5f9", resizeMode: "cover" },
+  imageFull: { width: width, height: 400, backgroundColor: "#f1f5f9" },
+  pagination: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    gap: 6,
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+  },
   
   content: { padding: 20, backgroundColor: "#f8fafc", borderTopLeftRadius: 30, borderTopRightRadius: 30, marginTop: -30 },
   categoryBadge: { backgroundColor: "rgba(59, 130, 246, 0.1)", alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginBottom: 12, borderWidth: 1, borderColor: "rgba(59, 130, 246, 0.2)" },

@@ -163,6 +163,16 @@ export default function CatalogScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  const getPhotoArray = (fotoString: string | null) => {
+    if (!fotoString) return [];
+    try {
+      const parsed = JSON.parse(fotoString);
+      return Array.isArray(parsed) ? parsed : [fotoString];
+    } catch (e) {
+      return [fotoString];
+    }
+  };
+
   const filteredProducts = useMemo(() => {
     let result = products;
     if (activeCategory !== "Semua") {
@@ -378,9 +388,9 @@ export default function CatalogScreen() {
               <View style={styles.imageContainer}>
                 <Image
                   source={{
-                    uri: item.gambar?.startsWith('http')
-                      ? item.gambar
-                      : `${API_URL}/uploads/${item.gambar}`
+                    uri: getPhotoArray(item.gambar)[0]?.startsWith('http')
+                      ? getPhotoArray(item.gambar)[0]
+                      : `${API_URL}/uploads/${getPhotoArray(item.gambar)[0]}`
                   }}
                   style={styles.image}
                 />

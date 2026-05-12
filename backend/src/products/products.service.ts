@@ -50,13 +50,32 @@ export class ProductsService {
 
     // 3. Jika user mengunggah gambar baru
     if (imageFilename) {
-      dataToUpdate.gambar = imageFilename; // Update nama file di DB
+      dataToUpdate.gambar = imageFilename; 
 
-      // 4. Hapus gambar lama dari folder uploads (jika ada)
+      // 4. Hapus gambar-gambar lama dari folder uploads (jika ada)
       if (existingProduct.gambar) {
-        const oldImagePath = join(process.cwd(), 'uploads', existingProduct.gambar);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath); // Hapus file fisik
+        try {
+          const oldImages = JSON.parse(existingProduct.gambar);
+          if (Array.isArray(oldImages)) {
+            oldImages.forEach(img => {
+              const oldImagePath = join(process.cwd(), 'uploads', img);
+              if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+              }
+            });
+          } else {
+            // Fallback jika data lama bukan JSON array
+            const oldImagePath = join(process.cwd(), 'uploads', existingProduct.gambar);
+            if (fs.existsSync(oldImagePath)) {
+              fs.unlinkSync(oldImagePath);
+            }
+          }
+        } catch (e) {
+          // Fallback jika JSON.parse gagal
+          const oldImagePath = join(process.cwd(), 'uploads', existingProduct.gambar);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
         }
       }
     }

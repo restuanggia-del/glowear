@@ -26,7 +26,7 @@ export default function ProductsPage() {
 
   // State Modal Tambah
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     namaProduk: "",
     deskripsi: "",
@@ -37,7 +37,7 @@ export default function ProductsPage() {
 
   // State Modal Edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editSelectedFile, setEditSelectedFile] = useState<File | null>(null);
+  const [editSelectedFiles, setEditSelectedFiles] = useState<File[]>([]);
   const [editFormData, setEditFormData] = useState({
     id: "",
     namaProduk: "",
@@ -99,8 +99,8 @@ export default function ProductsPage() {
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedFile) {
-      showDialog('info', 'Gambar Diperlukan', 'Silakan pilih gambar produk terlebih dahulu sebelum menyimpan!');
+    if (selectedFiles.length === 0) {
+      showDialog('info', 'Gambar Diperlukan', 'Silakan pilih minimal satu gambar produk terlebih dahulu!');
       return;
     }
 
@@ -110,7 +110,10 @@ export default function ProductsPage() {
     submitData.append("harga", formData.harga.toString());
     submitData.append("stok", formData.stok.toString());
     submitData.append("categoryId", formData.categoryId);
-    submitData.append("image", selectedFile);
+    
+    selectedFiles.forEach(file => {
+      submitData.append("image", file);
+    });
 
     try {
       const res = await fetch("http://localhost:3001/products", {
@@ -123,7 +126,7 @@ export default function ProductsPage() {
         fetchProducts();
         showDialog('success', 'Berhasil', 'Produk baru telah ditambahkan ke katalog.');
         setFormData({ namaProduk: "", deskripsi: "", harga: 0, stok: 0, categoryId: "" });
-        setSelectedFile(null);
+        setSelectedFiles([]);
       } else {
         showDialog('error', 'Gagal', 'Terjadi kesalahan saat menambahkan produk.');
       }
@@ -143,8 +146,10 @@ export default function ProductsPage() {
     submitData.append("stok", editFormData.stok.toString());
     submitData.append("categoryId", editFormData.categoryId);
     
-    if (editSelectedFile) {
-      submitData.append("image", editSelectedFile);
+    if (editSelectedFiles.length > 0) {
+      editSelectedFiles.forEach(file => {
+        submitData.append("image", file);
+      });
     }
 
     try {
@@ -157,7 +162,7 @@ export default function ProductsPage() {
         setIsEditModalOpen(false);
         fetchProducts();
         showDialog('success', 'Update Berhasil', 'Informasi produk berhasil diperbarui.');
-        setEditSelectedFile(null);
+        setEditSelectedFiles([]);
       } else {
         showDialog('error', 'Update Gagal', 'Gagal menyimpan perubahan produk.');
       }
@@ -198,6 +203,16 @@ export default function ProductsPage() {
 
   const formatRupiah = (angka: number) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka);
+  };
+
+  const getPhotoArray = (fotoString: string | null) => {
+    if (!fotoString) return [];
+    try {
+      const parsed = JSON.parse(fotoString);
+      return Array.isArray(parsed) ? parsed : [fotoString];
+    } catch (e) {
+      return [fotoString];
+    }
   };
 
   const formatIdProduk = (id: string) => `PRD-${id.substring(0, 6).toUpperCase()}`;
@@ -270,9 +285,16 @@ export default function ProductsPage() {
                       </span>
                     </td>
                     <td className="py-4 px-6 flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0 shadow-sm">
+                      <div className="h-14 w-14 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0 shadow-sm relative">
                         {product.gambar ? (
-                          <img src={getImageUrl(product.gambar)!} alt={product.namaProduk} className="h-full w-full object-cover" />
+                          <>
+                            <img src={getImageUrl(getPhotoArray(product.gambar)[0])!} alt={product.namaProduk} className="h-full w-full object-cover" />
+                            {getPhotoArray(product.gambar).length > 1 && (
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-[10px] font-black text-white">
+                                +{getPhotoArray(product.gambar).length - 1}
+                              </div>
+                            )}
+                          </>
                         ) : (
                           <ImageIcon size={24} className="text-slate-300" />
                         )}
@@ -342,21 +364,36 @@ export default function ProductsPage() {
                     <input 
                       type="file" 
                       accept="image/*"
+                      multiple
                       required
-                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length > 5) {
+                          showDialog('info', 'Batas Maksimal', 'Maksimal 5 gambar diperbolehkan.');
+                          setSelectedFiles(files.slice(0, 5));
+                        } else {
+                          setSelectedFiles(files);
+                        }
+                      }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    {selectedFile ? (
-                      <div className="text-center z-0">
-                        <div className="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3"><ImageIcon size={32}/></div>
-                        <p className="text-sm font-bold text-slate-800 truncate max-w-xs">{selectedFile.name}</p>
-                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mt-2 bg-blue-50 py-1 px-3 rounded-full inline-block">Ganti Gambar</p>
+                    {selectedFiles.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 justify-center z-0">
+                        {selectedFiles.map((file, i) => (
+                          <div key={i} className="relative w-16 h-16 bg-blue-100 rounded-xl overflow-hidden border border-blue-200">
+                             <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                        <div className="w-full text-center mt-2">
+                           <p className="text-sm font-bold text-slate-800">{selectedFiles.length} Gambar Terpilih</p>
+                           <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider bg-blue-50 py-1 px-3 rounded-full inline-block mt-1">Ganti Semua</p>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
                         <div className="w-16 h-16 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-3 transition-colors"><Upload size={28} /></div>
-                        <p className="text-sm font-bold text-slate-700">Pilih atau seret gambar ke sini</p>
-                        <p className="text-xs font-medium text-slate-400 mt-1">Format: JPG, PNG (Maks. 2MB)</p>
+                        <p className="text-sm font-bold text-slate-700">Pilih hingga 5 gambar</p>
+                        <p className="text-xs font-medium text-slate-400 mt-1">Format: JPG, PNG (Maks. 5 File)</p>
                       </div>
                     )}
                   </div>
@@ -429,18 +466,33 @@ export default function ProductsPage() {
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={(e) => setEditSelectedFile(e.target.files?.[0] || null)}
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length > 5) {
+                          showDialog('info', 'Batas Maksimal', 'Maksimal 5 gambar diperbolehkan.');
+                          setEditSelectedFiles(files.slice(0, 5));
+                        } else {
+                          setEditSelectedFiles(files);
+                        }
+                      }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    {editSelectedFile ? (
-                      <div className="text-center z-0">
-                        <p className="text-sm font-bold text-blue-600 truncate max-w-xs">{editSelectedFile.name}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Siap Diunggah</p>
+                    {editSelectedFiles.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 justify-center z-0">
+                        {editSelectedFiles.map((file, i) => (
+                           <div key={i} className="relative w-12 h-12 bg-blue-100 rounded-lg overflow-hidden border border-blue-200">
+                              <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                           </div>
+                        ))}
+                        <div className="w-full text-center mt-1">
+                           <p className="text-xs font-bold text-blue-600">{editSelectedFiles.length} Gambar Terpilih</p>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
                         <Upload size={24} className="mb-2 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                        <p className="text-sm font-bold text-slate-600">Pilih gambar baru</p>
+                        <p className="text-sm font-bold text-slate-600">Ganti semua gambar (Opsional)</p>
                       </div>
                     )}
                   </div>
@@ -476,7 +528,7 @@ export default function ProductsPage() {
 
             {/* Footer (Menempel di Bawah) */}
             <div className="p-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFile(null); }} className="w-full sm:w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
+              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFiles([]); }} className="w-full sm:w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
               <button type="submit" form="editForm" className="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Perubahan</button>
             </div>
           </div>

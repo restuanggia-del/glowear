@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { multerOptions } from './multer.config';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Products')
 @Controller('products')
@@ -12,24 +12,23 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image', multerOptions))
+  @UseInterceptors(FilesInterceptor('image', 5, multerOptions))
   async create(
-    @UploadedFile() file: Express.Multer.File, 
-    @Body() createProductDto: any // Ubah sementara ke any untuk manual parsing
+    @UploadedFiles() files: Express.Multer.File[], 
+    @Body() createProductDto: any
   ) {
-    if (!file) {
-      throw new BadRequestException('Silakan unggah file gambar');
+    if (!files || files.length === 0) {
+      throw new BadRequestException('Silakan unggah minimal satu gambar');
     }
 
-    // KONVERSI MANUAL: Karena FormData mengirimkan string
     const data = {
       ...createProductDto,
       harga: parseInt(createProductDto.harga),
       stok: parseInt(createProductDto.stok),
     };
 
-    // Kirim data yang sudah dikonversi ke service
-    return this.productsService.create(data, file.filename);
+    const filenames = files.map(file => file.filename);
+    return this.productsService.create(data, JSON.stringify(filenames));
   }
 
   @Get()
@@ -44,21 +43,20 @@ export class ProductsController {
 
   // Menggunakan PUT sesuai permintaan Anda
   @Put(':id')
-  @UseInterceptors(FileInterceptor('image', multerOptions)) // Tambahkan interceptor
+  @UseInterceptors(FilesInterceptor('image', 5, multerOptions))
   async update(
     @Param('id') id: string, 
     @Body() updateProductDto: any,
-    @UploadedFile() file?: Express.Multer.File // File bersifat opsional saat edit
+    @UploadedFiles() files?: Express.Multer.File[]
   ) {
-    // Konversi string dari FormData menjadi number
     const data = {
       ...updateProductDto,
       harga: parseInt(updateProductDto.harga),
       stok: parseInt(updateProductDto.stok),
     };
 
-    // Kirim data dan filename (jika ada) ke service
-    return this.productsService.update(id, data, file?.filename);
+    const filenames = files && files.length > 0 ? JSON.stringify(files.map(f => f.filename)) : undefined;
+    return this.productsService.update(id, data, filenames);
   }
 
   @Delete(':id')

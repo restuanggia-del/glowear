@@ -102,9 +102,6 @@ export default function ProfileScreen() {
           {(!userData.noTelepon || !userData.alamat) && (<Text style={s.warningText}>* Silakan klik tombol Edit untuk melengkapi data pengiriman Anda.</Text>)}
         </View>
 
-          </View>
-        </View>
-
         <TouchableOpacity 
           style={[s.card, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 18 }]}
           onPress={() => router.push('/wishlist')}
