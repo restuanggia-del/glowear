@@ -45,4 +45,19 @@ export class AuthController {
       nama: user.nama
     };
   }
+
+  @Post('forgot-password')
+  forgotPassword(@Body() body: { email: string }) {
+    return this.authService.requestResetPassword(body.email);
+  }
+
+  @Post('verify-otp')
+  verifyOtp(@Body() body: { email: string; otp: string }) {
+    return this.authService.verifyResetOtp(body.email, body.otp);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() body: { email: string; otp: string; kataSandiBaru: string }) {
+    return this.authService.resetPassword(body.email, body.otp, body.kataSandiBaru);
+  }
 }

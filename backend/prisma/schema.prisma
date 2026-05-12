@@ -24,6 +24,8 @@ model Pengguna {
   alamat      String?  @db.Text
   fotoProfil  String?  @map("foto_profil")
   expoPushToken String? @map("expo_push_token")
+  resetPasswordOtp String? @map("reset_password_otp")
+  resetPasswordOtpExpiry DateTime? @map("reset_password_otp_expiry")
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")
   orders    Order[]

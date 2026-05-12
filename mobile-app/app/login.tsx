@@ -136,7 +136,7 @@ export default function Login() {
                     <View style={styles.checkbox} />
                     <Text style={styles.rememberText}>Ingat Saya</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => router.push("/forgot-password")}>
                     <Text style={styles.forgotText}>Lupa kata sandi?</Text>
                   </TouchableOpacity>
                 </View>

@@ -111,6 +111,79 @@ export class AuthService {
     });
   }
 
+  // --- FORGOT PASSWORD LOGIC ---
+
+  async requestResetPassword(email: string) {
+    const user = await this.prisma.pengguna.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Email tidak terdaftar');
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date();
+    expiry.setMinutes(expiry.getMinutes() + 15); // Expire in 15 mins
+
+    await this.prisma.pengguna.update({
+      where: { email },
+      data: {
+        resetPasswordOtp: otp,
+        resetPasswordOtpExpiry: expiry,
+      },
+    });
+
+    // SIMULASI: Log ke console (karena tidak ada SMTP)
+    console.log(`[FORGOT PASSWORD] OTP untuk ${email}: ${otp}`);
+
+    return {
+      message: 'Kode OTP telah dikirim ke email Anda (Simulasi)',
+      // Untuk kemudahan testing, kembalikan OTP jika di env development
+      otp: process.env.NODE_ENV === 'production' ? undefined : otp,
+    };
+  }
+
+  async verifyResetOtp(email: string, otp: string) {
+    const user = await this.prisma.pengguna.findUnique({
+      where: { email },
+    });
+
+    if (!user || user.resetPasswordOtp !== otp) {
+      throw new BadRequestException('Kode OTP salah');
+    }
+
+    if (new Date() > (user.resetPasswordOtpExpiry || new Date())) {
+      throw new BadRequestException('Kode OTP telah kadaluarsa');
+    }
+
+    return { message: 'OTP valid' };
+  }
+
+  async resetPassword(email: string, otp: string, kataSandiBaru: string) {
+    const user = await this.prisma.pengguna.findUnique({
+      where: { email },
+    });
+
+    if (!user || user.resetPasswordOtp !== otp) {
+      throw new BadRequestException('Gagal mereset password: OTP tidak valid');
+    }
+
+    const hashedPassword = await bcrypt.hash(kataSandiBaru, 10);
+
+    await this.prisma.pengguna.update({
+      where: { email },
+      data: {
+        kataSandi: hashedPassword,
+        resetPasswordOtp: null,
+        resetPasswordOtpExpiry: null,
+      },
+    });
+
+    return { message: 'Password berhasil diperbarui' };
+  }
+
   // helper
   async validateUser(userId: string) {
     const user = await this.prisma.pengguna.findUnique({
