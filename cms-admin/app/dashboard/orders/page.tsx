@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Search, Edit, Truck, Package, CheckCircle, Clock, Banknote, 
-  Eye, X, MapPin, FileText, CalendarDays, AlertCircle, 
-  CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon, Printer
+import {
+  Search, Edit, Truck, Package, CheckCircle, Clock, Banknote,
+  Eye, X, MapPin, FileText, CalendarDays, AlertCircle,
+  CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon, Printer, ShoppingBag, Users
 } from "lucide-react";
 import Image from "next/image"; // Menggunakan Next Image untuk optimasi
 import { api } from "@/app/services/api";
@@ -37,7 +37,7 @@ export default function OrdersPage() {
   // State Modal Utama
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  
+
   // ==========================================
   // STATE BARU: IMAGE PREVIEW (ZOOM)
   // ==========================================
@@ -67,7 +67,7 @@ export default function OrdersPage() {
   // State Custom Dropdown
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isPaymentDropdownOpen, setIsPaymentDropdownOpen] = useState(false);
-  
+
   // State Custom Dialog
   const [dialog, setDialog] = useState<{
     isOpen: boolean;
@@ -112,7 +112,7 @@ export default function OrdersPage() {
 
   const handleUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     showDialog('confirm', 'Konfirmasi Update', `Yakin ingin mengubah status pesanan ORD-${selectedOrder.id.substring(0, 6).toUpperCase()}?`, async () => {
       closeDialog();
       try {
@@ -164,13 +164,23 @@ export default function OrdersPage() {
     return new Date(dateString).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   };
 
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'SELESAI': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'DIKIRIM': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'DIPROSES': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'DIBATALKAN': return 'bg-rose-100 text-rose-700 border-rose-200';
+      default: return 'bg-orange-100 text-orange-700 border-orange-200';
+    }
+  };
+
   const filteredOrders = orders.filter((order) =>
     String(order.id).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="space-y-6 pb-10 relative">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
@@ -211,53 +221,51 @@ export default function OrdersPage() {
               ) : filteredOrders.length === 0 ? (
                 <tr><td colSpan={5} className="py-16 text-center text-slate-500 font-medium">Tidak ada pesanan ditemukan.</td></tr>
               ) : (
-               filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-4 px-6">
-                    <p className="font-mono text-sm font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded inline-block mb-1 border border-slate-200">
-                      ORD-{String(order.id).substring(0, 6).toUpperCase()}
-                    </p>
-                    <p className="text-xs text-slate-500 font-medium">{formatDate(order.waktuDibuat)}</p>
-                  </td>
-                  <td className="py-4 px-6">
-                    <p className="text-xs text-slate-600 font-bold mb-0.5">{order.items?.length || 0} Macam Barang</p>
-                    <p className="font-black text-blue-600 text-sm">{formatRupiah(order.totalHarga)}</p>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${
-                      order.statusPembayaran === 'LUNAS' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 
-                      order.statusPembayaran === 'DP' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-rose-100 text-rose-700 border border-rose-200'
-                    }`}>
-                      <Banknote size={12} /> {order.statusPembayaran.replace('_', ' ')}
-                    </span>
-                    {order.statusPembayaran === 'DP' && <p className="text-[10px] text-slate-500 mt-1.5 font-bold uppercase tracking-wider">Sisa: {formatRupiah(order.sisaPembayaran)}</p>}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${
-                      order.status === 'SELESAI' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
-                      order.status === 'DIKIRIM' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                      order.status === 'DIPROSES' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                      order.status === 'DIBATALKAN' ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-orange-100 text-orange-700 border border-orange-200'
-                    }`}>
-                      {order.status === 'SELESAI' ? <CheckCircle size={12}/> : order.status === 'DIKIRIM' ? <Truck size={12}/> : order.status === 'DIPROSES' ? <Package size={12}/> : order.status === 'DIBATALKAN' ? <XCircle size={12}/> : <Clock size={12}/>}
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <button onClick={() => openDetailModal(order)} className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-all bg-slate-100 border border-slate-200 shadow-sm" title="Lihat Detail">
-                        <Eye size={16} />
-                      </button>
-                      <button onClick={() => openUpdateModal(order)} className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-lg transition-all bg-blue-50 border border-blue-100 shadow-sm" title="Update Status">
-                        <Edit size={16} />
-                      </button>
-                      <button onClick={() => openInvoice(order)} className="p-2 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg transition-all bg-emerald-50 border border-emerald-100 shadow-sm" title="Cetak Struk">
-                        <Printer size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )))}
+                filteredOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-4 px-6">
+                      <p className="font-mono text-sm font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded inline-block mb-1 border border-slate-200">
+                        ORD-{String(order.id).substring(0, 6).toUpperCase()}
+                      </p>
+                      <p className="text-xs text-slate-500 font-medium">{formatDate(order.waktuDibuat)}</p>
+                    </td>
+                    <td className="py-4 px-6">
+                      <p className="text-xs text-slate-600 font-bold mb-0.5">{order.items?.length || 0} Macam Barang</p>
+                      <p className="font-black text-blue-600 text-sm">{formatRupiah(order.totalHarga)}</p>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${order.statusPembayaran === 'LUNAS' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                        order.statusPembayaran === 'DP' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-rose-100 text-rose-700 border border-rose-200'
+                        }`}>
+                        <Banknote size={12} /> {order.statusPembayaran.replace('_', ' ')}
+                      </span>
+                      {order.statusPembayaran === 'DP' && <p className="text-[10px] text-slate-500 mt-1.5 font-bold uppercase tracking-wider">Sisa: {formatRupiah(order.sisaPembayaran)}</p>}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${order.status === 'SELESAI' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                        order.status === 'DIKIRIM' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                          order.status === 'DIPROSES' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                            order.status === 'DIBATALKAN' ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-orange-100 text-orange-700 border border-orange-200'
+                        }`}>
+                        {order.status === 'SELESAI' ? <CheckCircle size={12} /> : order.status === 'DIKIRIM' ? <Truck size={12} /> : order.status === 'DIPROSES' ? <Package size={12} /> : order.status === 'DIBATALKAN' ? <XCircle size={12} /> : <Clock size={12} />}
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={() => openDetailModal(order)} className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-all bg-slate-100 border border-slate-200 shadow-sm" title="Lihat Detail">
+                          <Eye size={16} />
+                        </button>
+                        <button onClick={() => openUpdateModal(order)} className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-lg transition-all bg-blue-50 border border-blue-100 shadow-sm" title="Update Status">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => openInvoice(order)} className="p-2 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg transition-all bg-emerald-50 border border-emerald-100 shadow-sm" title="Cetak Struk">
+                          <Printer size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )))}
             </tbody>
           </table>
         </div>
@@ -270,9 +278,9 @@ export default function OrdersPage() {
         <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
-            
+
             <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20">
-              
+
               {/* Modern Header dengan Gradients */}
               <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-8 text-white relative overflow-hidden flex-shrink-0">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
@@ -289,17 +297,17 @@ export default function OrdersPage() {
                         </span>
                       </div>
                       <p className="text-slate-400 font-medium mt-1 flex items-center gap-2">
-                        <CalendarDays size={14} className="text-slate-500"/> Terdaftar pada {formatDate(selectedOrder.waktuDibuat)}
+                        <CalendarDays size={14} className="text-slate-500" /> Terdaftar pada {formatDate(selectedOrder.waktuDibuat)}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col items-end gap-3">
                     <div className={`px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 border shadow-lg ${getStatusStyle(selectedOrder.status)}`}>
-                       {selectedOrder.status}
+                      {selectedOrder.status}
                     </div>
                     <div className={`px-4 py-1.5 rounded-xl font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 bg-white/10 border border-white/10 text-white`}>
-                       Status Bayar: <span className="text-blue-400">{selectedOrder.statusPembayaran}</span>
+                      Status Bayar: <span className="text-blue-400">{selectedOrder.statusPembayaran}</span>
                     </div>
                   </div>
                 </div>
@@ -307,27 +315,27 @@ export default function OrdersPage() {
 
               {/* Body Content */}
               <div className="p-8 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar bg-slate-50/50">
-                
+
                 {/* Section 1: Customer & Logistics Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <Users size={14} className="text-blue-500"/> Informasi Pelanggan
+                      <Users size={14} className="text-blue-500" /> Informasi Pelanggan
                     </h3>
                     <div className="space-y-3">
                       <p className="text-base font-black text-slate-900 leading-none">{selectedOrder.pengguna?.nama || "Pelanggan Glowear"}</p>
                       <p className="text-[13px] text-slate-500 font-medium flex items-center gap-2">
-                         <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.email}
+                        <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.email}
                       </p>
                       <p className="text-[13px] text-slate-500 font-medium flex items-center gap-2">
-                         <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.noTelp}
+                        <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span> {selectedOrder.pengguna?.noTelp}
                       </p>
                     </div>
                   </div>
 
                   <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <MapPin size={14} className="text-rose-500"/> Alamat Pengiriman
+                      <MapPin size={14} className="text-rose-500" /> Alamat Pengiriman
                     </h3>
                     <p className="text-[13px] text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 italic">
                       {selectedOrder.alamatPengiriman || "Alamat tidak dicantumkan."}
@@ -336,7 +344,7 @@ export default function OrdersPage() {
 
                   <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm group hover:shadow-md transition-all duration-300">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <Banknote size={14} className="text-emerald-500"/> Ringkasan Finansial
+                      <Banknote size={14} className="text-emerald-500" /> Ringkasan Finansial
                     </h3>
                     <div className="space-y-2.5">
                       <div className="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl">
@@ -359,20 +367,20 @@ export default function OrdersPage() {
                 <section>
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                      <Shirt size={16} className="text-blue-500"/> Item Produksi ({selectedOrder.items?.length || 0})
+                      <Shirt size={16} className="text-blue-500" /> Item Produksi ({selectedOrder.items?.length || 0})
                     </h3>
                     <div className="h-px flex-1 bg-slate-200 mx-6"></div>
                   </div>
-                  
+
                   <div className="space-y-6">
                     {selectedOrder.items?.map((item: any, idx: number) => (
                       <div key={idx} className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col md:flex-row gap-0 group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
-                        
+
                         {/* Area Info (Kiri) */}
                         <div className="flex-1 p-8">
                           <div className="flex items-center gap-4 mb-6">
                             <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300">
-                               <Shirt size={28}/>
+                              <Shirt size={28} />
                             </div>
                             <div>
                               <p className="font-black text-slate-900 text-lg leading-none">{item.product?.namaProduk || "Produk Custom"}</p>
@@ -382,7 +390,7 @@ export default function OrdersPage() {
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
                               <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Pilihan Sablon</p>
@@ -400,20 +408,20 @@ export default function OrdersPage() {
                         {/* Area Lampiran (Kanan) */}
                         <div className="w-full md:w-[360px] bg-slate-50/80 p-8 border-t md:border-t-0 md:border-l border-slate-100">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Aset Desain Pelanggan</p>
-                          
+
                           <div className="grid grid-cols-2 gap-4">
                             {[
                               { label: 'Depan', file: item.fileDesainDepan },
                               { label: 'Belakang', file: item.fileDesainBelakang }
                             ].map((design, i) => (
                               <div key={i} className="space-y-2">
-                                <div 
-                                  className="aspect-square bg-white rounded-2xl border-2 border-slate-200 overflow-hidden relative group cursor-pointer shadow-sm hover:border-blue-400 transition-all duration-300" 
+                                <div
+                                  className="aspect-square bg-white rounded-2xl border-2 border-slate-200 overflow-hidden relative group cursor-pointer shadow-sm hover:border-blue-400 transition-all duration-300"
                                   onClick={() => design.file && openPreview(`${API_BASE_URL}/${design.file}`)}
                                 >
                                   {design.file ? (
                                     <>
-                                      <Image src={`${API_BASE_URL}/${design.file}`} alt={design.label} fill className="object-cover group-hover:scale-110 transition-transform duration-500"/>
+                                      <Image src={`${API_BASE_URL}/${design.file}`} alt={design.label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                       <div className="absolute inset-0 bg-blue-600/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white backdrop-blur-[2px]">
                                         <Eye size={24} className="scale-75 group-hover:scale-100 transition-transform duration-300" />
                                       </div>
@@ -435,7 +443,7 @@ export default function OrdersPage() {
                   </div>
                 </section>
               </div>
-              
+
               {/* Modern Action Bar */}
               <div className="p-8 bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0 relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
                 <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
@@ -443,20 +451,20 @@ export default function OrdersPage() {
                     Tutup
                   </button>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
-                   <button 
-                     onClick={() => { setIsDetailModalOpen(false); openUpdateModal(selectedOrder); }}
-                     className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest border border-slate-700"
-                   >
-                     <Edit size={16} /> Update Status
-                   </button>
-                   <button 
-                     onClick={() => openInvoice(selectedOrder)} 
-                     className="px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-600/20 flex items-center gap-3 uppercase tracking-widest border border-emerald-500"
-                   >
-                     <Printer size={18} /> Cetak Struk
-                   </button>
+                  <button
+                    onClick={() => { setIsDetailModalOpen(false); openUpdateModal(selectedOrder); }}
+                    className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest border border-slate-700"
+                  >
+                    <Edit size={16} /> Update Status
+                  </button>
+                  <button
+                    onClick={() => openInvoice(selectedOrder)}
+                    className="px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-600/20 flex items-center gap-3 uppercase tracking-widest border border-emerald-500"
+                  >
+                    <Printer size={18} /> Cetak Struk
+                  </button>
                 </div>
               </div>
             </div>
@@ -467,18 +475,18 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL PREVIEW GAMBAR (ZOOM LIGHTBOX)
       ========================================= */}
-{isPreviewOpen && previewImageUrl && (
+      {isPreviewOpen && previewImageUrl && (
         <div className="fixed inset-0 z-[100] pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 h-[calc(100vh-110px)] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
           {/* Backdrop Gelap */}
           <div className="fixed inset-0 bg-black/90 backdrop-blur-sm"></div>
-          
+
           {/* Kontainer Gambar (Centered) */}
           <div className="relative z-10 max-w-7xl max-h-[90vh] p-4 flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <Image 
-              src={previewImageUrl} 
-              alt="Zoom Preview" 
-              width={1200} 
-              height={1200} 
+            <Image
+              src={previewImageUrl}
+              alt="Zoom Preview"
+              width={1200}
+              height={1200}
               className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border-4 border-white/10 animate-in zoom-in-95 duration-300"
             />
             <p className="text-white/60 text-xs mt-4 font-medium tracking-wide">Klik di luar gambar atau tombol X untuk menutup</p>
@@ -500,9 +508,9 @@ export default function OrdersPage() {
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsModalOpen(false)}></div>
-          
+
           <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
-            
+
             {/* Header dengan Icon Visual */}
             <div className="p-8 pb-4 text-center">
               <div className="w-20 h-20 bg-blue-50 rounded-[2rem] flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-inner">
@@ -513,12 +521,12 @@ export default function OrdersPage() {
             </div>
 
             <form onSubmit={handleUpdateSubmit} className="p-8 pt-4 space-y-6">
-              
+
               {/* Dropdown Produksi */}
               <div className="relative">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Tahap Produksi</label>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => { setIsStatusDropdownOpen(!isStatusDropdownOpen); setIsPaymentDropdownOpen(false); }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-800 flex justify-between items-center hover:bg-white hover:border-blue-400 transition-all shadow-sm"
                 >
@@ -535,10 +543,10 @@ export default function OrdersPage() {
                 {isStatusDropdownOpen && (
                   <div className="absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden p-2 animate-in fade-in slide-in-from-top-2">
                     {STATUS_OPTIONS.map((opt) => (
-                      <button 
+                      <button
                         key={opt.value}
                         type="button"
-                        onClick={() => { setUpdateForm({...updateForm, status: opt.value}); setIsStatusDropdownOpen(false); }}
+                        onClick={() => { setUpdateForm({ ...updateForm, status: opt.value }); setIsStatusDropdownOpen(false); }}
                         className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 rounded-xl transition-all"
                       >
                         <div className={`w-8 h-8 rounded-lg ${opt.color.replace('text', 'bg')}/10 flex items-center justify-center`}><opt.icon size={16} className={opt.color} /></div>
@@ -552,8 +560,8 @@ export default function OrdersPage() {
               {/* Dropdown Pembayaran */}
               <div className="relative">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Status Keuangan</label>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => { setIsPaymentDropdownOpen(!isPaymentDropdownOpen); setIsStatusDropdownOpen(false); }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-800 flex justify-between items-center hover:bg-white hover:border-blue-400 transition-all shadow-sm"
                 >
@@ -570,10 +578,10 @@ export default function OrdersPage() {
                 {isPaymentDropdownOpen && (
                   <div className="absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden p-2 animate-in fade-in slide-in-from-top-2">
                     {PAYMENT_OPTIONS.map((opt) => (
-                      <button 
+                      <button
                         key={opt.value}
                         type="button"
-                        onClick={() => { setUpdateForm({...updateForm, statusPembayaran: opt.value}); setIsPaymentDropdownOpen(false); }}
+                        onClick={() => { setUpdateForm({ ...updateForm, statusPembayaran: opt.value }); setIsPaymentDropdownOpen(false); }}
                         className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 rounded-xl transition-all"
                       >
                         <div className={`w-8 h-8 rounded-lg ${opt.color.replace('text', 'bg')}/10 flex items-center justify-center`}><opt.icon size={16} className={opt.color} /></div>
@@ -590,11 +598,11 @@ export default function OrdersPage() {
                   <label className="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3 px-1">Nominal Pembayaran (Rp)</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-blue-400 text-lg">Rp</span>
-                    <input 
-                      type="number" 
-                      required 
-                      value={updateForm.dpAmount || ''} 
-                      onChange={(e) => setUpdateForm({...updateForm, dpAmount: Number(e.target.value)})} 
+                    <input
+                      type="number"
+                      required
+                      value={updateForm.dpAmount || ''}
+                      onChange={(e) => setUpdateForm({ ...updateForm, dpAmount: Number(e.target.value) })}
                       className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border-2 border-blue-100 focus:border-blue-500 outline-none font-black text-blue-900 transition-all text-xl"
                       placeholder="0"
                     />
@@ -607,23 +615,23 @@ export default function OrdersPage() {
                 <div className="space-y-4 p-6 bg-indigo-50 rounded-3xl border border-indigo-100 animate-in slide-in-from-bottom-2">
                   <div>
                     <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 px-1">Kurir / Ekspedisi</label>
-                    <input 
-                      type="text" 
-                      required 
+                    <input
+                      type="text"
+                      required
                       placeholder="Contoh: J&T Express"
-                      value={updateForm.kurir || ''} 
-                      onChange={(e) => setUpdateForm({...updateForm, kurir: e.target.value})} 
+                      value={updateForm.kurir || ''}
+                      onChange={(e) => setUpdateForm({ ...updateForm, kurir: e.target.value })}
                       className="w-full p-4 rounded-2xl bg-white border-2 border-indigo-100 focus:border-indigo-500 outline-none font-bold text-slate-800 transition-all text-sm"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 px-1">Nomor Resi</label>
-                    <input 
-                      type="text" 
-                      required 
+                    <input
+                      type="text"
+                      required
                       placeholder="Masukkan resi pengiriman"
-                      value={updateForm.nomorResi || ''} 
-                      onChange={(e) => setUpdateForm({...updateForm, nomorResi: e.target.value})} 
+                      value={updateForm.nomorResi || ''}
+                      onChange={(e) => setUpdateForm({ ...updateForm, nomorResi: e.target.value })}
                       className="w-full p-4 rounded-2xl bg-white border-2 border-indigo-100 focus:border-indigo-500 outline-none font-black text-indigo-900 transition-all text-sm uppercase tracking-widest"
                     />
                   </div>
@@ -649,15 +657,15 @@ export default function OrdersPage() {
       {dialog.isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={closeDialog}></div>
-          
+
           <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 p-8 text-center">
             <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 ${dialog.type === 'confirm' ? 'bg-amber-50 text-amber-500 border border-amber-100' : 'bg-emerald-50 text-emerald-500 border border-emerald-100'}`}>
               {dialog.type === 'confirm' ? <AlertCircle size={40} /> : <CheckCircle2 size={40} />}
             </div>
-            
+
             <h3 className="text-2xl font-black text-slate-900 leading-tight mb-2">{dialog.title}</h3>
             <p className="text-slate-500 font-medium text-[13px] mb-8 leading-relaxed px-2">{dialog.message}</p>
-            
+
             <div className="flex flex-col gap-3">
               {dialog.type === 'confirm' ? (
                 <>
