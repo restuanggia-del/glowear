@@ -16,6 +16,8 @@ import { PortfolioModule } from './portfolio/portfolio.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { ReviewsModule } from './reviews/reviews.module';
     DashboardModule,
     NotificationsModule,
     ReviewsModule,
+    WishlistModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

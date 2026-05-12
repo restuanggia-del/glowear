@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Param, UploadedFile, UseInterceptors, Get } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Post, Body, Param, UploadedFiles, UseInterceptors, Get } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ReviewsService } from './reviews.service';
@@ -9,7 +9,7 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('foto', {
+  @UseInterceptors(FilesInterceptor('foto', 5, {
     storage: diskStorage({
       destination: './uploads',
       filename: (req, file, cb) => {
@@ -20,18 +20,20 @@ export class ReviewsController {
   }))
   async createReview(
     @Body() body: { orderId: string, userId: string, rating: string, komentar: string },
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFiles() files: Express.Multer.File[]
   ) {
     try {
       console.log('Received Review Body:', body);
-      console.log('Received File:', file ? file.filename : 'No file');
+      console.log('Received Files:', files ? files.map(f => f.filename) : 'No files');
       
+      const fotoString = files && files.length > 0 ? JSON.stringify(files.map(f => f.filename)) : undefined;
+
       return await this.reviewsService.createReview(
         body.orderId,
         body.userId,
         Number(body.rating),
         body.komentar,
-        file ? file.filename : undefined
+        fotoString
       );
     } catch (error) {
       console.error('Error creating review:', error);
@@ -42,5 +44,15 @@ export class ReviewsController {
   @Get('order/:orderId')
   async getReviewByOrder(@Param('orderId') orderId: string) {
     return this.reviewsService.getReviewsByOrder(orderId);
+  }
+
+  @Get('product/:productId')
+  async getReviewsByProduct(@Param('productId') productId: string) {
+    return this.reviewsService.getReviewsByProduct(productId);
+  }
+
+  @Get()
+  async getAllReviews() {
+    return this.reviewsService.getAllReviews();
   }
 }

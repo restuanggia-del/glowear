@@ -26,8 +26,9 @@ model Pengguna {
   expoPushToken String? @map("expo_push_token")
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
   waktuDiubah DateTime @updatedAt @map("waktu_diubah")
-  orders Order[]
-  reviews Review[]
+  orders    Order[]
+  reviews   Review[]
+  wishlists Wishlist[]
 
   @@map("pengguna")
 }
@@ -60,6 +61,7 @@ model Product {
   waktuDibuat   DateTime    @default(now())
   waktuDiupdate DateTime    @updatedAt
   OrderItem     OrderItem[]
+  wishlists     Wishlist[]
 
   @@map("products")
 }
@@ -203,4 +205,25 @@ model Notifikasi {
   waktuDibuat DateTime @default(now()) @map("waktu_dibuat")
 
   @@map("notifikasi")
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  pengguna  Pengguna @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  waktuDibuat DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("wishlist")
+}
+
+model SearchLog {
+  id          String   @id @default(uuid())
+  keyword     String
+  userId      String?
+  waktuDibuat DateTime @default(now())
+
+  @@map("search_logs")
 }

@@ -9,6 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Skeleton from "../../components/Skeleton";
 import Animated, { FadeInDown, FadeInRight, BounceIn } from "react-native-reanimated";
 import { useCartStore } from "../../store/cart-store";
+import { useSearchHistoryStore } from "../../store/search-history-store";
+import { useWishlistStore } from "../../store/wishlist-store";
 
 const { width, height } = Dimensions.get("window");
 
@@ -21,6 +23,9 @@ export default function CatalogScreen() {
 
   const { addItem, totalItems } = useCartStore();
   const cartItemsCount = totalItems();
+  
+  const { history, addSearch, removeSearch, clearHistory } = useSearchHistoryStore();
+  const { toggleWishlist, wishlistIds } = useWishlistStore();
 
   // State Filter & Pencarian
   const [searchQuery, setSearchQuery] = useState("");
@@ -196,6 +201,12 @@ export default function CatalogScreen() {
           value={searchQuery}
           onChangeText={setSearchQuery}
           returnKeyType="search"
+          onSubmitEditing={() => {
+            if (searchQuery.trim()) {
+              addSearch(searchQuery);
+              api.post('/search/log', { keyword: searchQuery, userId: userData?.id }).catch(console.error);
+            }
+          }}
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery("")}>
@@ -203,6 +214,28 @@ export default function CatalogScreen() {
           </TouchableOpacity>
         )}
       </View>
+
+      {!searchQuery && history.length > 0 && (
+        <View style={styles.historyContainer}>
+          <View style={styles.historyHeader}>
+            <Text style={styles.historyTitle}>Pencarian Terakhir</Text>
+            <TouchableOpacity onPress={clearHistory}>
+              <Text style={styles.clearHistoryText}>Hapus Semua</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.historyTags}>
+            {history.map((item, idx) => (
+              <TouchableOpacity key={idx} style={styles.historyTag} onPress={() => setSearchQuery(item)}>
+                <Ionicons name="time-outline" size={14} color="#64748b" style={{ marginRight: 4 }} />
+                <Text style={styles.historyTagText}>{item}</Text>
+                <TouchableOpacity onPress={() => removeSearch(item)} style={{ marginLeft: 6 }}>
+                  <Ionicons name="close" size={14} color="#94a3b8" />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
 
       {banners.length > 0 && !searchQuery && (
         <Animated.View entering={FadeInRight.delay(400)} style={styles.bannerSection}>
@@ -351,6 +384,16 @@ export default function CatalogScreen() {
                   }}
                   style={styles.image}
                 />
+                <TouchableOpacity 
+                  style={styles.heartBtnCard}
+                  onPress={() => userData ? toggleWishlist(userData.id, item.id) : showAlert({ title: "Oops", message: "Silakan login untuk menyimpan produk ke favorit." })}
+                >
+                  <Ionicons 
+                    name={wishlistIds.includes(item.id) ? "heart" : "heart-outline"} 
+                    size={20} 
+                    color={wishlistIds.includes(item.id) ? "#ef4444" : "#94a3b8"} 
+                  />
+                </TouchableOpacity>
                 <View style={styles.priceTag}>
                   <Text style={styles.priceText}>{formatRupiah(item.harga)}</Text>
                 </View>
@@ -466,6 +509,14 @@ const styles = StyleSheet.create({
   image: { width: "100%", height: "100%", backgroundColor: "#f1f5f9" },
   priceTag: { position: 'absolute', bottom: 10, left: 10, backgroundColor: 'rgba(255, 255, 255, 0.95)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   priceText: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 11 },
+  heartBtnCard: { position: "absolute", top: 10, right: 10, backgroundColor: "rgba(255,255,255,0.9)", padding: 6, borderRadius: 12, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
+  historyContainer: { marginBottom: 20 },
+  historyHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
+  historyTitle: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 13 },
+  clearHistoryText: { color: "#ef4444", fontFamily: "Poppins_500Medium", fontSize: 11 },
+  historyTags: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  historyTag: { flexDirection: "row", alignItems: "center", backgroundColor: "#ffffff", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: "#e2e8f0" },
+  historyTagText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 12 },
   info: { padding: 12 },
   catName: { color: "#94a3b8", fontSize: 9, fontFamily: "Poppins_700Bold", textTransform: "uppercase", marginBottom: 4, letterSpacing: 1 },
   prodName: { color: "#1e293b", fontSize: 14, fontFamily: "Poppins_600SemiBold", height: 40, lineHeight: 20 },

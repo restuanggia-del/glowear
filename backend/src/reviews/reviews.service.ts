@@ -43,4 +43,40 @@ export class ReviewsService {
       include: { pengguna: true },
     });
   }
+
+  async getReviewsByProduct(productId: string) {
+    return this.prisma.review.findMany({
+      where: {
+        order: {
+          items: {
+            some: {
+              productId: productId
+            }
+          }
+        }
+      },
+      include: {
+        pengguna: {
+          select: { nama: true, fotoProfil: true }
+        }
+      },
+      orderBy: { waktuDibuat: 'desc' }
+    });
+  }
+
+  async getAllReviews() {
+    return this.prisma.review.findMany({
+      include: {
+        pengguna: { select: { nama: true } },
+        order: {
+          include: {
+            items: {
+              include: { product: { select: { namaProduk: true } } }
+            }
+          }
+        }
+      },
+      orderBy: { waktuDibuat: 'desc' }
+    });
+  }
 }
