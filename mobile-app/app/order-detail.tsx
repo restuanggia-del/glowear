@@ -182,8 +182,8 @@ export default function OrderDetailScreen() {
   if (loading) {
     return (
       <View style={styles.loadingArea}>
-        <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }} />
-        <ActivityIndicator size="large" color="#38bdf8" />
+        <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }
@@ -191,7 +191,7 @@ export default function OrderDetailScreen() {
   if (!order) {
     return (
       <View style={styles.loadingArea}>
-        <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }} />
+        <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
         <Ionicons name="alert-circle-outline" size={48} color="#64748b" />
         <Text style={{ color: "#64748b", fontFamily: "Poppins_500Medium", marginTop: 12 }}>Pesanan tidak ditemukan</Text>
       </View>
@@ -204,9 +204,10 @@ export default function OrderDetailScreen() {
     <View style={styles.container}>
       <Stack.Screen options={{
         title: "Detail Pesanan",
-        headerStyle: { backgroundColor: "#0f172a" },
-        headerTintColor: "#fff",
-        headerTitleStyle: { fontFamily: "Poppins_700Bold" }
+        headerStyle: { backgroundColor: "#ffffff" },
+        headerTintColor: "#1e293b",
+        headerTitleStyle: { fontFamily: "Poppins_700Bold" },
+        headerShadowVisible: false
       }} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
@@ -233,7 +234,7 @@ export default function OrderDetailScreen() {
                     styles.timelineDot,
                     step.completed ? (step.isError ? styles.timelineDotError : styles.timelineDotActive) : styles.timelineDotInactive
                   ]}>
-                    {step.completed && <Ionicons name={step.isError ? "close" : "checkmark"} size={12} color="#0f172a" />}
+                    {step.completed && <Ionicons name={step.isError ? "close" : "checkmark"} size={12} color="#fff" />}
                   </View>
                   {index < arr.length - 1 && (
                     <View style={[
@@ -245,7 +246,7 @@ export default function OrderDetailScreen() {
                 <View style={styles.timelineContent}>
                   <Text style={[
                     styles.timelineLabel,
-                    step.completed ? (step.isError ? {color: '#ef4444'} : {color: '#fff'}) : {color: '#64748b'},
+                    step.completed ? (step.isError ? {color: '#ef4444'} : {color: '#1e293b'}) : {color: '#94a3b8'},
                     step.isCurrent && {fontFamily: 'Poppins_700Bold'}
                   ]}>
                     {step.label}
@@ -315,8 +316,8 @@ export default function OrderDetailScreen() {
                   )}
                   {/* Catatan Admin */}
                   {item.catatanAdmin && (
-                    <View style={{ marginTop: 6, backgroundColor: "#0f172a", padding: 8, borderRadius: 8 }}>
-                      <Text style={{ color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 11 }}>
+                    <View style={{ marginTop: 6, backgroundColor: "#f1f5f9", padding: 8, borderRadius: 8 }}>
+                      <Text style={{ color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 11 }}>
                         Catatan Admin: {item.catatanAdmin}
                       </Text>
                     </View>
@@ -491,80 +492,80 @@ export default function OrderDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a", paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
-  loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, backgroundColor: "#f8fafc", paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
+  loadingArea: { flex: 1, backgroundColor: "#f8fafc", justifyContent: "center", alignItems: "center" },
 
   statusBanner: { flexDirection: "row", alignItems: "center", padding: 18, borderRadius: 16, marginBottom: 20 },
   statusLabel: { fontFamily: "Poppins_700Bold", fontSize: 16 },
   statusDate: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 2 },
 
   // Timeline Styles
-  timelineCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 20, borderWidth: 1, borderColor: "#334155" },
+  timelineCard: { backgroundColor: "#ffffff", borderRadius: 16, padding: 20, borderWidth: 1, borderColor: "#f1f5f9", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 },
   timelineRow: { flexDirection: "row", minHeight: 60 },
   timelineDotContainer: { alignItems: "center", width: 30 },
   timelineDot: { width: 20, height: 20, borderRadius: 10, justifyContent: "center", alignItems: "center", zIndex: 2 },
-  timelineDotActive: { backgroundColor: "#38bdf8", shadowColor: "#38bdf8", shadowOffset: {width: 0, height: 0}, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 },
+  timelineDotActive: { backgroundColor: "#3b82f6", shadowColor: "#3b82f6", shadowOffset: {width: 0, height: 0}, shadowOpacity: 0.4, shadowRadius: 6, elevation: 4 },
   timelineDotError: { backgroundColor: "#ef4444" },
-  timelineDotInactive: { backgroundColor: "#334155", borderWidth: 2, borderColor: "#475569" },
+  timelineDotInactive: { backgroundColor: "#e2e8f0", borderWidth: 2, borderColor: "#cbd5e1" },
   timelineLine: { width: 2, flex: 1, marginVertical: -2 },
-  timelineLineActive: { backgroundColor: "#38bdf8" },
-  timelineLineInactive: { backgroundColor: "#334155" },
+  timelineLineActive: { backgroundColor: "#3b82f6" },
+  timelineLineInactive: { backgroundColor: "#e2e8f0" },
   timelineContent: { flex: 1, paddingLeft: 10, paddingBottom: 25, marginTop: -2 },
   timelineLabel: { fontFamily: "Poppins_600SemiBold", fontSize: 13 },
   
-  resiBox: { marginTop: 10, backgroundColor: "rgba(56,189,248,0.08)", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(56,189,248,0.2)", flexDirection: "row", alignItems: "center" },
+  resiBox: { marginTop: 10, backgroundColor: "rgba(59,130,246,0.06)", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(59,130,246,0.15)", flexDirection: "row", alignItems: "center" },
   kurirName: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 },
-  resiNumber: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 2 },
-  iconBtn: { padding: 8, backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 8, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)" },
-  iconBtnFilled: { padding: 8, backgroundColor: "#38bdf8", borderRadius: 8 },
+  resiNumber: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 2 },
+  iconBtn: { padding: 8, backgroundColor: "rgba(59,130,246,0.08)", borderRadius: 8, borderWidth: 1, borderColor: "rgba(59,130,246,0.2)" },
+  iconBtnFilled: { padding: 8, backgroundColor: "#3b82f6", borderRadius: 8 },
 
   section: { marginBottom: 24 },
-  sectionTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15, marginBottom: 12 },
+  sectionTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 15, marginBottom: 12 },
 
-  itemCard: { flexDirection: "row", backgroundColor: "#1e293b", padding: 12, borderRadius: 14, borderWidth: 1, borderColor: "#334155", marginBottom: 10, alignItems: "flex-start" },
-  itemImage: { width: 64, height: 64, borderRadius: 10, backgroundColor: "#334155" },
+  itemCard: { flexDirection: "row", backgroundColor: "#ffffff", padding: 12, borderRadius: 14, borderWidth: 1, borderColor: "#f1f5f9", marginBottom: 10, alignItems: "flex-start", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  itemImage: { width: 64, height: 64, borderRadius: 10, backgroundColor: "#f1f5f9" },
   itemInfo: { flex: 1, marginLeft: 12 },
-  itemName: { color: "#fff", fontFamily: "Poppins_600SemiBold", fontSize: 13, lineHeight: 18 },
+  itemName: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 13, lineHeight: 18 },
   itemMeta: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 3 },
-  itemTotal: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 13, marginLeft: 8 },
+  itemTotal: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 13, marginLeft: 8 },
 
-  sablonBadge: { alignSelf: "flex-start", marginTop: 6, backgroundColor: "rgba(56,189,248,0.12)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)" },
-  sablonText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 10 },
+  sablonBadge: { alignSelf: "flex-start", marginTop: 6, backgroundColor: "rgba(59,130,246,0.08)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: "rgba(59,130,246,0.2)" },
+  sablonText: { color: "#3b82f6", fontFamily: "Poppins_600SemiBold", fontSize: 10 },
 
-  summaryCard: { backgroundColor: "#1e293b", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#334155" },
-  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderColor: "#293548" },
-  summaryLabel: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 13 },
-  summaryValue: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 14 },
+  summaryCard: { backgroundColor: "#ffffff", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#f1f5f9", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderColor: "#f1f5f9" },
+  summaryLabel: { color: "#64748b", fontFamily: "Poppins_500Medium", fontSize: 13 },
+  summaryValue: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 14 },
 
   payBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   payBadgeText: { fontFamily: "Poppins_700Bold", fontSize: 11 },
 
-  addressCard: { backgroundColor: "#1e293b", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#334155" },
-  addressName: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 14 },
-  addressPhone: { color: "#38bdf8", fontFamily: "Poppins_500Medium", fontSize: 12, marginTop: 2 },
-  addressText: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginTop: 6, lineHeight: 20 },
+  addressCard: { backgroundColor: "#ffffff", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "#f1f5f9", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  addressName: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 14 },
+  addressPhone: { color: "#3b82f6", fontFamily: "Poppins_500Medium", fontSize: 12, marginTop: 2 },
+  addressText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 13, marginTop: 6, lineHeight: 20 },
 
-  noteText: { color: "#cbd5e1", fontFamily: "Poppins_400Regular", fontSize: 13, lineHeight: 20 },
+  noteText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 13, lineHeight: 20 },
 
-  receiveButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 16, marginTop: 10, shadowColor: "#38bdf8", shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
-  receiveButtonText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15, marginLeft: 8 },
+  receiveButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#3b82f6", paddingVertical: 16, borderRadius: 16, marginTop: 10, shadowColor: "#3b82f6", shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+  receiveButtonText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15, marginLeft: 8 },
 
   // Modal Review Styles
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.7)", justifyContent: "flex-end" },
-  modalContent: { backgroundColor: "#0f172a", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 25, minHeight: "50%", borderWidth: 1, borderColor: "#1e293b" },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.4)", justifyContent: "flex-end" },
+  modalContent: { backgroundColor: "#ffffff", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 25, minHeight: "50%" },
   modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 15 },
-  modalTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 20 },
-  modalSubtitle: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginBottom: 20 },
+  modalTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 20 },
+  modalSubtitle: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 13, marginBottom: 20 },
   
   starsContainer: { flexDirection: "row", justifyContent: "center", gap: 10, marginBottom: 25 },
   
-  reviewInput: { backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155", borderRadius: 12, color: "#fff", fontFamily: "Poppins_400Regular", paddingHorizontal: 15, paddingVertical: 15, height: 100, textAlignVertical: 'top', marginBottom: 20 },
+  reviewInput: { backgroundColor: "#f1f5f9", borderWidth: 1, borderColor: "#e2e8f0", borderRadius: 12, color: "#1e293b", fontFamily: "Poppins_400Regular", paddingHorizontal: 15, paddingVertical: 15, height: 100, textAlignVertical: 'top', marginBottom: 20 },
   
-  imagePickerBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(56,189,248,0.1)", paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", marginBottom: 15 },
-  imagePickerText: { color: "#38bdf8", fontFamily: "Poppins_600SemiBold", fontSize: 13, marginLeft: 8 },
+  imagePickerBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(59,130,246,0.08)", paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(59,130,246,0.2)", marginBottom: 15 },
+  imagePickerText: { color: "#3b82f6", fontFamily: "Poppins_600SemiBold", fontSize: 13, marginLeft: 8 },
   
-  previewImage: { width: 100, height: 100, borderRadius: 12, marginBottom: 20, alignSelf: "center", borderWidth: 1, borderColor: "#334155" },
+  previewImage: { width: 100, height: 100, borderRadius: 12, marginBottom: 20, alignSelf: "center", borderWidth: 1, borderColor: "#e2e8f0" },
   
-  submitReviewBtn: { backgroundColor: "#38bdf8", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10, marginBottom: 20 },
-  submitReviewText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 }
+  submitReviewBtn: { backgroundColor: "#3b82f6", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10, marginBottom: 20 },
+  submitReviewText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15 }
 });

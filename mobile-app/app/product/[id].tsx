@@ -62,7 +62,7 @@ export default function ProductDetailScreen() {
     return (
       <View style={styles.loadingArea}>
         <Stack.Screen options={{ headerShown: false }} />
-        <ActivityIndicator size="large" color="#38bdf8" />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }
@@ -88,7 +88,7 @@ export default function ProductDetailScreen() {
           headerTitle: "",
           headerLeft: () => (
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color="#fff" />
+              <Ionicons name="arrow-back" size={24} color="#1e293b" />
             </TouchableOpacity>
           )
         }} 
@@ -148,74 +148,74 @@ export default function ProductDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
-  errorText: { color: "#fff", fontFamily: "Poppins_600SemiBold", fontSize: 18, marginTop: 10 },
-  backBtnError: { marginTop: 20, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: "#38bdf8", borderRadius: 10 },
-  backBtnText: { color: "#0f172a", fontFamily: "Poppins_700Bold" },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  loadingArea: { flex: 1, backgroundColor: "#f8fafc", justifyContent: "center", alignItems: "center" },
+  errorText: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 18, marginTop: 10 },
+  backBtnError: { marginTop: 20, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: "#3b82f6", borderRadius: 10 },
+  backBtnText: { color: "#fff", fontFamily: "Poppins_700Bold" },
   
-  backButton: { backgroundColor: "rgba(15, 23, 42, 0.6)", padding: 10, borderRadius: 100, marginLeft: 15, marginTop: 10 },
+  backButton: { backgroundColor: "rgba(255, 255, 255, 0.9)", padding: 10, borderRadius: 100, marginLeft: 15, marginTop: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   
-  imageFull: { width: "100%", height: width * 1.1, backgroundColor: "#1e293b", resizeMode: "cover" },
+  imageFull: { width: "100%", height: width * 1.1, backgroundColor: "#f1f5f9", resizeMode: "cover" },
   
-  content: { padding: 20, backgroundColor: "#0f172a", borderTopLeftRadius: 30, borderTopRightRadius: 30, marginTop: -30 },
-  categoryBadge: { backgroundColor: "rgba(56, 189, 248, 0.15)", alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginBottom: 12, borderWidth: 1, borderColor: "rgba(56, 189, 248, 0.3)" },
-  categoryText: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 12, textTransform: "uppercase", letterSpacing: 0.5 },
-  title: { color: "#fff", fontFamily: "Poppins_800ExtraBold", fontSize: 26, lineHeight: 34 },
-  price: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 24, marginTop: 5 },
+  content: { padding: 20, backgroundColor: "#f8fafc", borderTopLeftRadius: 30, borderTopRightRadius: 30, marginTop: -30 },
+  categoryBadge: { backgroundColor: "rgba(59, 130, 246, 0.1)", alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, marginBottom: 12, borderWidth: 1, borderColor: "rgba(59, 130, 246, 0.2)" },
+  categoryText: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 12, textTransform: "uppercase", letterSpacing: 0.5 },
+  title: { color: "#1e293b", fontFamily: "Poppins_800ExtraBold", fontSize: 26, lineHeight: 34 },
+  price: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 24, marginTop: 5 },
   
-  stockContainer: { flexDirection: "row", alignItems: "center", marginTop: 15, backgroundColor: "#1e293b", padding: 12, borderRadius: 12, alignSelf: "flex-start" },
-  stockText: { color: "#94a3b8", fontFamily: "Poppins_500Medium", marginLeft: 8, fontSize: 13, marginTop: 1 },
+  stockContainer: { flexDirection: "row", alignItems: "center", marginTop: 15, backgroundColor: "#ffffff", padding: 12, borderRadius: 12, alignSelf: "flex-start", borderWidth: 1, borderColor: "#f1f5f9" },
+  stockText: { color: "#64748b", fontFamily: "Poppins_500Medium", marginLeft: 8, fontSize: 13, marginTop: 1 },
   
-  divider: { height: 1, backgroundColor: "#1e293b", marginVertical: 24 },
-  descTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 10 },
-  descText: { color: "#cbd5e1", fontFamily: "Poppins_400Regular", fontSize: 14, lineHeight: 24 },
+  divider: { height: 1, backgroundColor: "#e2e8f0", marginVertical: 24 },
+  descTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 10 },
+  descText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 14, lineHeight: 24 },
   
   bottomBar: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#1e293b",
+    backgroundColor: "#ffffff",
     flexDirection: "row",
     paddingHorizontal: 15,
     paddingVertical: 15,
     paddingBottom: 30, 
     alignItems: "center",
     gap: 12,
-    borderTopWidth: 1,
-    borderColor: "#334155",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: "#94a3b8",
+    shadowOffset: { width: 0, height: -5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 15,
   },
   cartButton: { 
     flex: 1,
     flexDirection: "row",
     alignItems: "center", 
     justifyContent: "center",
-    backgroundColor: "rgba(56, 189, 248, 0.1)", 
+    backgroundColor: "rgba(59, 130, 246, 0.08)", 
     borderWidth: 1, 
-    borderColor: "#38bdf8",
+    borderColor: "#3b82f6",
     paddingVertical: 16, 
     borderRadius: 16,
     gap: 8,
   },
-  cartButtonText: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 14 },
+  cartButtonText: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 14 },
   buyButton: { 
     flex: 1.5,
-    backgroundColor: "#38bdf8", 
+    backgroundColor: "#3b82f6", 
     paddingVertical: 16, 
     borderRadius: 16, 
     alignItems: "center",
-    shadowColor: "#38bdf8",
+    shadowColor: "#3b82f6",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 8,
   },
-  buyButtonText: { color: "#0f172a", fontFamily: "Poppins_800ExtraBold", fontSize: 15 },
-  disabledButton: { backgroundColor: "#334155", borderColor: "#475569", shadowOpacity: 0, elevation: 0 },
+  buyButtonText: { color: "#fff", fontFamily: "Poppins_800ExtraBold", fontSize: 15 },
+  disabledButton: { backgroundColor: "#e2e8f0", borderColor: "#cbd5e1", shadowOpacity: 0, elevation: 0 },
 });

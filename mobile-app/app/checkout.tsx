@@ -156,15 +156,15 @@ export default function CheckoutScreen() {
   if (loading || !product) {
     return (
       <View style={styles.loadingArea}>
-        <Stack.Screen options={{ title: "Checkout", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }} />
-        <ActivityIndicator size="large" color="#38bdf8" />
+        <Stack.Screen options={{ title: "Checkout", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff", headerTitleStyle: { fontFamily: "Poppins_700Bold" } }} />
+      <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerTitleStyle: { fontFamily: "Poppins_700Bold" }, headerShadowVisible: false }} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
         
@@ -233,11 +233,11 @@ export default function CheckoutScreen() {
           <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Jumlah Pesanan</Text>
           <View style={styles.qtyContainer}>
             <TouchableOpacity style={styles.qtyBtn} onPress={handleDecrement}>
-              <Ionicons name="remove" size={24} color="#fff" />
+              <Ionicons name="remove" size={24} color="#64748b" />
             </TouchableOpacity>
             <Text style={styles.qtyText}>{qty}</Text>
             <TouchableOpacity style={styles.qtyBtn} onPress={handleIncrement}>
-              <Ionicons name="add" size={24} color="#fff" />
+              <Ionicons name="add" size={24} color="#64748b" />
             </TouchableOpacity>
           </View>
 
@@ -248,7 +248,7 @@ export default function CheckoutScreen() {
               <Image source={{ uri: designImage }} style={styles.designPreview} />
             ) : (
               <View style={styles.uploadPlaceholder}>
-                <Ionicons name="image-outline" size={36} color="#38bdf8" />
+                <Ionicons name="image-outline" size={36} color="#3b82f6" />
                 <Text style={styles.uploadText}>Ketuk untuk melampirkan gambar referensi atau desain Anda</Text>
               </View>
             )}
@@ -280,11 +280,11 @@ export default function CheckoutScreen() {
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
             <Text style={styles.sectionTitle}>Kirim Ke</Text>
             <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
-              <Text style={{color: '#38bdf8', fontFamily: 'Poppins_600SemiBold', fontSize: 12}}>Edit</Text>
+              <Text style={{color: '#3b82f6', fontFamily: 'Poppins_600SemiBold', fontSize: 12}}>Edit</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.addressCard}>
-            <Ionicons name="location" size={24} color="#38bdf8" />
+            <Ionicons name="location" size={24} color="#3b82f6" />
             <View style={styles.addressInfo}>
               <Text style={styles.addressName}>{userData?.nama} ({userData?.noTelepon || "No HP Kosong"})</Text>
               <Text style={styles.addressText}>{userData?.alamat || "Alamat belum diisi! Silakan edit profil."}</Text>
@@ -305,7 +305,7 @@ export default function CheckoutScreen() {
           disabled={submitting}
           onPress={handleCheckout}
         >
-          {submitting ? <ActivityIndicator color="#0f172a" /> : <Text style={styles.checkoutBtnText}>Buat Pesanan</Text>}
+          {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.checkoutBtnText}>Buat Pesanan</Text>}
         </TouchableOpacity>
       </View>
     </View>
@@ -313,54 +313,52 @@ export default function CheckoutScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  loadingArea: { flex: 1, backgroundColor: "#f8fafc", justifyContent: "center", alignItems: "center" },
   
   section: { marginBottom: 25 },
-  sectionTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 16, marginBottom: 12 },
+  sectionTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 16, marginBottom: 12 },
   
-  productCard: { flexDirection: "row", backgroundColor: "#1e293b", padding: 12, borderRadius: 16, borderWidth: 1, borderColor: "#334155" },
-  productImage: { width: 80, height: 80, borderRadius: 10, backgroundColor: "#334155" },
+  productCard: { flexDirection: "row", backgroundColor: "#ffffff", padding: 12, borderRadius: 16, borderWidth: 1, borderColor: "#f1f5f9", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 },
+  productImage: { width: 80, height: 80, borderRadius: 10, backgroundColor: "#f1f5f9" },
   productInfo: { flex: 1, marginLeft: 15, justifyContent: "center" },
-  productName: { color: "#fff", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
-  productPrice: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 16, marginTop: 5 },
+  productName: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
+  productPrice: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 16, marginTop: 5 },
 
   sizeContainer: { flexDirection: "row", gap: 10 },
-  sizeButton: { flex: 1, paddingVertical: 12, backgroundColor: "#1e293b", borderRadius: 10, borderWidth: 1, borderColor: "#334155", alignItems: "center" },
-  sizeButtonActive: { backgroundColor: "rgba(56, 189, 248, 0.15)", borderColor: "#38bdf8" },
+  sizeButton: { flex: 1, paddingVertical: 12, backgroundColor: "#ffffff", borderRadius: 10, borderWidth: 1, borderColor: "#e2e8f0", alignItems: "center" },
+  sizeButtonActive: { backgroundColor: "rgba(59, 130, 246, 0.1)", borderColor: "#3b82f6" },
   sizeText: { color: "#94a3b8", fontFamily: "Poppins_600SemiBold" },
-  sizeTextActive: { color: "#38bdf8", fontFamily: "Poppins_800ExtraBold" },
+  sizeTextActive: { color: "#3b82f6", fontFamily: "Poppins_800ExtraBold" },
 
-  // Jenis Sablon
   sablonContainer: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  sablonButton: { width: "30%", minWidth: 90, flexGrow: 1, paddingVertical: 12, paddingHorizontal: 8, backgroundColor: "#1e293b", borderRadius: 10, borderWidth: 1, borderColor: "#334155", alignItems: "center" },
-  sablonButtonActive: { backgroundColor: "rgba(56, 189, 248, 0.12)", borderColor: "#38bdf8", borderWidth: 1.5 },
-  sablonLabel: { color: "#94a3b8", fontFamily: "Poppins_700Bold", fontSize: 13 },
-  sablonLabelActive: { color: "#38bdf8" },
-  sablonDesc: { color: "#475569", fontFamily: "Poppins_400Regular", fontSize: 10, textAlign: "center", marginTop: 3 },
-  sablonDescActive: { color: "#7dd3fc" },
+  sablonButton: { width: "30%", minWidth: 90, flexGrow: 1, paddingVertical: 12, paddingHorizontal: 8, backgroundColor: "#ffffff", borderRadius: 10, borderWidth: 1, borderColor: "#e2e8f0", alignItems: "center" },
+  sablonButtonActive: { backgroundColor: "rgba(59, 130, 246, 0.08)", borderColor: "#3b82f6", borderWidth: 1.5 },
+  sablonLabel: { color: "#64748b", fontFamily: "Poppins_700Bold", fontSize: 13 },
+  sablonLabelActive: { color: "#3b82f6" },
+  sablonDesc: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 10, textAlign: "center", marginTop: 3 },
+  sablonDescActive: { color: "#60a5fa" },
 
-  qtyContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#1e293b", alignSelf: "flex-start", borderRadius: 12, borderWidth: 1, borderColor: "#334155" },
+  qtyContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#ffffff", alignSelf: "flex-start", borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" },
   qtyBtn: { padding: 10, paddingHorizontal: 15 },
-  qtyText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 18, width: 40, textAlign: "center" },
+  qtyText: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 18, width: 40, textAlign: "center" },
 
-  // Style untuk Upload Desain Custom
-  uploadBox: { backgroundColor: "#1e293b", borderRadius: 12, borderWidth: 2, borderColor: "#334155", borderStyle: "dashed", overflow: "hidden", minHeight: 120, justifyContent: "center", alignItems: "center" },
+  uploadBox: { backgroundColor: "#ffffff", borderRadius: 12, borderWidth: 2, borderColor: "#e2e8f0", borderStyle: "dashed", overflow: "hidden", minHeight: 120, justifyContent: "center", alignItems: "center" },
   uploadPlaceholder: { padding: 20, alignItems: "center" },
   uploadText: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, textAlign: "center", marginTop: 8 },
-  designPreview: { width: "100%", height: 200, resizeMode: "contain", backgroundColor: "#0f172a" },
+  designPreview: { width: "100%", height: 200, resizeMode: "contain", backgroundColor: "#f1f5f9" },
 
-  input: { backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155", borderRadius: 12, color: "#fff", fontFamily: "Poppins_400Regular", padding: 15 },
+  input: { backgroundColor: "#f1f5f9", borderWidth: 1, borderColor: "#e2e8f0", borderRadius: 12, color: "#1e293b", fontFamily: "Poppins_400Regular", padding: 15 },
 
-  addressCard: { flexDirection: "row", backgroundColor: "rgba(56, 189, 248, 0.05)", padding: 15, borderRadius: 16, borderWidth: 1, borderColor: "rgba(56, 189, 248, 0.2)", alignItems: "center" },
+  addressCard: { flexDirection: "row", backgroundColor: "rgba(59, 130, 246, 0.04)", padding: 15, borderRadius: 16, borderWidth: 1, borderColor: "rgba(59, 130, 246, 0.15)", alignItems: "center" },
   addressInfo: { flex: 1, marginLeft: 15 },
-  addressName: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 13, marginBottom: 4 },
-  addressText: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, lineHeight: 18 },
+  addressName: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 13, marginBottom: 4 },
+  addressText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 12, lineHeight: 18 },
 
-  bottomBar: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#1e293b", flexDirection: "row", padding: 20, paddingBottom: 25, alignItems: "center", borderTopWidth: 1, borderColor: "#334155" },
+  bottomBar: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#ffffff", flexDirection: "row", padding: 20, paddingBottom: 25, alignItems: "center", borderTopLeftRadius: 24, borderTopRightRadius: 24, shadowColor: "#94a3b8", shadowOffset: { width: 0, height: -5 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 15 },
   totalContainer: { flex: 1 },
   totalLabel: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 11 },
-  totalPrice: { color: "#38bdf8", fontFamily: "Poppins_800ExtraBold", fontSize: 22 },
-  checkoutBtn: { backgroundColor: "#38bdf8", paddingVertical: 14, paddingHorizontal: 24, borderRadius: 14 },
-  checkoutBtnText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 15 },
+  totalPrice: { color: "#3b82f6", fontFamily: "Poppins_800ExtraBold", fontSize: 22 },
+  checkoutBtn: { backgroundColor: "#3b82f6", paddingVertical: 14, paddingHorizontal: 24, borderRadius: 14, shadowColor: "#3b82f6", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+  checkoutBtnText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15 },
 });

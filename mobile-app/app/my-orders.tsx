@@ -119,7 +119,7 @@ export default function MyOrdersScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }} />
+        <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
         <View style={{ padding: 20 }}>
           {/* Skeleton Tabs */}
           <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
@@ -131,7 +131,7 @@ export default function MyOrdersScreen() {
           {/* Skeleton Cards */}
           <View style={{ gap: 15 }}>
             {[1, 2, 3].map(i => (
-              <View key={i} style={{ backgroundColor: '#1e293b', borderRadius: 16, padding: 15, borderWidth: 1, borderColor: '#334155' }}>
+              <View key={i} style={{ backgroundColor: '#ffffff', borderRadius: 16, padding: 15, borderWidth: 1, borderColor: '#f1f5f9' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
                   <Skeleton width={120} height={20} borderRadius={5} />
                   <Skeleton width={80} height={20} borderRadius={10} />
@@ -154,7 +154,7 @@ export default function MyOrdersScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff", headerTitleStyle: { fontFamily: "Poppins_700Bold" } }} />
+      <Stack.Screen options={{ title: "Pesanan Saya", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerTitleStyle: { fontFamily: "Poppins_700Bold" }, headerShadowVisible: false }} />
 
       <View style={styles.tabContainer}>
         <FlatList
@@ -186,7 +186,7 @@ export default function MyOrdersScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 15, paddingBottom: 30 }}
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#38bdf8" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.orderCard}
@@ -272,53 +272,48 @@ export default function MyOrdersScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: "#0f172a",
+    backgroundColor: "#f8fafc",
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0, 
   },
-  loadingArea: { flex: 1, backgroundColor: "#0f172a", justifyContent: "center", alignItems: "center" },
+  loadingArea: { flex: 1, backgroundColor: "#f8fafc", justifyContent: "center", alignItems: "center" },
   
-  tabContainer: { paddingVertical: 10, borderBottomWidth: 1, borderColor: "#1e293b", paddingLeft: 10 },
-  tabButton: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, marginRight: 10, backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155" },
+  tabContainer: { paddingVertical: 10, borderBottomWidth: 1, borderColor: "#f1f5f9", paddingLeft: 10 },
+  tabButton: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, marginRight: 10, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#e2e8f0" },
   tabButtonActive: { 
-    backgroundColor: "rgba(56, 189, 248, 0.15)", 
-    borderColor: "#38bdf8",
-    shadowColor: "#38bdf8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: "rgba(59, 130, 246, 0.1)", 
+    borderColor: "#3b82f6",
   },
   tabText: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 13 },
-  tabTextActive: { color: "#38bdf8", fontFamily: "Poppins_700Bold" },
+  tabTextActive: { color: "#3b82f6", fontFamily: "Poppins_700Bold" },
 
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", paddingBottom: 50 },
-  emptyText: { color: "#64748b", fontFamily: "Poppins_500Medium", marginTop: 15 },
+  emptyText: { color: "#94a3b8", fontFamily: "Poppins_500Medium", marginTop: 15 },
 
   orderCard: { 
-    backgroundColor: "#1e293b", 
+    backgroundColor: "#ffffff", 
     borderRadius: 20, 
     padding: 16, 
     marginBottom: 20, 
     borderWidth: 1, 
-    borderColor: "#334155",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    borderColor: "#f1f5f9",
+    shadowColor: "#94a3b8",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 3,
   },
-  orderHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderBottomWidth: 1, borderColor: "#334155", paddingBottom: 10, marginBottom: 15 },
+  orderHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderBottomWidth: 1, borderColor: "#f1f5f9", paddingBottom: 10, marginBottom: 15 },
   orderDate: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 12 },
   statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   statusText: { fontFamily: "Poppins_700Bold", fontSize: 10 },
 
   productRow: { flexDirection: "row", alignItems: "center" },
-  productImage: { width: 70, height: 70, borderRadius: 10, backgroundColor: "#334155" },
+  productImage: { width: 70, height: 70, borderRadius: 10, backgroundColor: "#f1f5f9" },
   productInfo: { flex: 1, marginLeft: 15 },
-  productName: { color: "#fff", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
+  productName: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 14 },
   productDetail: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 2 },
-  totalPrice: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 5 },
+  totalPrice: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 5 },
 
-  payButton: { marginTop: 15, backgroundColor: "rgba(56, 189, 248, 0.1)", borderWidth: 1, borderColor: "#38bdf8", paddingVertical: 10, borderRadius: 10, alignItems: "center" },
-  payButtonText: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 13 }
+  payButton: { marginTop: 15, backgroundColor: "rgba(59, 130, 246, 0.06)", borderWidth: 1, borderColor: "#3b82f6", paddingVertical: 10, borderRadius: 10, alignItems: "center" },
+  payButtonText: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 13 }
 });

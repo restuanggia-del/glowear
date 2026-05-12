@@ -116,8 +116,8 @@ export default function PaymentScreen() {
   if (loadingSettings) {
     return (
       <View style={[styles.safeArea, { justifyContent: "center", alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#38bdf8" />
-        <Text style={{ color: "#94a3b8", marginTop: 15, fontFamily: 'Poppins_500Medium' }}>Memuat informasi pembayaran...</Text>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={{ color: "#64748b", marginTop: 15, fontFamily: 'Poppins_500Medium' }}>Memuat informasi pembayaran...</Text>
       </View>
     );
   }
@@ -126,9 +126,10 @@ export default function PaymentScreen() {
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen options={{ 
         title: "Konfirmasi Pembayaran", 
-        headerStyle: { backgroundColor: "#0f172a" }, 
-        headerTintColor: "#fff", 
-        headerTitleStyle: { fontFamily: "Poppins_700Bold", fontSize: 16 } 
+        headerStyle: { backgroundColor: "#ffffff" }, 
+        headerTintColor: "#1e293b", 
+        headerTitleStyle: { fontFamily: "Poppins_700Bold", fontSize: 16 },
+        headerShadowVisible: false
       }} />
 
       <ScrollView style={styles.scrollArea} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -163,7 +164,7 @@ export default function PaymentScreen() {
             </View>
           </View>
           <View style={styles.billFooter}>
-            <Ionicons name="time-outline" size={14} color="#38bdf8" />
+            <Ionicons name="time-outline" size={14} color="#3b82f6" />
             <Text style={styles.billExpiry}>Selesaikan pembayaran dalam 24 jam</Text>
           </View>
         </View>
@@ -199,7 +200,7 @@ export default function PaymentScreen() {
         {settings?.syaratKetentuan && (
           <View style={styles.infoBox}>
             <View style={styles.infoBoxHeader}>
-              <Ionicons name="information-circle" size={18} color="#38bdf8" />
+              <Ionicons name="information-circle" size={18} color="#3b82f6" />
               <Text style={styles.infoBoxTitle}>Informasi Penting</Text>
             </View>
             <Text style={styles.infoBoxContent}>{settings.syaratKetentuan}</Text>
@@ -222,7 +223,7 @@ export default function PaymentScreen() {
           ) : (
             <View style={styles.uploadPlaceholder}>
               <View style={styles.uploadIconCircle}>
-                <Ionicons name="cloud-upload" size={32} color="#38bdf8" />
+                <Ionicons name="cloud-upload" size={32} color="#3b82f6" />
               </View>
               <Text style={styles.uploadMainText}>Klik untuk Unggah Struk</Text>
               <Text style={styles.uploadSubText}>Format JPG, PNG atau Screenshot</Text>
@@ -242,7 +243,7 @@ export default function PaymentScreen() {
           activeOpacity={0.8}
         >
           {uploading ? (
-            <ActivityIndicator color="#0f172a" />
+            <ActivityIndicator color="#fff" />
           ) : (
             <View style={styles.confirmBtnContent}>
               <Text style={[styles.confirmBtnText, !receiptImage && { color: "#64748b" }]}>
@@ -258,33 +259,30 @@ export default function PaymentScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#0f172a" },
+  safeArea: { flex: 1, backgroundColor: "#f8fafc" },
   scrollArea: { flex: 1 }, 
   scrollContent: { padding: 24, paddingBottom: 40 },
   
-  // Stepper Styles
   stepper: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 32 },
   step: { alignItems: "center", gap: 6 },
-  stepDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: "#1e293b", borderSize: 1, borderColor: "#334155", justifyContent: "center", alignItems: "center" },
-  stepDotActive: { backgroundColor: "#38bdf8", borderColor: "#38bdf8" },
+  stepDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: "#e2e8f0", justifyContent: "center", alignItems: "center" },
+  stepDotActive: { backgroundColor: "#3b82f6" },
   stepNum: { fontSize: 10, fontFamily: "Poppins_700Bold", color: "#fff" },
-  stepText: { fontSize: 10, color: "#64748b", fontFamily: "Poppins_600SemiBold" },
-  stepTextActive: { color: "#fff" },
-  stepLine: { width: 30, height: 2, backgroundColor: "#1e293b", marginHorizontal: 8, marginTop: -15 },
+  stepText: { fontSize: 10, color: "#94a3b8", fontFamily: "Poppins_600SemiBold" },
+  stepTextActive: { color: "#1e293b" },
+  stepLine: { width: 30, height: 2, backgroundColor: "#e2e8f0", marginHorizontal: 8, marginTop: -15 },
 
-  // Bill Card Styles
-  billCard: { backgroundColor: "#1e293b", borderRadius: 24, padding: 24, marginBottom: 32, borderWidth: 1, borderColor: "#334155", shadowColor: "#000", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8 },
+  billCard: { backgroundColor: "#ffffff", borderRadius: 24, padding: 24, marginBottom: 32, borderWidth: 1, borderColor: "#f1f5f9", shadowColor: "#94a3b8", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 6 },
   billHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 },
-  billLabel: { color: "#94a3b8", fontFamily: "Poppins_600SemiBold", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 },
-  billAmount: { color: "#fff", fontFamily: "Poppins_800ExtraBold", fontSize: 32, marginTop: 4 },
-  orderBadge: { backgroundColor: "rgba(56, 189, 248, 0.15)", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: "rgba(56, 189, 248, 0.3)" },
-  orderBadgeText: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 11 },
-  billFooter: { flexDirection: "row", alignItems: "center", gap: 8, paddingTop: 16, borderTopWidth: 1, borderColor: "#293548" },
-  billExpiry: { color: "#38bdf8", fontFamily: "Poppins_500Medium", fontSize: 12 },
+  billLabel: { color: "#64748b", fontFamily: "Poppins_600SemiBold", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 },
+  billAmount: { color: "#1e293b", fontFamily: "Poppins_800ExtraBold", fontSize: 32, marginTop: 4 },
+  orderBadge: { backgroundColor: "rgba(59, 130, 246, 0.1)", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: "rgba(59, 130, 246, 0.2)" },
+  orderBadgeText: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 11 },
+  billFooter: { flexDirection: "row", alignItems: "center", gap: 8, paddingTop: 16, borderTopWidth: 1, borderColor: "#f1f5f9" },
+  billExpiry: { color: "#3b82f6", fontFamily: "Poppins_500Medium", fontSize: 12 },
 
-  sectionTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 16 },
+  sectionTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 16 },
 
-  // Bank Card Styles (Premium look like a credit card)
   bankCard: { backgroundColor: "#0369a1", borderRadius: 24, padding: 24, marginBottom: 24, shadowColor: "#0369a1", shadowOffset: { width: 0, height: 15 }, shadowOpacity: 0.4, shadowRadius: 20, elevation: 12 },
   bankCardTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 30 },
   bankNameLabel: { color: "rgba(255,255,255,0.7)", fontFamily: "Poppins_700Bold", fontSize: 12, letterSpacing: 1 },
@@ -294,18 +292,16 @@ const styles = StyleSheet.create({
   bankCardAction: { backgroundColor: "rgba(255,255,255,0.15)", alignSelf: "flex-start", paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, flexDirection: "row", alignItems: "center", gap: 10 },
   bankCardActionText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 12 },
 
-  // Info Box Styles
-  infoBox: { backgroundColor: "rgba(56, 189, 248, 0.05)", borderRadius: 20, padding: 20, marginBottom: 32, borderWidth: 1, borderColor: "rgba(56, 189, 248, 0.2)" },
+  infoBox: { backgroundColor: "rgba(59, 130, 246, 0.04)", borderRadius: 20, padding: 20, marginBottom: 32, borderWidth: 1, borderColor: "rgba(59, 130, 246, 0.12)" },
   infoBoxHeader: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 },
-  infoBoxTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 14 },
-  infoBoxContent: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, lineHeight: 22 },
+  infoBoxTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 14 },
+  infoBoxContent: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 13, lineHeight: 22 },
 
-  // Upload Styles
-  uploadContainer: { backgroundColor: "#1e293b", borderRadius: 24, borderWidth: 2, borderColor: "#334155", borderStyle: "dashed", overflow: "hidden", minHeight: 180 },
+  uploadContainer: { backgroundColor: "#ffffff", borderRadius: 24, borderWidth: 2, borderColor: "#e2e8f0", borderStyle: "dashed", overflow: "hidden", minHeight: 180 },
   uploadPlaceholder: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32 },
-  uploadIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(56, 189, 248, 0.1)", justifyContent: "center", alignItems: "center", marginBottom: 16 },
-  uploadMainText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15 },
-  uploadSubText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 4 },
+  uploadIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(59, 130, 246, 0.08)", justifyContent: "center", alignItems: "center", marginBottom: 16 },
+  uploadMainText: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 15 },
+  uploadSubText: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginTop: 4 },
   
   imagePreviewContainer: { width: "100%", height: 350 },
   imagePreview: { width: "100%", height: "100%", resizeMode: "cover" },
@@ -313,10 +309,9 @@ const styles = StyleSheet.create({
   changeBtn: { backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 20, paddingVertical: 12, borderRadius: 14, flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.2)" },
   changeBtnText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 14 },
 
-  // Bottom Bar Styles
-  bottomBar: { backgroundColor: "#0f172a", padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, borderTopWidth: 1, borderColor: "#1e293b" },
-  confirmBtn: { backgroundColor: "#38bdf8", height: 60, borderRadius: 18, justifyContent: "center", alignItems: "center", shadowColor: "#38bdf8", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8 },
-  confirmBtnDisabled: { backgroundColor: "#1e293b", shadowOpacity: 0, elevation: 0 },
+  bottomBar: { backgroundColor: "#ffffff", padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, borderTopLeftRadius: 24, borderTopRightRadius: 24, shadowColor: "#94a3b8", shadowOffset: { width: 0, height: -5 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 15 },
+  confirmBtn: { backgroundColor: "#3b82f6", height: 60, borderRadius: 18, justifyContent: "center", alignItems: "center", shadowColor: "#3b82f6", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 8 },
+  confirmBtnDisabled: { backgroundColor: "#e2e8f0", shadowOpacity: 0, elevation: 0 },
   confirmBtnContent: { flexDirection: "row", alignItems: "center", gap: 10 },
-  confirmBtnText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 16 },
+  confirmBtnText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 16 },
 });
