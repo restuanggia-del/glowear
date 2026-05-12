@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/lib/auth-context"; 
 import { useRouter } from "next/navigation";
-import { Users, Package, ShoppingCart, TrendingUp, Clock, Star, ArrowRight } from "lucide-react";
+import { Users, Package, ShoppingCart, TrendingUp, Clock, Star, ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Lottie from "lottie-react";
@@ -37,10 +37,15 @@ export default function DashboardPage() {
 
         // FETCH DATA REALTIME DARI BACKEND
         try {
-          const res = await fetch("http://localhost:3001/dashboard/stats");
-          if (res.ok) {
-            const data = await res.json();
-            setDashboardData(data);
+          const [resStats, resPopular] = await Promise.all([
+            fetch("http://localhost:3001/dashboard/stats"),
+            fetch("http://localhost:3001/search/popular")
+          ]);
+          
+          if (resStats.ok) {
+            const stats = await resStats.json();
+            const popular = resPopular.ok ? await resPopular.json() : [];
+            setDashboardData({ ...stats, popularSearches: popular });
           } else {
             throw new Error("Backend belum siap");
           }
@@ -63,6 +68,12 @@ export default function DashboardPage() {
               { nama: "Kaos Polos Cotton Combed 30s", terjual: 450 },
               { nama: "Hoodie Jumper Fleece", terjual: 320 },
               { nama: "Sablon DTF Custom A3", terjual: 215 },
+            ],
+            popularSearches: [
+              { keyword: "Kaos Polo", count: 120 },
+              { keyword: "Jersey Futsal", count: 85 },
+              { keyword: "Bordir Komputer", count: 64 },
+              { keyword: "Sablon DTF", count: 42 }
             ]
           });
         }
@@ -192,24 +203,48 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Kolom Kanan: Produk Terlaris */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-          <h2 className="text-lg font-bold text-gray-800 mb-1">Produk Terlaris</h2>
-          <p className="text-xs text-gray-500 mb-6">Item paling banyak dipesan bulan ini</p>
-          
-          <div className="flex-1 flex flex-col justify-center space-y-5">
-            {dashboardData?.bestSellers.map((item: any, idx: number) => (
-              <div key={idx} className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0 font-bold border border-orange-100">
-                  #{idx + 1}
+        {/* Kolom Kanan: Produk Terlaris & Pencarian Populer */}
+        <div className="space-y-6">
+          {/* Produk Terlaris */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+            <h2 className="text-lg font-bold text-gray-800 mb-1">Produk Terlaris</h2>
+            <p className="text-xs text-gray-500 mb-6">Item paling banyak dipesan bulan ini</p>
+            
+            <div className="flex-1 flex flex-col justify-center space-y-5">
+              {dashboardData?.bestSellers.map((item: any, idx: number) => (
+                <div key={idx} className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0 font-bold border border-orange-100">
+                    #{idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-gray-800 line-clamp-1">{item.nama}</h4>
+                    <p className="text-xs text-gray-500">{item.terjual} Pcs Terjual</p>
+                  </div>
+                  <Star size={16} className="text-yellow-400 fill-yellow-400" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-bold text-gray-800 line-clamp-1">{item.nama}</h4>
-                  <p className="text-xs text-gray-500">{item.terjual} Pcs Terjual</p>
+              ))}
+            </div>
+          </div>
+
+          {/* Pencarian Populer */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider">Pencarian Populer</h2>
+              <Search size={16} className="text-blue-500" />
+            </div>
+            <div className="space-y-3">
+              {dashboardData?.popularSearches.map((item: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between group cursor-default">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-slate-300">#{idx + 1}</span>
+                    <span className="text-sm font-bold text-slate-600 group-hover:text-blue-600 transition-colors">{item.keyword}</span>
+                  </div>
+                  <span className="bg-slate-50 px-2 py-1 rounded-lg text-[10px] font-black text-slate-400 border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-all">
+                    {item.count}X
+                  </span>
                 </div>
-                <Star size={16} className="text-yellow-400 fill-yellow-400" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

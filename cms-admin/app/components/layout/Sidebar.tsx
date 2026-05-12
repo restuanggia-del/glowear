@@ -7,7 +7,7 @@ import {
   ShoppingBag, FolderTree, Shirt, BanknoteArrowUp, Users, HandCoins, 
   Settings, Flag, MonitorSmartphone, ChartCandlestick, SquareLibrary,
   Smartphone, Store, Palette, Clock4, Truck, UserCircle, X,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Star
 } from 'lucide-react';
 import { useAuth } from '@/app/lib/auth-context'; 
 import { useState, useEffect } from 'react';
@@ -174,6 +174,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsO
                 <div className="pl-11 pr-2 space-y-1">
                   <Link href="/dashboard/categories" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/categories') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Layers size={18} /> Kategori</Link>
                   <Link href="/dashboard/products" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/products') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Package size={18} /> Produk</Link>
+                  <Link href="/dashboard/reviews" onClick={handleLinkClick} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${pathname.includes('/dashboard/reviews') ? "bg-slate-800 text-white font-medium" : "text-slate-400 hover:text-white hover:bg-slate-800/50"}`}><Star size={18} /> Ulasan Pelanggan</Link>
                 </div>
               </div>
             </div>

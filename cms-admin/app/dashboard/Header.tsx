@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User } from "lucide-react";
+import { Menu, Bell, Search, LogOut, ChevronRight, Clock, X, Settings, User, Star } from "lucide-react";
 import { useAuth } from "@/app/lib/auth-context";
 import { api } from "@/app/services/api";
 import { useState, useEffect, useRef } from "react";
@@ -24,6 +24,7 @@ const SEARCH_SUGGESTIONS = [
   { label: "Categories", path: "/dashboard/categories", icon: <LuLayoutGrid size={18} className="text-gray-500" /> },
   { label: "Banners", path: "/dashboard/banners", icon: <LuImage size={18} className="text-gray-500" /> },
   { label: "Reports", path: "/dashboard/reports", icon: <LuReceiptText size={18} className="text-gray-500" /> },
+  { label: "Ulasan", path: "/dashboard/reviews", icon: <Star size={18} className="text-gray-500" /> },
   { label: "Settings", path: "/dashboard/settings", icon: <LuSettings size={18} className="text-gray-500" /> },
 ];
 
@@ -130,6 +131,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     if (pathname?.includes("/categories")) return "Kategori";
     if (pathname?.includes("/banners")) return "Banners";
     if (pathname?.includes("/reports")) return "Laporan";
+    if (pathname?.includes("/reviews")) return "Ulasan Pelanggan";
     if (pathname?.includes("/settings")) return "Pengaturan";
     if (pathname?.includes("/account")) return "Akun Saya";
     if (pathname?.includes("/pelanggan")) return "Pelanggan";

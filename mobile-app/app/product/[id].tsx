@@ -5,7 +5,9 @@ import { api } from "../../services/api";
 import { API_URL } from "../../constants/config";
 import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "../../store/cart-store";
+import { useWishlistStore } from "../../store/wishlist-store";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -14,21 +16,32 @@ export default function ProductDetailScreen() {
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
   
+  const { toggleWishlist, wishlistIds } = useWishlistStore();
+  
   const [product, setProduct] = useState<any>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const fetchProductDetail = async () => {
+    const fetchUserAndProduct = async () => {
       try {
-        const res = await api.get(`/products/${id}`);
-        setProduct(res.data);
+        const userString = await AsyncStorage.getItem("userData");
+        if (userString) setUser(JSON.parse(userString));
+
+        const [resProduct, resReviews] = await Promise.all([
+          api.get(`/products/${id}`),
+          api.get(`/reviews/product/${id}`)
+        ]);
+        setProduct(resProduct.data);
+        setReviews(resReviews.data);
       } catch (error) {
-        console.error("Gagal mengambil detail produk", error);
+        console.error("Gagal mengambil detail", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProductDetail();
+    fetchUserAndProduct();
   }, [id]);
 
   const handleAddToCart = () => {
@@ -90,6 +103,21 @@ export default function ProductDetailScreen() {
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="#1e293b" />
             </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity 
+              style={[styles.backButton, { marginRight: 15 }]} 
+              onPress={() => {
+                if (!user) return Alert.alert("Oops", "Silakan login untuk menyimpan produk ke favorit.");
+                if (product) toggleWishlist(user.id, product.id);
+              }}
+            >
+              <Ionicons 
+                name={product && wishlistIds.includes(product.id) ? "heart" : "heart-outline"} 
+                size={24} 
+                color={product && wishlistIds.includes(product.id) ? "#ef4444" : "#1e293b"} 
+              />
+            </TouchableOpacity>
           )
         }} 
       />
@@ -121,6 +149,59 @@ export default function ProductDetailScreen() {
 
           <Text style={styles.descTitle}>Deskripsi Produk</Text>
           <Text style={styles.descText}>{product.deskripsi || "Tidak ada deskripsi untuk produk ini."}</Text>
+
+          <View style={styles.divider} />
+
+          <View style={styles.reviewHeader}>
+            <Text style={styles.descTitle}>Ulasan Pembeli ({reviews.length})</Text>
+            {reviews.length > 0 && (
+              <View style={styles.ratingBadge}>
+                <Ionicons name="star" size={16} color="#f59e0b" />
+                <Text style={styles.ratingBadgeText}>
+                  {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} / 5.0
+                </Text>
+              </View>
+            )}
+          </View>
+          
+          {reviews.length === 0 ? (
+            <Text style={styles.noReviewText}>Belum ada ulasan untuk produk ini.</Text>
+          ) : (
+            reviews.map((rev) => (
+              <View key={rev.id} style={styles.reviewCard}>
+                <View style={styles.reviewUserRow}>
+                  <View style={styles.reviewAvatar}>
+                    <Text style={styles.reviewAvatarText}>{rev.pengguna?.nama?.charAt(0) || "U"}</Text>
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Text style={styles.reviewUserName}>{rev.pengguna?.nama || "Pelanggan"}</Text>
+                    <View style={styles.reviewStars}>
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <Ionicons key={s} name={s <= rev.rating ? "star" : "star-outline"} size={12} color="#f59e0b" />
+                      ))}
+                    </View>
+                  </View>
+                </View>
+                {rev.komentar && <Text style={styles.reviewText}>{rev.komentar}</Text>}
+                {rev.foto && (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                    {(() => {
+                      try {
+                        const photos = JSON.parse(rev.foto);
+                        if (Array.isArray(photos)) {
+                          return photos.map((f: string, i: number) => (
+                            <Image key={i} source={{ uri: `${API_URL}/uploads/${f}` }} style={styles.reviewImage} />
+                          ));
+                        }
+                      } catch (e) {
+                        return <Image source={{ uri: `${API_URL}/uploads/${rev.foto}` }} style={styles.reviewImage} />;
+                      }
+                    })()}
+                  </ScrollView>
+                )}
+              </View>
+            ))
+          )}
         </Animated.View>
       </ScrollView>
 
@@ -170,6 +251,19 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: "#e2e8f0", marginVertical: 24 },
   descTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 10 },
   descText: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 14, lineHeight: 24 },
+
+  reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
+  ratingBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(245, 158, 11, 0.1)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  ratingBadgeText: { color: '#f59e0b', fontFamily: 'Poppins_700Bold', fontSize: 13, marginLeft: 6 },
+  noReviewText: { color: '#94a3b8', fontFamily: 'Poppins_400Regular', fontSize: 13, fontStyle: 'italic' },
+  reviewCard: { backgroundColor: '#ffffff', padding: 15, borderRadius: 16, marginBottom: 15, borderWidth: 1, borderColor: '#f1f5f9' },
+  reviewUserRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  reviewAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#e2e8f0', justifyContent: 'center', alignItems: 'center' },
+  reviewAvatarText: { color: '#64748b', fontFamily: 'Poppins_700Bold', fontSize: 14 },
+  reviewUserName: { color: '#1e293b', fontFamily: 'Poppins_600SemiBold', fontSize: 13 },
+  reviewStars: { flexDirection: 'row', marginTop: 2 },
+  reviewText: { color: '#475569', fontFamily: 'Poppins_400Regular', fontSize: 13, lineHeight: 20 },
+  reviewImage: { width: 70, height: 70, borderRadius: 8, marginRight: 10, backgroundColor: '#f1f5f9' },
   
   bottomBar: {
     position: "absolute",

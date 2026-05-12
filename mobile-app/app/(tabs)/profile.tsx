@@ -102,16 +102,24 @@ export default function ProfileScreen() {
           {(!userData.noTelepon || !userData.alamat) && (<Text style={s.warningText}>* Silakan klik tombol Edit untuk melengkapi data pengiriman Anda.</Text>)}
         </View>
 
-        <View style={s.card}>
-          <View style={s.cardHeader}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}><Ionicons name="cart" size={20} color="#3b82f6" /><Text style={s.cardTitle}>Pesanan Saya</Text></View>
-          </View>
-          <View style={s.orderMenuContainer}>
-            <TouchableOpacity style={s.orderMenuItem} onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'PENDING' } })}><Ionicons name="wallet-outline" size={28} color="#64748b" /><Text style={s.orderMenuText}>Belum Bayar</Text></TouchableOpacity>
-            <TouchableOpacity style={s.orderMenuItem} onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'DIPROSES' } })}><Ionicons name="cog-outline" size={28} color="#64748b" /><Text style={s.orderMenuText}>Diproses</Text></TouchableOpacity>
-            <TouchableOpacity style={s.orderMenuItem} onPress={() => router.push({ pathname: '/my-orders', params: { initialStatus: 'DIKIRIM' } })}><Ionicons name="cube-outline" size={28} color="#64748b" /><Text style={s.orderMenuText}>Dikirim</Text></TouchableOpacity>
           </View>
         </View>
+
+        <TouchableOpacity 
+          style={[s.card, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 18 }]}
+          onPress={() => router.push('/wishlist')}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: 10, borderRadius: 12, marginRight: 15 }}>
+              <Ionicons name="heart" size={24} color="#ef4444" />
+            </View>
+            <View>
+              <Text style={{ fontFamily: 'Poppins_700Bold', color: '#1e293b', fontSize: 15 }}>Favorit Saya</Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', color: '#94a3b8', fontSize: 12 }}>Lihat produk yang kamu sukai</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
+        </TouchableOpacity>
 
         <View style={{ gap: 10, marginTop: 10 }}>
           <TouchableOpacity style={[s.logoutButton, { backgroundColor: "rgba(59, 130, 246, 0.08)", borderColor: "#3b82f6", borderWidth: 1 }]}

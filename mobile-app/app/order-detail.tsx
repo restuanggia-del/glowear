@@ -20,7 +20,7 @@ export default function OrderDetailScreen() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
-  const [reviewImage, setReviewImage] = useState<string | null>(null);
+  const [reviewImages, setReviewImages] = useState<string[]>([]);
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
@@ -113,16 +113,28 @@ export default function OrderDetailScreen() {
   };
 
   const pickImage = async () => {
+    if (reviewImages.length >= 5) {
+      return showAlert({
+        title: "Batas Maksimal",
+        message: "Maksimal 5 foto ulasan.",
+        type: "warning"
+      });
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      allowsMultipleSelection: true,
+      selectionLimit: 5 - reviewImages.length,
       quality: 0.8,
     });
 
     if (!result.canceled) {
-      setReviewImage(result.assets[0].uri);
+      const uris = result.assets.map(a => a.uri);
+      setReviewImages(prev => [...prev, ...uris].slice(0, 5));
     }
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    setReviewImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const submitReview = async () => {
@@ -145,11 +157,13 @@ export default function OrderDetailScreen() {
       formData.append("rating", rating.toString());
       formData.append("komentar", reviewText);
 
-      if (reviewImage) {
-        const filename = reviewImage.split('/').pop() || 'photo.jpg';
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : `image`;
-        formData.append('foto', { uri: reviewImage, name: filename, type } as any);
+      if (reviewImages.length > 0) {
+        reviewImages.forEach((uri) => {
+          const filename = uri.split('/').pop() || 'photo.jpg';
+          const match = /\.(\w+)$/.exec(filename);
+          const type = match ? `image/${match[1]}` : `image`;
+          formData.append('foto', { uri, name: filename, type } as any);
+        });
       }
 
       await api.post("/reviews", formData, {
@@ -461,15 +475,29 @@ export default function OrderDetailScreen() {
               onChangeText={setReviewText}
             />
 
-            <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
-              <Ionicons name="camera-outline" size={20} color="#38bdf8" />
-              <Text style={styles.imagePickerText}>
-                {reviewImage ? "Ganti Foto Ulasan" : "Unggah Foto Ulasan (Opsional)"}
-              </Text>
-            </TouchableOpacity>
+            {reviewImages.length < 5 && (
+              <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
+                <Ionicons name="camera-outline" size={20} color="#38bdf8" />
+                <Text style={styles.imagePickerText}>
+                  Unggah Foto ({reviewImages.length}/5)
+                </Text>
+              </TouchableOpacity>
+            )}
 
-            {reviewImage && (
-              <Image source={{ uri: reviewImage }} style={styles.previewImage} />
+            {reviewImages.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.previewContainer}>
+                {reviewImages.map((uri, idx) => (
+                  <View key={idx} style={styles.previewImageWrapper}>
+                    <Image source={{ uri }} style={styles.previewImage} />
+                    <TouchableOpacity 
+                      style={styles.removeImageBtn} 
+                      onPress={() => removeImage(idx)}
+                    >
+                      <Ionicons name="close" size={14} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
             )}
 
             <TouchableOpacity 
@@ -564,7 +592,10 @@ const styles = StyleSheet.create({
   imagePickerBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(59,130,246,0.08)", paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: "rgba(59,130,246,0.2)", marginBottom: 15 },
   imagePickerText: { color: "#3b82f6", fontFamily: "Poppins_600SemiBold", fontSize: 13, marginLeft: 8 },
   
-  previewImage: { width: 100, height: 100, borderRadius: 12, marginBottom: 20, alignSelf: "center", borderWidth: 1, borderColor: "#e2e8f0" },
+  previewContainer: { marginBottom: 20, flexDirection: 'row' },
+  previewImageWrapper: { position: 'relative', marginRight: 10 },
+  previewImage: { width: 80, height: 80, borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" },
+  removeImageBtn: { position: 'absolute', top: -5, right: -5, backgroundColor: "#ef4444", borderRadius: 12, width: 24, height: 24, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: "#fff" },
   
   submitReviewBtn: { backgroundColor: "#3b82f6", paddingVertical: 16, borderRadius: 14, alignItems: "center", marginTop: 10, marginBottom: 20 },
   submitReviewText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15 }
