@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Image as ImageIcon, X, Upload, Loader2, Package, Tag, AlertCircle, CheckCircle2, Info } from "lucide-react";
+import Skeleton from "@/app/components/Skeleton";
 
 interface Category {
   id: string;
@@ -273,7 +274,19 @@ export default function ProductsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
               {loading ? (
-                <tr><td colSpan={6} className="py-16 text-center"><Loader2 size={32} className="animate-spin mx-auto mb-3 text-blue-500"/><span className="text-slate-500 font-medium">Memuat data produk...</span></td></tr>
+                [...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="py-4 px-6"><Skeleton className="h-6 w-24" /></td>
+                    <td className="py-4 px-6 flex items-center gap-4">
+                      <Skeleton className="h-14 w-14 rounded-xl shrink-0" />
+                      <Skeleton className="h-4 w-32" />
+                    </td>
+                    <td className="py-4 px-6"><Skeleton className="h-6 w-20 rounded-full" /></td>
+                    <td className="py-4 px-6"><Skeleton className="h-4 w-24" /></td>
+                    <td className="py-4 px-6"><Skeleton className="h-4 w-12" /></td>
+                    <td className="py-4 px-6"><div className="flex justify-center gap-2"><Skeleton className="h-9 w-9 rounded-lg" /><Skeleton className="h-9 w-9 rounded-lg" /></div></td>
+                  </tr>
+                ))
               ) : filteredProducts.length === 0 ? (
                 <tr><td colSpan={6} className="py-16 text-center flex flex-col items-center justify-center text-slate-500"><Package size={40} className="mb-3 text-slate-300"/><span className="font-medium">Tidak ada produk ditemukan.</span></td></tr>
               ) : (

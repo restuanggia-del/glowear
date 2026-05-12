@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, ShieldAlert, ShieldCheck, User, Loader2, Users, AlertCircle, CheckCircle2, X, Info, ChevronDown, ChevronUp, Edit, Trash2, Mail, Phone, MapPin, Lock } from "lucide-react";
+import Skeleton from "@/app/components/Skeleton";
 import Image from "next/image";
 import { api } from "@/app/services/api";
 
@@ -194,9 +195,36 @@ export default function UsersPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 py-20 flex flex-col items-center justify-center">
-          <Loader2 size={40} className="animate-spin text-blue-500 mb-4" />
-          <p className="text-slate-500 font-medium">Memuat data pengguna...</p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-5 border-b border-slate-100 bg-indigo-50/30">
+              <Skeleton className="h-8 w-48" />
+            </div>
+            <div className="p-6 space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-xl" />
+                    <div><Skeleton className="h-4 w-32 mb-2" /><Skeleton className="h-3 w-24" /></div>
+                  </div>
+                  <div className="flex gap-4">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-9 w-9 rounded-lg" />
+                    <Skeleton className="h-9 w-9 rounded-lg" />
+                    <Skeleton className="h-9 w-9 rounded-lg" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+              <Skeleton className="h-8 w-48" />
+            </div>
+          </div>
         </div>
       ) : (
         <>

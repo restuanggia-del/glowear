@@ -8,6 +8,7 @@ import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import Lottie from "lottie-react";
 import animationData from "@/app/assets/Product Offer.json";
+import Skeleton from "@/app/components/Skeleton";
 
 export default function DashboardPage() {
   const { user, validate } = useAuth();
@@ -88,9 +89,22 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full items-center justify-center min-h-[60vh] gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <p className="text-sm font-black text-slate-400 uppercase tracking-widest animate-pulse">Menyiapkan Dashboard...</p>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        {/* Banner Skeleton */}
+        <Skeleton className="h-64 w-full rounded-[2.5rem]" />
+        
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32 rounded-3xl" />
+          ))}
+        </div>
+        
+        {/* Chart & Tables Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Skeleton className="lg:col-span-2 h-96 rounded-[2.5rem]" />
+          <Skeleton className="h-96 rounded-[2.5rem]" />
+        </div>
       </div>
     );
   }

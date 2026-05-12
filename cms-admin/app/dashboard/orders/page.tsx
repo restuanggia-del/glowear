@@ -9,6 +9,7 @@ import {
 import Image from "next/image"; // Menggunakan Next Image untuk optimasi
 import { api } from "@/app/services/api";
 import Invoice from "@/app/components/Invoice";
+import Skeleton from "@/app/components/Skeleton";
 
 // ==========================================
 // CONFIGURASI & DATA MASTER
@@ -217,7 +218,15 @@ export default function OrdersPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={5} className="py-16 text-center text-slate-500 font-medium">Memuat data pesanan...</td></tr>
+                [...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="py-4 px-6"><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-3 w-32" /></td>
+                    <td className="py-4 px-6"><Skeleton className="h-4 w-20 mb-2" /><Skeleton className="h-4 w-28" /></td>
+                    <td className="py-4 px-6"><Skeleton className="h-6 w-24" /></td>
+                    <td className="py-4 px-6"><Skeleton className="h-6 w-24" /></td>
+                    <td className="py-4 px-6"><div className="flex justify-center gap-2"><Skeleton className="h-9 w-9 rounded-lg" /><Skeleton className="h-9 w-9 rounded-lg" /><Skeleton className="h-9 w-9 rounded-lg" /></div></td>
+                  </tr>
+                ))
               ) : filteredOrders.length === 0 ? (
                 <tr><td colSpan={5} className="py-16 text-center text-slate-500 font-medium">Tidak ada pesanan ditemukan.</td></tr>
               ) : (
