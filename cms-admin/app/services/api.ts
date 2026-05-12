@@ -57,3 +57,18 @@ export async function validateDashboardAccess(id: string) {
   const { data } = await api.post('/auth/validate', { id });
   return data;
 }
+
+export async function forgotPassword(email: string) {
+  const { data } = await api.post('/auth/forgot-password', { email });
+  return data;
+}
+
+export async function verifyOtp(email: string, otp: string) {
+  const { data } = await api.post('/auth/verify-otp', { email, otp });
+  return data;
+}
+
+export async function resetPassword(email: string, otp: string, kataSandiBaru: string) {
+  const { data } = await api.post('/auth/reset-password', { email, otp, kataSandiBaru });
+  return data;
+}
