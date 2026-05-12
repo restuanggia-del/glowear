@@ -47,6 +47,16 @@ export default function ReviewsPage() {
     }
   };
 
+  const getPhotoArray = (fotoString: string) => {
+    if (!fotoString) return [];
+    try {
+      const parsed = JSON.parse(fotoString);
+      return Array.isArray(parsed) ? parsed : [fotoString];
+    } catch (e) {
+      return [fotoString];
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -122,30 +132,15 @@ export default function ReviewsPage() {
                 {/* Photos */}
                 {rev.foto && (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {(() => {
-                      try {
-                        const photos = JSON.parse(rev.foto);
-                        if (Array.isArray(photos)) {
-                          return photos.map((f, i) => (
-                            <div key={i} className="relative group/img">
-                              <img 
-                                src={`http://localhost:3001/uploads/${f}`} 
-                                alt="Ulasan" 
-                                className="w-16 h-16 rounded-xl object-cover border border-slate-100 shadow-sm"
-                              />
-                            </div>
-                          ));
-                        }
-                      } catch (e) {
-                        return (
-                          <img 
-                            src={`http://localhost:3001/uploads/${rev.foto}`} 
-                            alt="Ulasan" 
-                            className="w-16 h-16 rounded-xl object-cover border border-slate-100 shadow-sm"
-                          />
-                        );
-                      }
-                    })()}
+                    {getPhotoArray(rev.foto).map((f: string, i: number) => (
+                      <div key={i} className="relative group/img">
+                        <img 
+                          src={`http://localhost:3001/uploads/${f}`} 
+                          alt="Ulasan" 
+                          className="w-16 h-16 rounded-xl object-cover border border-slate-100 shadow-sm"
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -155,7 +150,7 @@ export default function ReviewsPage() {
                 <div className="flex items-center gap-1 text-blue-500">
                    <ImageIcon size={14} />
                    <span className="text-[10px] font-bold uppercase tracking-tight">
-                    {rev.foto ? (Array.isArray(JSON.parse(rev.foto)) ? JSON.parse(rev.foto).length : 1) : 0} Foto
+                    {getPhotoArray(rev.foto).length} Foto
                    </span>
                 </div>
               </div>

@@ -71,6 +71,16 @@ export default function ProductDetailScreen() {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
   };
 
+  const getPhotoArray = (fotoString: string) => {
+    if (!fotoString) return [];
+    try {
+      const parsed = JSON.parse(fotoString);
+      return Array.isArray(parsed) ? parsed : [fotoString];
+    } catch (e) {
+      return [fotoString];
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingArea}>
@@ -185,18 +195,9 @@ export default function ProductDetailScreen() {
                 {rev.komentar && <Text style={styles.reviewText}>{rev.komentar}</Text>}
                 {rev.foto && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-                    {(() => {
-                      try {
-                        const photos = JSON.parse(rev.foto);
-                        if (Array.isArray(photos)) {
-                          return photos.map((f: string, i: number) => (
-                            <Image key={i} source={{ uri: `${API_URL}/uploads/${f}` }} style={styles.reviewImage} />
-                          ));
-                        }
-                      } catch (e) {
-                        return <Image source={{ uri: `${API_URL}/uploads/${rev.foto}` }} style={styles.reviewImage} />;
-                      }
-                    })()}
+                    {getPhotoArray(rev.foto).map((f: string, i: number) => (
+                      <Image key={i} source={{ uri: `${API_URL}/uploads/${f}` }} style={styles.reviewImage} />
+                    ))}
                   </ScrollView>
                 )}
               </View>
