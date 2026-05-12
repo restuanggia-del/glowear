@@ -67,15 +67,15 @@ export default function StudioScreen() {
         <Text style={styles.sectionTitle}>Layanan Custom</Text>
         <View style={styles.grid}>
           <View style={styles.serviceCard}>
-            <View style={[styles.iconBox, { backgroundColor: 'rgba(56, 189, 248, 0.1)' }]}>
-              <Ionicons name="color-palette" size={32} color="#38bdf8" />
+            <View style={[styles.iconBox, { backgroundColor: 'rgba(59, 130, 246, 0.1)' }]}>
+              <Ionicons name="color-palette" size={32} color="#3b82f6" />
             </View>
             <Text style={styles.serviceName}>Sablon DTF</Text>
             <Text style={styles.serviceDesc}>Full color & detail</Text>
           </View>
           <View style={styles.serviceCard}>
             <View style={[styles.iconBox, { backgroundColor: 'rgba(251, 191, 36, 0.1)' }]}>
-              <MaterialCommunityIcons name="embroidery" size={32} color="#fbbf24" />
+              <MaterialCommunityIcons name="embroidery" size={32} color="#f59e0b" />
             </View>
             <Text style={styles.serviceName}>Bordir Komp.</Text>
             <Text style={styles.serviceDesc}>Hasil rapi & mewah</Text>
@@ -89,7 +89,7 @@ export default function StudioScreen() {
         </View>
 
         {loading ? (
-            <ActivityIndicator color="#38bdf8" style={{ marginTop: 20 }} />
+            <ActivityIndicator color="#3b82f6" style={{ marginTop: 20 }} />
         ) : (
             <View style={styles.productList}>
                 {baseProducts.map((item, index) => (
@@ -113,7 +113,7 @@ export default function StudioScreen() {
                                 </View>
                             </View>
                             <View style={styles.plusBtn}>
-                                <Ionicons name="brush" size={18} color="#0f172a" />
+                                <Ionicons name="brush" size={18} color="#fff" />
                             </View>
                         </TouchableOpacity>
                     </Animated.View>
@@ -122,7 +122,7 @@ export default function StudioScreen() {
         )}
 
         <View style={styles.infoBox}>
-            <Ionicons name="information-circle-outline" size={24} color="#38bdf8" />
+            <Ionicons name="information-circle-outline" size={24} color="#3b82f6" />
             <Text style={styles.infoText}>Klik pada produk untuk mulai mengunggah desain dan memilih jenis sablon.</Text>
         </View>
 
@@ -133,79 +133,90 @@ export default function StudioScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
   scrollContent: { padding: 20 },
   header: { marginTop: 40, marginBottom: 25 },
-  title: { color: "#fff", fontFamily: "Poppins_800ExtraBold", fontSize: 28 },
-  subtitle: { color: "#94a3b8", fontFamily: "Poppins_500Medium", fontSize: 14, marginTop: 4 },
+  title: { color: "#1e293b", fontFamily: "Poppins_800ExtraBold", fontSize: 28 },
+  subtitle: { color: "#64748b", fontFamily: "Poppins_500Medium", fontSize: 14, marginTop: 4 },
   
   heroCard: { 
     height: 200, 
     borderRadius: 24, 
     overflow: "hidden", 
     marginBottom: 30,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
+    elevation: 6,
+    shadowColor: "#94a3b8",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
   },
   heroImage: { width: "100%", height: "100%" },
   heroOverlay: { 
     ...StyleSheet.absoluteFillObject, 
-    backgroundColor: "rgba(15, 23, 42, 0.6)", 
+    backgroundColor: "rgba(15, 23, 42, 0.55)", 
     padding: 20, 
     justifyContent: "flex-end" 
   },
   heroTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 22 },
   heroSubtitle: { color: "#e2e8f0", fontFamily: "Poppins_400Regular", fontSize: 12, marginBottom: 15 },
-  startBtn: { backgroundColor: "#38bdf8", alignSelf: "flex-start", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12 },
-  startBtnText: { color: "#0f172a", fontFamily: "Poppins_700Bold", fontSize: 13 },
+  startBtn: { backgroundColor: "#3b82f6", alignSelf: "flex-start", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12 },
+  startBtnText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 13 },
 
-  sectionTitle: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 5 },
-  sectionSubtitle: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 12, marginBottom: 15 },
+  sectionTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 18, marginBottom: 5 },
+  sectionSubtitle: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, marginBottom: 15 },
   grid: { flexDirection: "row", justifyContent: "space-between", gap: 15, marginBottom: 30 },
   serviceCard: { 
     flex: 1,
-    backgroundColor: "#1e293b", 
+    backgroundColor: "#ffffff", 
     borderRadius: 20, 
     padding: 15, 
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "#f1f5f9",
+    shadowColor: "#94a3b8",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   iconBox: { width: 50, height: 50, borderRadius: 15, justifyContent: "center", alignItems: "center", marginBottom: 10 },
-  serviceName: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 13 },
-  serviceDesc: { color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 10, marginTop: 2, textAlign: "center" },
+  serviceName: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 13 },
+  serviceDesc: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 10, marginTop: 2, textAlign: "center" },
 
   productList: { gap: 15 },
   productItem: { 
     flexDirection: "row", 
-    backgroundColor: "#1e293b", 
+    backgroundColor: "#ffffff", 
     borderRadius: 20, 
     padding: 12, 
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#334155"
+    borderColor: "#f1f5f9",
+    shadowColor: "#94a3b8",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  productImg: { width: 70, height: 70, borderRadius: 12, backgroundColor: "#334155" },
+  productImg: { width: 70, height: 70, borderRadius: 12, backgroundColor: "#f1f5f9" },
   productInfo: { flex: 1, marginLeft: 15 },
-  productName: { color: "#fff", fontFamily: "Poppins_600SemiBold", fontSize: 15 },
-  productPrice: { color: "#38bdf8", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 2 },
+  productName: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 15 },
+  productPrice: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 14, marginTop: 2 },
   badgeCustom: { backgroundColor: "rgba(16, 185, 129, 0.1)", alignSelf: "flex-start", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginTop: 5 },
   badgeText: { color: "#10b981", fontSize: 9, fontFamily: "Poppins_700Bold" },
-  plusBtn: { width: 36, height: 36, borderRadius: 12, backgroundColor: "#38bdf8", justifyContent: "center", alignItems: "center" },
+  plusBtn: { width: 36, height: 36, borderRadius: 12, backgroundColor: "#3b82f6", justifyContent: "center", alignItems: "center" },
 
   infoBox: { 
     marginTop: 30, 
-    backgroundColor: "rgba(56, 189, 248, 0.05)", 
+    backgroundColor: "rgba(59, 130, 246, 0.05)", 
     padding: 15, 
     borderRadius: 16, 
     flexDirection: "row", 
     alignItems: "center", 
     gap: 12,
     borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.2)"
+    borderColor: "rgba(59, 130, 246, 0.15)"
   },
-  infoText: { flex: 1, color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 12, lineHeight: 18 },
+  infoText: { flex: 1, color: "#64748b", fontFamily: "Poppins_400Regular", fontSize: 12, lineHeight: 18 },
+  sectionHeader: {},
 });

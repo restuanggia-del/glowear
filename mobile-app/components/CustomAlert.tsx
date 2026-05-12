@@ -63,7 +63,7 @@ export const CustomAlertProvider: React.FC<{ children: React.ReactNode }> = ({ c
       case 'success': return { name: 'checkmark-circle', color: '#10b981' };
       case 'error': return { name: 'close-circle', color: '#ef4444' };
       case 'warning': return { name: 'warning', color: '#f59e0b' };
-      default: return { name: 'information-circle', color: '#38bdf8' };
+      default: return { name: 'information-circle', color: '#3b82f6' };
     }
   };
 
@@ -105,25 +105,23 @@ export const CustomAlertProvider: React.FC<{ children: React.ReactNode }> = ({ c
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   alertBox: {
-    backgroundColor: '#1e293b',
-    borderRadius: 24,
-    padding: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 28,
+    padding: 28,
     width: '100%',
     maxWidth: 340,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
     elevation: 20,
-    shadowColor: '#000',
+    shadowColor: '#64748b',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
   },
   iconContainer: {
     width: 80,
@@ -134,14 +132,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    color: '#fff',
+    color: '#1e293b',
     fontFamily: 'Poppins_700Bold',
     fontSize: 20,
     textAlign: 'center',
     marginBottom: 8,
   },
   message: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontFamily: 'Poppins_400Regular',
     fontSize: 14,
     textAlign: 'center',
@@ -161,12 +159,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.15,
     shadowRadius: 5,
     elevation: 5,
   },
   confirmButtonText: {
-    color: '#0f172a',
+    color: '#ffffff',
     fontFamily: 'Poppins_700Bold',
     fontSize: 15,
   },
@@ -174,14 +172,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     borderRadius: 15,
-    backgroundColor: '#334155',
+    backgroundColor: '#f1f5f9',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: '#e2e8f0',
   },
   cancelButtonText: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontFamily: 'Poppins_600SemiBold',
     fontSize: 15,
   },

@@ -35,7 +35,7 @@ export default function Skeleton({ width = '100%', height = 20, borderRadius = 4
           width,
           height,
           borderRadius,
-          backgroundColor: '#334155', // Tailwind slate-700
+          backgroundColor: '#e2e8f0', // Tailwind slate-200 (light theme)
           opacity,
         },
         style,
