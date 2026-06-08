@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Trash2, Plus, Image as ImageIcon, Link as LinkIcon, Loader2, AlertCircle, CheckCircle2, X, Info, Edit } from "lucide-react";
+import { Upload, Trash2, Plus, Image as ImageIcon, Link as LinkIcon, Loader2, X, Edit } from "lucide-react";
+import DialogModal, { DEFAULT_DIALOG, DialogState } from "@/app/components/ui/DialogModal";
 
 export default function BannersPage() {
   const [banners, setBanners] = useState<any[]>([]);
@@ -19,23 +20,11 @@ export default function BannersPage() {
   const [editJudul, setEditJudul] = useState("");
   const [editLink, setEditLink] = useState("");
 
-  // ==========================================
-  // STATE CUSTOM DIALOG (Pengganti Alert)
-  // ==========================================
-  const [dialog, setDialog] = useState<{
-    isOpen: boolean;
-    type: 'success' | 'error' | 'info' | 'confirm';
-    title: string;
-    message: string;
-    onConfirm?: () => void;
-  }>({ isOpen: false, type: 'info', title: '', message: '' });
-
-  const showDialog = (type: 'success' | 'error' | 'info' | 'confirm', title: string, message: string, onConfirm?: () => void) => {
+  const [dialog, setDialog] = useState<DialogState>(DEFAULT_DIALOG);
+  const showDialog = (type: DialogState['type'], title: string, message: string, onConfirm?: () => void) => {
     setDialog({ isOpen: true, type, title, message, onConfirm });
   };
-
-  const closeDialog = () => setDialog({ ...dialog, isOpen: false });
-  // ==========================================
+  const closeDialog = () => setDialog(DEFAULT_DIALOG);
 
   const fetchBanners = async () => {
     try {
@@ -140,7 +129,7 @@ export default function BannersPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
@@ -380,49 +369,8 @@ export default function BannersPage() {
         </div>
       )}
 
-      {/* =========================================
-          CUSTOM DIALOG SYSTEM (Pengganti Alert)
-      ========================================= */}
-      {dialog.isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => dialog.type !== 'confirm' && closeDialog()}></div>
-            
-            <div className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center animate-in zoom-in-95 duration-200 sm:my-8 border border-slate-100">
-              
-              <div className={`mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-5 shadow-inner
-                ${dialog.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 
-                  dialog.type === 'error' ? 'bg-rose-100 text-rose-500' : 
-                  dialog.type === 'confirm' ? 'bg-amber-100 text-amber-500' : 
-                  'bg-blue-100 text-blue-500'}`}
-              >
-                {dialog.type === 'success' && <CheckCircle2 size={32} />}
-                {dialog.type === 'error' && <X size={32} />}
-                {dialog.type === 'confirm' && <AlertCircle size={32} />}
-                {dialog.type === 'info' && <Info size={32} />}
-              </div>
-
-              <h3 className="text-xl font-black text-slate-800 mb-2">{dialog.title}</h3>
-              <p className="text-sm font-medium text-slate-500 leading-relaxed mb-8">{dialog.message}</p>
-
-              {dialog.type === 'confirm' ? (
-                <div className="flex gap-3">
-                  <button onClick={closeDialog} className="flex-1 py-3 rounded-full font-bold text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                    Batal
-                  </button>
-                  <button onClick={dialog.onConfirm} className="flex-1 py-3 rounded-full font-bold text-sm bg-rose-600 text-white hover:bg-rose-700 shadow-md shadow-rose-600/20 transition-all active:scale-95">
-                    Ya, Hapus
-                  </button>
-                </div>
-              ) : (
-                <button onClick={closeDialog} className="w-full py-3 rounded-full font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all active:scale-95">
-                  Mengerti
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* SHARED DIALOG */}
+      <DialogModal dialog={dialog} onClose={closeDialog} />
 
     </div>
   );
