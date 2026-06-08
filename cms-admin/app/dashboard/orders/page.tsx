@@ -284,11 +284,10 @@ export default function OrdersPage() {
           MODAL DETAIL PESANAN (PREMIUM OVERHAUL)
       ========================================= */}
       {isDetailModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[110px] pl-4 lg:ml-[320px] lg:pl-0">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
 
-            <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20">
+          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[90vh]">
 
               {/* Modern Header dengan Gradients */}
               <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-8 text-white relative overflow-hidden flex-shrink-0">
@@ -477,7 +476,6 @@ export default function OrdersPage() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       )}
 
@@ -485,8 +483,7 @@ export default function OrdersPage() {
           MODAL PREVIEW GAMBAR (ZOOM LIGHTBOX)
       ========================================= */}
       {isPreviewOpen && previewImageUrl && (
-        <div className="fixed inset-0 z-[100] pt-[110px] pl-4 lg:ml-[320px] lg:pl-0 h-[calc(100vh-110px)] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
-          {/* Backdrop Gelap */}
+        <div className="fixed inset-0 z-[200] flex items-center justify-center animate-in fade-in duration-300" onClick={closePreview}>
           <div className="fixed inset-0 bg-black/90 backdrop-blur-sm"></div>
 
           {/* Kontainer Gambar (Centered) */}

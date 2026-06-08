@@ -3,7 +3,12 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./lib/auth-context";
 
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const poppins = Poppins({ 
+  subsets: ["latin"], 
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Glowear",
@@ -16,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className={poppins.className} suppressHydrationWarning={true}>
+    <html lang="id" className={poppins.variable}>
+      <body className={`${poppins.className} antialiased`} suppressHydrationWarning={true}>
         <AuthProvider>
           {children}
         </AuthProvider>
