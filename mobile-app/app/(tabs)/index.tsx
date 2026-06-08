@@ -450,8 +450,8 @@ export default function CatalogScreen() {
 
                 <View style={styles.cardFooter}>
                   <View style={styles.ratingRow}>
-                    <Ionicons name="star" size={12} color="#fbbf24" />
-                    <Text style={styles.ratingText}>4.9</Text>
+                    <Ionicons name="star" size={12} color={ratings[item.id] ? "#fbbf24" : "#cbd5e1"} />
+                    <Text style={styles.ratingText}>{ratings[item.id] ? ratings[item.id].toFixed(1) : "-"}</Text>
                   </View>
                   <TouchableOpacity
                     style={styles.addBtn}
