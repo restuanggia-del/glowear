@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Dimensions, Modal, TextInput, TouchableOpacity, Alert, Platform, StatusBar } from "react-native";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useAlert } from "../../components/CustomAlert";
 import { api } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +20,11 @@ export default function CatalogScreen() {
   const [banners, setBanners] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [ratings, setRatings] = useState<Record<string, number>>({});
+
+  // Auto-scroll banner
+  const bannerRef = useRef<FlatList>(null);
+  const bannerIndexRef = useRef(0);
 
   const { addItem, totalItems } = useCartStore();
   const cartItemsCount = totalItems();
@@ -49,12 +54,39 @@ export default function CatalogScreen() {
       setProducts(resProducts.data);
       setBanners(resBanners.data);
       setCategories(resCategories.data);
+
+      // Ambil rating rata-rata semua produk sekaligus
+      const productList: any[] = resProducts.data;
+      const ratingMap: Record<string, number> = {};
+      await Promise.allSettled(
+        productList.map(async (p) => {
+          try {
+            const r = await api.get(`/reviews/product/${p.id}`);
+            if (r.data.length > 0) {
+              const avg = r.data.reduce((sum: number, rv: any) => sum + rv.rating, 0) / r.data.length;
+              ratingMap[p.id] = parseFloat(avg.toFixed(1));
+            }
+          } catch { /* skip */ }
+        })
+      );
+      setRatings(ratingMap);
     } catch (error) {
       console.error("Gagal ambil data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Auto-scroll banner setiap 4 detik
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const interval = setInterval(() => {
+      const nextIndex = (bannerIndexRef.current + 1) % banners.length;
+      bannerIndexRef.current = nextIndex;
+      bannerRef.current?.scrollToOffset({ offset: nextIndex * (width - 30), animated: true });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [banners.length]);
 
   // 2. Cek kelengkapan profil pengguna dengan data TERBARU dari server
   const checkUserProfile = async () => {
@@ -250,6 +282,7 @@ export default function CatalogScreen() {
       {banners.length > 0 && !searchQuery && (
         <Animated.View entering={FadeInRight.delay(400)} style={styles.bannerSection}>
           <FlatList
+            ref={bannerRef}
             data={banners}
             horizontal
             pagingEnabled
@@ -257,6 +290,9 @@ export default function CatalogScreen() {
             keyExtractor={(item) => item.id}
             snapToAlignment="center"
             decelerationRate="fast"
+            onScroll={(e) => {
+              bannerIndexRef.current = Math.round(e.nativeEvent.contentOffset.x / (width - 30));
+            }}
             renderItem={({ item }) => (
               <View style={styles.bannerWrapper}>
                 <Image

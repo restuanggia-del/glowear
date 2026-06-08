@@ -132,11 +132,7 @@ export default function Login() {
                 </View>
 
                 <View style={styles.rememberRow}>
-                  <TouchableOpacity style={styles.checkboxContainer}>
-                    <View style={styles.checkbox} />
-                    <Text style={styles.rememberText}>Ingat Saya</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => router.push("/forgot-password")}>
+                  <TouchableOpacity onPress={() => router.push("/forgot-password")} style={{ alignSelf: 'flex-end' }}>
                     <Text style={styles.forgotText}>Lupa kata sandi?</Text>
                   </TouchableOpacity>
                 </View>

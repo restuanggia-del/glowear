@@ -64,6 +64,11 @@ export default function PortfolioScreen() {
 
   return (
     <View style={s.container}>
+      {/* Header */}
+      <View style={s.pageHeader}>
+        <Text style={s.pageHeaderTitle}>Portfolio Kami</Text>
+        <Text style={s.pageHeaderSub}>{portfolios.length} Karya Terbaik</Text>
+      </View>
       <View style={s.filterContainer}>
         <FlatList data={categories} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item} contentContainerStyle={{ paddingHorizontal: 15 }}
           renderItem={({ item }) => (
@@ -120,6 +125,9 @@ export default function PortfolioScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8fafc", paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 },
+  pageHeader: { paddingHorizontal: 15, paddingTop: 20, paddingBottom: 12, backgroundColor: '#ffffff', borderBottomWidth: 1, borderColor: '#f1f5f9' },
+  pageHeaderTitle: { color: '#1e293b', fontFamily: 'Poppins_800ExtraBold', fontSize: 24 },
+  pageHeaderSub: { color: '#94a3b8', fontFamily: 'Poppins_500Medium', fontSize: 13, marginTop: 2 },
   filterContainer: { paddingVertical: 12, borderBottomWidth: 1, borderColor: "#f1f5f9" },
   filterTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#e2e8f0" },
   filterTabActive: { backgroundColor: "rgba(59, 130, 246, 0.1)", borderColor: "#3b82f6" },

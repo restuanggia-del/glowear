@@ -61,7 +61,7 @@ export default function WishlistScreen() {
   return (
     <View style={s.container}>
       <Stack.Screen options={{ 
-        title: "Favorit Saya", 
+        title: `Favorit Saya (${products.length})`, 
         headerStyle: { backgroundColor: "#ffffff" }, 
         headerTintColor: "#1e293b", 
         headerTitleStyle: { fontFamily: "Poppins_700Bold" },

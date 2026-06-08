@@ -7,13 +7,16 @@ import Skeleton from "../../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useAlert } from "../../components/CustomAlert";
 
 export default function OrdersScreen() {
   const router = useRouter();
+  const { showAlert } = useAlert();
   const { initialStatus } = useLocalSearchParams();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(initialStatus || "SEMUA");
 
   const tabs = [
@@ -36,6 +39,29 @@ export default function OrdersScreen() {
 
   useEffect(() => { fetchOrders(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); fetchOrders(); }, []);
+
+  const handleCancelOrder = (orderId: string) => {
+    showAlert({
+      title: "Batalkan Pesanan?",
+      message: "Pesanan yang dibatalkan tidak dapat dikembalikan. Stok akan otomatis dikembalikan.",
+      showCancel: true,
+      confirmText: "Ya, Batalkan",
+      cancelText: "Batal",
+      type: "warning",
+      onConfirm: async () => {
+        setCancellingId(orderId);
+        try {
+          await api.patch(`/orders/${orderId}/cancel`);
+          showAlert({ title: "Berhasil", message: "Pesanan dibatalkan.", type: "success", onConfirm: fetchOrders });
+        } catch (error: any) {
+          const msg = error?.response?.data?.message || "Gagal membatalkan pesanan.";
+          showAlert({ title: "Gagal", message: msg, type: "error" });
+        } finally {
+          setCancellingId(null);
+        }
+      }
+    });
+  };
 
   const formatRupiah = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
   const formatDate = (d: any) => { if (!d) return "-"; const date = new Date(d); return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }); };
@@ -78,14 +104,41 @@ export default function OrdersScreen() {
                 <Text style={s.orderDate}>{formatDate(item.createdAt)}</Text>
                 <View style={[s.statusBadge, { backgroundColor: `${getStatusColor(item.status)}15` }]}><Text style={[s.statusText, { color: getStatusColor(item.status) }]}>{item.status}</Text></View>
               </View>
+              {item.nomorResi && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 }}>
+                  <Ionicons name="bus-outline" size={13} color="#10b981" />
+                  <Text style={{ color: '#10b981', fontFamily: 'Poppins_600SemiBold', fontSize: 11 }}>Resi: {item.nomorResi}</Text>
+                </View>
+              )}
               <View style={s.productRow}>
                 <Image source={{ uri: getImageUrl(item) }} style={s.productImage} />
                 <View style={s.productInfo}>
                   <Text style={s.productName} numberOfLines={1}>{item.items?.[0]?.product?.namaProduk || "Custom Order"}</Text>
+                  <Text style={{ color: '#94a3b8', fontFamily: 'Poppins_400Regular', fontSize: 11, marginTop: 1 }}>
+                    {item.items?.[0]?.jumlah || 0} pcs {item.items?.[0]?.jenisSablon ? `| ${item.items[0].jenisSablon}` : ''}
+                  </Text>
                   <Text style={s.totalPrice}>{formatRupiah(item.totalHarga)}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
               </View>
+              {item.status === 'PENDING' && item.statusPembayaran !== 'LUNAS' && (
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+                  <TouchableOpacity
+                    style={[s.actionBtn, { flex: 2, backgroundColor: '#3b82f6', borderColor: '#3b82f6' }]}
+                    onPress={() => router.push({ pathname: '/payment', params: { orderId: item.id, totalHarga: item.totalHarga } })}
+                  >
+                    <Ionicons name="wallet-outline" size={14} color="#fff" />
+                    <Text style={[s.actionBtnText, { color: '#fff' }]}>Bayar Sekarang</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[s.actionBtn, { flex: 1, backgroundColor: 'transparent', borderColor: '#ef4444' }]}
+                    onPress={() => handleCancelOrder(item.id)}
+                    disabled={cancellingId === item.id}
+                  >
+                    <Text style={[s.actionBtnText, { color: '#ef4444' }]}>Batalkan</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -115,4 +168,6 @@ const s = StyleSheet.create({
   totalPrice: { color: "#3b82f6", fontFamily: "Poppins_700Bold", fontSize: 13, marginTop: 2 },
   emptyContainer: { alignItems: "center", marginTop: 100 },
   emptyText: { color: "#94a3b8", fontFamily: "Poppins_500Medium", marginTop: 10 },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1, gap: 6 },
+  actionBtnText: { fontFamily: 'Poppins_700Bold', fontSize: 12 },
 });
