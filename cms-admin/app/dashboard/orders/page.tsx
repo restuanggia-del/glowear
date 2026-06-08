@@ -6,10 +6,11 @@ import {
   Eye, X, MapPin, FileText, CalendarDays, AlertCircle,
   CheckCircle2, Info, XCircle, ChevronDown, Palette, Shirt, ImageIcon, Printer, ShoppingBag, Users
 } from "lucide-react";
-import Image from "next/image"; // Menggunakan Next Image untuk optimasi
+import Image from "next/image";
 import { api } from "@/app/services/api";
 import Invoice from "@/app/components/Invoice";
 import Skeleton from "@/app/components/Skeleton";
+import DialogModal, { DEFAULT_DIALOG, DialogState } from "@/app/components/ui/DialogModal";
 
 // ==========================================
 // CONFIGURASI & DATA MASTER
@@ -69,20 +70,13 @@ export default function OrdersPage() {
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isPaymentDropdownOpen, setIsPaymentDropdownOpen] = useState(false);
 
-  // State Custom Dialog
-  const [dialog, setDialog] = useState<{
-    isOpen: boolean;
-    type: 'success' | 'error' | 'info' | 'confirm';
-    title: string;
-    message: string;
-    onConfirm?: () => void;
-  }>({ isOpen: false, type: 'info', title: '', message: '' });
+  const [dialog, setDialog] = useState<DialogState>(DEFAULT_DIALOG);
 
-  const showDialog = (type: 'success' | 'error' | 'info' | 'confirm', title: string, message: string, onConfirm?: () => void) => {
+  const showDialog = (type: DialogState['type'], title: string, message: string, onConfirm?: () => void) => {
     setDialog({ isOpen: true, type, title, message, onConfirm });
   };
 
-  const closeDialog = () => setDialog({ ...dialog, isOpen: false });
+  const closeDialog = () => setDialog(DEFAULT_DIALOG);
 
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [updateForm, setUpdateForm] = useState({
@@ -657,44 +651,10 @@ export default function OrdersPage() {
         </div>
       )}
 
-      {/* =========================================
-          DIALOG KONFIRMASI (PREMIUM ALERT)
-      ========================================= */}
-      {dialog.isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={closeDialog}></div>
+      {/* SHARED DIALOG */}
+      <DialogModal dialog={dialog} onClose={closeDialog} />
 
-          <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 p-8 text-center">
-            <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 ${dialog.type === 'confirm' ? 'bg-amber-50 text-amber-500 border border-amber-100' : 'bg-emerald-50 text-emerald-500 border border-emerald-100'}`}>
-              {dialog.type === 'confirm' ? <AlertCircle size={40} /> : <CheckCircle2 size={40} />}
-            </div>
-
-            <h3 className="text-2xl font-black text-slate-900 leading-tight mb-2">{dialog.title}</h3>
-            <p className="text-slate-500 font-medium text-[13px] mb-8 leading-relaxed px-2">{dialog.message}</p>
-
-            <div className="flex flex-col gap-3">
-              {dialog.type === 'confirm' ? (
-                <>
-                  <button onClick={dialog.onConfirm} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 shadow-xl shadow-slate-900/20 transition-all active:scale-95">
-                    Ya, Lanjutkan
-                  </button>
-                  <button onClick={closeDialog} className="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-200 transition-all">
-                    Batalkan
-                  </button>
-                </>
-              ) : (
-                <button onClick={closeDialog} className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-700 shadow-xl shadow-emerald-600/20 transition-all active:scale-95">
-                  Selesai
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =========================================
-          MODAL INVOICE (PRINTABLE)
-      ========================================= */}
+      {/* MODAL INVOICE */}
       {isInvoiceOpen && (
         <Invoice order={invoiceOrder} onClose={() => setIsInvoiceOpen(false)} />
       )}
