@@ -32,7 +32,7 @@ export default function Login() {
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
     const trimmedPassword = kataSandi.trim();
-    
+
     if (!trimmedEmail || !trimmedPassword) {
       Alert.alert("Error", "Email dan password wajib diisi");
       return;
@@ -49,9 +49,9 @@ export default function Login() {
         await AsyncStorage.setItem("userToken", res.data.access_token);
       }
       await AsyncStorage.setItem("userData", JSON.stringify(res.data.user));
-      
+
       const pushToken = await registerForPushNotificationsAsync();
-      
+
       if (pushToken && res.data.user?.id) {
         try {
           await api.put(`/users/${res.data.user.id}`, { expoPushToken: pushToken });
@@ -73,8 +73,8 @@ export default function Login() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ImageBackground
@@ -84,7 +84,7 @@ export default function Login() {
       >
         <View style={styles.overlay}>
           <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            
+
             {/* Logo */}
             <View style={styles.logoContainer}>
               <Image source={require("../assets/images/logoglomed.png")} style={styles.logo} resizeMode="contain" />
@@ -101,7 +101,7 @@ export default function Login() {
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Email</Text>
                   <TextInput
-                    placeholder="admin@glowear.com"
+                    placeholder="faiznizar@glowear.com"
                     value={email}
                     onChangeText={setEmail}
                     style={styles.input}
@@ -122,8 +122,8 @@ export default function Login() {
                       style={styles.passwordInput}
                       placeholderTextColor="#94a3b8"
                     />
-                    <TouchableOpacity 
-                      style={styles.eyeButton} 
+                    <TouchableOpacity
+                      style={styles.eyeButton}
                       onPress={() => setShowPassword(!showPassword)}
                     >
                       <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#94a3b8" />
@@ -154,7 +154,7 @@ export default function Login() {
                 <Text style={styles.linkText}> Buat Akun Baru</Text>
               </TouchableOpacity>
             </View>
-            
+
           </ScrollView>
         </View>
       </ImageBackground>
