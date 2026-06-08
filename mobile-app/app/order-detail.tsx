@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Skeleton from "../components/Skeleton";
 
 export default function OrderDetailScreen() {
   const router = useRouter();
@@ -195,9 +196,26 @@ export default function OrderDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingArea}>
+      <View style={[styles.container, { padding: 20 }]}>
         <Stack.Screen options={{ title: "Detail Pesanan", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
-        <ActivityIndicator size="large" color="#3b82f6" />
+        {/* Status Banner Skeleton */}
+        <Skeleton height={80} borderRadius={16} style={{ marginBottom: 24 }} />
+        {/* Timeline Skeleton */}
+        <Skeleton width={140} height={20} borderRadius={8} style={{ marginBottom: 12 }} />
+        <Skeleton height={160} borderRadius={16} style={{ marginBottom: 24 }} />
+        {/* Product Item Skeleton */}
+        <Skeleton width={160} height={20} borderRadius={8} style={{ marginBottom: 12 }} />
+        <View style={{ flexDirection: 'row', backgroundColor: '#fff', borderRadius: 14, padding: 12, marginBottom: 10, alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9' }}>
+          <Skeleton width={64} height={64} borderRadius={10} />
+          <View style={{ flex: 1, marginLeft: 12, gap: 8 }}>
+            <Skeleton width="80%" height={14} borderRadius={6} />
+            <Skeleton width="50%" height={12} borderRadius={6} />
+            <Skeleton width={70} height={18} borderRadius={6} />
+          </View>
+        </View>
+        {/* Summary Skeleton */}
+        <Skeleton width={180} height={20} borderRadius={8} style={{ marginTop: 14, marginBottom: 12 }} />
+        <Skeleton height={110} borderRadius={14} />
       </View>
     );
   }

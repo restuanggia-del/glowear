@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Platform, StatusBar, RefreshControl, Alert } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Platform, StatusBar, RefreshControl, ActivityIndicator } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import { api } from "../services/api";
@@ -6,9 +6,11 @@ import { API_URL } from "../constants/config";
 import Skeleton from "../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { useAlert } from "../components/CustomAlert";
 
 export default function MyOrdersScreen() {
   const router = useRouter();
+  const { showAlert } = useAlert();
   const { initialStatus } = useLocalSearchParams(); 
   
   const [orders, setOrders] = useState<any[]>([]);
@@ -52,35 +54,31 @@ export default function MyOrdersScreen() {
   }, []);
 
   const handleCancelOrder = (orderId: string) => {
-    Alert.alert(
-      "Batalkan Pesanan?",
-      "Pesanan yang dibatalkan tidak dapat dikembalikan. Stok produk akan otomatis dikembalikan.\n\nYakin ingin membatalkan pesanan ini?",
-      [
-        { text: "Tidak, Kembali", style: "cancel" },
-        {
-          text: "Ya, Batalkan",
-          style: "destructive",
-          onPress: async () => {
-            setCancellingId(orderId);
-            try {
-              // PATCH sesuai endpoint backend: PATCH /orders/:id/cancel
-              await api.patch(`/orders/${orderId}/cancel`);
-              Alert.alert(
-                "Pesanan Dibatalkan ✓",
-                "Pesanan Anda telah berhasil dibatalkan.",
-                [{ text: "OK" }]
-              );
-              fetchOrders(); // Refresh daftar pesanan
-            } catch (error: any) {
-              const msg = error?.response?.data?.message || "Gagal membatalkan pesanan. Coba lagi.";
-              Alert.alert("Gagal Membatalkan", msg);
-            } finally {
-              setCancellingId(null);
-            }
-          }
+    showAlert({
+      title: "Batalkan Pesanan?",
+      message: "Pesanan yang dibatalkan tidak dapat dikembalikan. Stok produk akan otomatis dikembalikan.\n\nYakin ingin membatalkan pesanan ini?",
+      showCancel: true,
+      confirmText: "Ya, Batalkan",
+      cancelText: "Tidak, Kembali",
+      type: "warning",
+      onConfirm: async () => {
+        setCancellingId(orderId);
+        try {
+          await api.patch(`/orders/${orderId}/cancel`);
+          showAlert({
+            title: "Pesanan Dibatalkan ✓",
+            message: "Pesanan Anda telah berhasil dibatalkan.",
+            type: "success",
+            onConfirm: fetchOrders
+          });
+        } catch (error: any) {
+          const msg = error?.response?.data?.message || "Gagal membatalkan pesanan. Coba lagi.";
+          showAlert({ title: "Gagal Membatalkan", message: msg, type: "error" });
+        } finally {
+          setCancellingId(null);
         }
-      ]
-    );
+      }
+    });
   };
 
   const formatRupiah = (number: number) => {

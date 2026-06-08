@@ -4,9 +4,10 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import { useAlert } from "../components/CustomAlert";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { api } from "../services/api";
 import * as Haptics from 'expo-haptics';
+import Skeleton from "../components/Skeleton";
 
 const { width } = Dimensions.get("window");
 
@@ -20,6 +21,24 @@ export default function PaymentScreen() {
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Countdown 24 jam
+  const DURATION = 24 * 60 * 60; // detik
+  const [timeLeft, setTimeLeft] = useState(DURATION);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatCountdown = (seconds: number) => {
+    const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${s}`;
+  };
 
   // Fetch settings saat mount
   useEffect(() => {
@@ -115,10 +134,25 @@ export default function PaymentScreen() {
 
   if (loadingSettings) {
     return (
-      <View style={[styles.safeArea, { justifyContent: "center", alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={{ color: "#64748b", marginTop: 15, fontFamily: 'Poppins_500Medium' }}>Memuat informasi pembayaran...</Text>
-      </View>
+      <SafeAreaView style={[styles.safeArea, { padding: 24 }]}>
+        <Stack.Screen options={{ title: "Konfirmasi Pembayaran", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
+        {/* Stepper skeleton */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 32 }}>
+          <Skeleton width={24} height={24} borderRadius={12} />
+          <Skeleton width={30} height={2} borderRadius={1} style={{ marginHorizontal: 8 }} />
+          <Skeleton width={24} height={24} borderRadius={12} />
+          <Skeleton width={30} height={2} borderRadius={1} style={{ marginHorizontal: 8 }} />
+          <Skeleton width={24} height={24} borderRadius={12} />
+        </View>
+        {/* Bill card skeleton */}
+        <Skeleton height={110} borderRadius={24} style={{ marginBottom: 32 }} />
+        {/* Bank card skeleton */}
+        <Skeleton width={160} height={22} borderRadius={8} style={{ marginBottom: 16 }} />
+        <Skeleton height={180} borderRadius={24} style={{ marginBottom: 24 }} />
+        {/* Upload area skeleton */}
+        <Skeleton width={160} height={22} borderRadius={8} style={{ marginBottom: 16 }} />
+        <Skeleton height={180} borderRadius={24} />
+      </SafeAreaView>
     );
   }
 
@@ -165,7 +199,10 @@ export default function PaymentScreen() {
           </View>
           <View style={styles.billFooter}>
             <Ionicons name="time-outline" size={14} color="#3b82f6" />
-            <Text style={styles.billExpiry}>Selesaikan pembayaran dalam 24 jam</Text>
+            <Text style={styles.billExpiry}>Selesaikan dalam: </Text>
+            <Text style={[styles.billExpiry, { fontFamily: 'Poppins_700Bold', color: timeLeft < 3600 ? '#ef4444' : '#3b82f6' }]}>
+              {formatCountdown(timeLeft)}
+            </Text>
           </View>
         </View>
 

@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Alert, FlatList } from "react-native";
+import { View, Text, Image, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Alert, FlatList, Modal } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
@@ -8,12 +8,15 @@ import { useCartStore } from "../../store/cart-store";
 import { useWishlistStore } from "../../store/wishlist-store";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Skeleton from "../../components/Skeleton";
+import { useAlert } from "../../components/CustomAlert";
 
 const { width } = Dimensions.get("window");
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams(); 
   const router = useRouter();
+  const { showAlert } = useAlert();
   const addItem = useCartStore((state) => state.addItem);
   
   const { toggleWishlist, wishlistIds } = useWishlistStore();
@@ -23,6 +26,11 @@ export default function ProductDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [user, setUser] = useState<any>(null);
+
+  // State untuk bottom sheet pilihan ukuran
+  const [showSizeModal, setShowSizeModal] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("L");
+  const [addMode, setAddMode] = useState<"cart" | "checkout">("cart");
 
   useEffect(() => {
     const fetchUserAndProduct = async () => {
@@ -45,27 +53,32 @@ export default function ProductDetailScreen() {
     fetchUserAndProduct();
   }, [id]);
 
-  const handleAddToCart = () => {
-    if (!product) return;
-    
-    addItem({
-      id: Math.random().toString(36).substring(7),
-      productId: product.id,
-      namaProduk: product.namaProduk,
-      harga: product.harga,
-      gambar: product.gambar,
-      jumlah: 1,
-      ukuran: "L", // Default size, could be selectable later
-    });
-    
-    Alert.alert(
-      "Berhasil! 🎉",
-      "Produk telah ditambahkan ke keranjang.",
-      [
-        { text: "Lanjut Belanja", style: "cancel" },
-        { text: "Lihat Keranjang", onPress: () => router.push("/cart") }
-      ]
-    );
+  const openSizeModal = (mode: "cart" | "checkout") => {
+    setAddMode(mode);
+    setShowSizeModal(true);
+  };
+
+  const confirmSize = () => {
+    setShowSizeModal(false);
+    if (addMode === "cart") {
+      if (!product) return;
+      addItem({
+        id: Math.random().toString(36).substring(7),
+        productId: product.id,
+        namaProduk: product.namaProduk,
+        harga: product.harga,
+        gambar: product.gambar,
+        jumlah: 1,
+        ukuran: selectedSize,
+      });
+      showAlert({
+        title: "Berhasil! 🎉",
+        message: `${product.namaProduk} (Ukuran ${selectedSize}) ditambahkan ke keranjang!`,
+        type: "success"
+      });
+    } else {
+      router.push({ pathname: '/checkout', params: { productId: product.id } });
+    }
   };
 
   const formatRupiah = (number: number) => {
@@ -84,9 +97,18 @@ export default function ProductDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingArea}>
+      <View style={[styles.container, { paddingTop: 80 }]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <Skeleton height={400} borderRadius={0} />
+        <View style={{ padding: 20, marginTop: -30 }}>
+          <Skeleton width={100} height={28} borderRadius={8} style={{ marginBottom: 12 }} />
+          <Skeleton width="90%" height={30} borderRadius={8} style={{ marginBottom: 8 }} />
+          <Skeleton width="60%" height={28} borderRadius={8} style={{ marginBottom: 20 }} />
+          <Skeleton height={48} borderRadius={12} style={{ marginBottom: 24 }} />
+          <Skeleton height={1} borderRadius={1} style={{ marginBottom: 24 }} />
+          <Skeleton width={180} height={22} borderRadius={8} style={{ marginBottom: 12 }} />
+          <Skeleton height={80} borderRadius={8} />
+        </View>
       </View>
     );
   }
@@ -240,7 +262,7 @@ export default function ProductDetailScreen() {
         <TouchableOpacity 
           style={[styles.cartButton, product.stok === 0 && styles.disabledButton]} 
           disabled={product.stok === 0}
-          onPress={handleAddToCart}
+          onPress={() => openSizeModal("cart")}
         >
           <Ionicons name="cart-outline" size={24} color="#38bdf8" />
           <Text style={styles.cartButtonText}>Keranjang</Text>
@@ -249,17 +271,58 @@ export default function ProductDetailScreen() {
         <TouchableOpacity 
           style={[styles.buyButton, product.stok === 0 && styles.disabledButton]} 
           disabled={product.stok === 0}
-          onPress={() => router.push({ pathname: '/checkout', params: { productId: product.id } })}
+          onPress={() => openSizeModal("checkout")}
         >
           <Text style={styles.buyButtonText}>{product.stok === 0 ? "Habis" : "Beli Sekarang"}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* MODAL PILIHAN UKURAN */}
+      <Modal visible={showSizeModal} transparent animationType="slide" onRequestClose={() => setShowSizeModal(false)}>
+        <View style={styles.sizeModalOverlay}>
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowSizeModal(false)} />
+          <View style={styles.sizeModalContent}>
+            <View style={styles.sizeModalHandle} />
+            <Text style={styles.sizeModalTitle}>Pilih Ukuran</Text>
+            <Text style={styles.sizeModalSub}>Pilih ukuran yang sesuai sebelum memesan</Text>
+            <View style={styles.sizeGrid}>
+              {['S', 'M', 'L', 'XL', 'XXL'].map((s) => (
+                <TouchableOpacity
+                  key={s}
+                  style={[styles.sizeChip, selectedSize === s && styles.sizeChipActive]}
+                  onPress={() => setSelectedSize(s)}
+                >
+                  <Text style={[styles.sizeChipText, selectedSize === s && styles.sizeChipTextActive]}>{s}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.sizeConfirmBtn} onPress={confirmSize}>
+              <Text style={styles.sizeConfirmText}>
+                {addMode === "cart" ? `Tambah ke Keranjang (${selectedSize})` : `Beli Sekarang (${selectedSize})`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8fafc" },
+  // Size Modal
+  sizeModalOverlay: { flex: 1, backgroundColor: "rgba(15,23,42,0.45)", justifyContent: "flex-end" },
+  sizeModalContent: { backgroundColor: "#fff", borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingTop: 12 },
+  sizeModalHandle: { width: 40, height: 5, backgroundColor: "#e2e8f0", borderRadius: 10, alignSelf: "center", marginBottom: 24 },
+  sizeModalTitle: { color: "#1e293b", fontFamily: "Poppins_700Bold", fontSize: 20, marginBottom: 6 },
+  sizeModalSub: { color: "#94a3b8", fontFamily: "Poppins_400Regular", fontSize: 13, marginBottom: 20 },
+  sizeGrid: { flexDirection: "row", gap: 12, marginBottom: 24 },
+  sizeChip: { flex: 1, paddingVertical: 14, backgroundColor: "#f8fafc", borderRadius: 14, borderWidth: 1.5, borderColor: "#e2e8f0", alignItems: "center" },
+  sizeChipActive: { backgroundColor: "rgba(59,130,246,0.1)", borderColor: "#3b82f6" },
+  sizeChipText: { color: "#94a3b8", fontFamily: "Poppins_700Bold", fontSize: 15 },
+  sizeChipTextActive: { color: "#3b82f6" },
+  sizeConfirmBtn: { backgroundColor: "#3b82f6", height: 56, borderRadius: 16, justifyContent: "center", alignItems: "center", shadowColor: "#3b82f6", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 8, marginBottom: 10 },
+  sizeConfirmText: { color: "#fff", fontFamily: "Poppins_700Bold", fontSize: 15 },
   loadingArea: { flex: 1, backgroundColor: "#f8fafc", justifyContent: "center", alignItems: "center" },
   errorText: { color: "#1e293b", fontFamily: "Poppins_600SemiBold", fontSize: 18, marginTop: 10 },
   backBtnError: { marginTop: 20, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: "#3b82f6", borderRadius: 10 },

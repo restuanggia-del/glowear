@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, TextInput, ActivityIndicator, Linking, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, ActivityIndicator, Linking, Image } from "react-native";
 import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
@@ -6,8 +6,11 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../../services/api";
 import { API_URL } from "../../constants/config";
+import { useAlert } from "../../components/CustomAlert";
+import Skeleton from "../../components/Skeleton";
 
 export default function ProfileScreen() {
+  const { showAlert } = useAlert();
   const [userData, setUserData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -25,10 +28,19 @@ export default function ProfileScreen() {
   }, []));
 
   const handleLogout = () => {
-    Alert.alert("Keluar Akun", "Apakah Anda yakin ingin keluar dari aplikasi?", [
-      { text: "Batal", style: "cancel" },
-      { text: "Ya, Keluar", style: "destructive", onPress: async () => { await AsyncStorage.removeItem("userToken"); await AsyncStorage.removeItem("userData"); router.replace("/login"); } }
-    ]);
+    showAlert({
+      title: "Keluar Akun",
+      message: "Apakah Anda yakin ingin keluar dari aplikasi?",
+      showCancel: true,
+      confirmText: "Ya, Keluar",
+      cancelText: "Batal",
+      type: "warning",
+      onConfirm: async () => {
+        await AsyncStorage.removeItem("userToken");
+        await AsyncStorage.removeItem("userData");
+        router.replace("/login");
+      }
+    });
   };
 
   const openEditModal = () => {
@@ -37,23 +49,23 @@ export default function ProfileScreen() {
   };
 
   const handleSaveProfile = async () => {
-    if (!form.nama) return Alert.alert("Peringatan", "Nama tidak boleh kosong.");
+    if (!form.nama) return showAlert({ title: "Peringatan", message: "Nama tidak boleh kosong.", type: "warning" });
     setSaving(true);
     try {
       await api.patch(`/users/${userData.id}`, { nama: form.nama, noTelp: form.noTelepon, alamat: form.alamat });
       const updatedUser = { ...userData, ...form };
       await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
       setUserData(updatedUser);
-      Alert.alert("Berhasil", "Profil Anda berhasil diperbarui!");
+      showAlert({ title: "Berhasil", message: "Profil Anda berhasil diperbarui!", type: "success" });
       setIsEditing(false);
-    } catch (error) { Alert.alert("Gagal", "Terjadi kesalahan saat menyimpan profil."); }
+    } catch (error) { showAlert({ title: "Gagal", message: "Terjadi kesalahan saat menyimpan profil.", type: "error" }); }
     finally { setSaving(false); }
   };
 
   const handlePickPhoto = async () => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) { Alert.alert("Izin Ditolak", "Anda harus memberikan izin akses galeri."); return; }
+      if (!permissionResult.granted) { showAlert({ title: "Izin Ditolak", message: "Anda harus memberikan izin akses galeri.", type: "warning" }); return; }
       const pickerResult = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.8 });
       if (!pickerResult.canceled && pickerResult.assets?.length > 0) {
         const imageUri = pickerResult.assets[0].uri;
@@ -67,14 +79,28 @@ export default function ProfileScreen() {
         await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
         setUserData(updatedUser);
       }
-    } catch (error) { Alert.alert("Gagal", "Terjadi kesalahan saat mengunggah foto profil."); }
+    } catch (error) { showAlert({ title: "Gagal", message: "Terjadi kesalahan saat mengunggah foto profil.", type: "error" }); }
     finally { setUploadingPhoto(false); }
   };
 
   const getProfilePhotoUrl = () => userData?.fotoProfil ? `${API_URL}/uploads/profiles/${userData.fotoProfil}` : null;
 
   if (!userData) {
-    return (<View style={s.container}><Text style={{ color: "#64748b", fontFamily: "Poppins_400Regular", marginTop: 50, textAlign: "center" }}>Memuat profil...</Text></View>);
+    return (
+      <View style={{ flex: 1, backgroundColor: "#f8fafc", padding: 20 }}>
+        {/* Header / Avatar Skeleton */}
+        <View style={{ alignItems: "center", paddingVertical: 40, backgroundColor: "#fff", borderBottomWidth: 1, borderColor: "#f1f5f9", marginHorizontal: -20, marginTop: -20, paddingHorizontal: 20 }}>
+          <Skeleton width={100} height={100} borderRadius={50} style={{ marginBottom: 15 }} />
+          <Skeleton width={150} height={22} borderRadius={8} style={{ marginBottom: 8 }} />
+          <Skeleton width={100} height={14} borderRadius={6} style={{ marginBottom: 12 }} />
+          <Skeleton width={80} height={24} borderRadius={20} />
+        </View>
+        {/* Info Card Skeleton */}
+        <Skeleton height={110} borderRadius={20} style={{ marginTop: 20 }} />
+        {/* Wishlist Card Skeleton */}
+        <Skeleton height={70} borderRadius={20} style={{ marginTop: 20 }} />
+      </View>
+    );
   }
 
   return (

@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
 import { useAlert } from "../components/CustomAlert";
+import Skeleton from "../components/Skeleton";
 
 export default function CheckoutScreen() {
   const { showAlert } = useAlert();
@@ -95,6 +96,14 @@ export default function CheckoutScreen() {
         type: "warning"
       });
     }
+    // Validasi stok
+    if (product && product.stok !== undefined && qty > product.stok) {
+      return showAlert({
+        title: "Stok Tidak Cukup",
+        message: `Stok produk hanya tersisa ${product.stok} pcs. Silakan kurangi jumlah pesanan.`,
+        type: "warning"
+      });
+    }
 
     setSubmitting(true);
     try {
@@ -155,9 +164,27 @@ export default function CheckoutScreen() {
 
   if (loading || !product) {
     return (
-      <View style={styles.loadingArea}>
+      <View style={[styles.container, { padding: 20, paddingTop: 30 }]}>
         <Stack.Screen options={{ title: "Checkout", headerStyle: { backgroundColor: "#ffffff" }, headerTintColor: "#1e293b", headerShadowVisible: false }} />
-        <ActivityIndicator size="large" color="#3b82f6" />
+        {/* Product card skeleton */}
+        <Skeleton width={120} height={18} borderRadius={8} style={{ marginBottom: 12 }} />
+        <View style={{ flexDirection: 'row', backgroundColor: '#fff', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: '#f1f5f9', marginBottom: 24 }}>
+          <Skeleton width={80} height={80} borderRadius={10} />
+          <View style={{ flex: 1, marginLeft: 15, justifyContent: 'center', gap: 10 }}>
+            <Skeleton width="80%" height={16} borderRadius={6} />
+            <Skeleton width="50%" height={20} borderRadius={6} />
+          </View>
+        </View>
+        {/* Size picker skeleton */}
+        <Skeleton width={120} height={18} borderRadius={8} style={{ marginBottom: 12 }} />
+        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 24 }}>
+          {[1,2,3,4,5].map(i => <Skeleton key={i} height={46} borderRadius={10} style={{ flex: 1 }} />)}
+        </View>
+        {/* Sablon picker skeleton */}
+        <Skeleton width={140} height={18} borderRadius={8} style={{ marginBottom: 12 }} />
+        <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+          {[1,2,3,4,5].map(i => <Skeleton key={i} width="30%" height={60} borderRadius={10} style={{ marginBottom: 10 }} />)}
+        </View>
       </View>
     );
   }
