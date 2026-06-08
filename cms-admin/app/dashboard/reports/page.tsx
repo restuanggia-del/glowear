@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Download, FileSpreadsheet, Calendar, TrendingUp, CheckCircle2, Banknote, Loader2, AlertCircle, X, Info, ChevronDown } from "lucide-react";
@@ -81,7 +81,7 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10 relative">
       
       {/* Header & Filter */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">

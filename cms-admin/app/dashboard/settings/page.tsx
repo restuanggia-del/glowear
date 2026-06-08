@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Store, Phone, CreditCard, FileText, Save, Info, Loader2, AlertCircle, CheckCircle2, X } from "lucide-react";
@@ -89,7 +89,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">

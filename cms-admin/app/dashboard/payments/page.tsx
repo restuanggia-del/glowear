@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Check, X, Eye, Banknote, Clock, User, Loader2, Image as ImageIcon, AlertCircle, CheckCircle2, Info } from "lucide-react";
@@ -90,7 +90,7 @@ export default function PaymentVerificationPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">

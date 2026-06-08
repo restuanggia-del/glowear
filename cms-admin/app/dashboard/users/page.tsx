@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Search, ShieldAlert, ShieldCheck, User, Loader2, Users, AlertCircle, CheckCircle2, X, Info, ChevronDown, ChevronUp, Edit, Trash2, Mail, Phone, MapPin, Lock } from "lucide-react";
@@ -172,7 +172,7 @@ export default function UsersPage() {
   const pelangganUsers = filteredUsers.filter(u => u.role !== 'ADMIN');
 
   return (
-    <div className="font-sans space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">

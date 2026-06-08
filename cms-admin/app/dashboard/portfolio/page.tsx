@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Image as ImageIcon, Tag, FileText, Camera, Upload, Edit, Loader2, AlertCircle, CheckCircle2, X, Info, Maximize2 } from "lucide-react";
@@ -146,7 +146,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="font-sans space-y-6 pb-10 pt-10 md:pt-32 relative">
+    <div className="space-y-6 pb-10 pt-10 md:pt-32 relative">
       
       {/* Header Halaman */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
