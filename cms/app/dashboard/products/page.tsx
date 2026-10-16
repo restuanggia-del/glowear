@@ -223,14 +223,14 @@ export default function ProductsPage() {
     <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Katalog Produk</h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">Kelola daftar baju polos, harga, dan ketersediaan stok Anda.</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Katalog Produk</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Kelola daftar baju polos, harga, dan ketersediaan stok Anda.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 font-bold shadow-md shadow-blue-600/20"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl sm:rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 font-bold shadow-md shadow-blue-600/20 text-sm"
         >
           <Plus size={18} className="stroke-[3px]" /> Tambah Produk
         </button>
@@ -238,7 +238,7 @@ export default function ProductsPage() {
 
       {/* Tabel Data */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
           <div className="relative w-full max-w-md group">
             <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input
@@ -251,8 +251,8 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[750px]">
             <thead>
               <tr className="bg-white text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-100">
                 <th className="py-4 px-6 font-bold">ID Produk</th>
@@ -279,7 +279,14 @@ export default function ProductsPage() {
                   </tr>
                 ))
               ) : filteredProducts.length === 0 ? (
-                <tr><td colSpan={6} className="py-16 text-center flex flex-col items-center justify-center text-slate-500"><Package size={40} className="mb-3 text-slate-300"/><span className="font-medium">Tidak ada produk ditemukan.</span></td></tr>
+                <tr>
+                  <td colSpan={6} className="py-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center">
+                      <Package size={40} className="mb-3 text-slate-300"/>
+                      <span className="font-medium text-sm">Tidak ada produk ditemukan.</span>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 filteredProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
@@ -322,7 +329,7 @@ export default function ProductsPage() {
                       </span>
                     </td>
                     <td className="py-4 px-6 text-center">
-                      <div className="flex items-center justify-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-center gap-2">
                         <button onClick={() => openEditModal(product)} className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-xl transition-all bg-blue-50 border border-blue-100 shadow-sm" title="Edit Produk">
                           <Edit size={16} />
                         </button>
@@ -346,35 +353,35 @@ export default function ProductsPage() {
           MODAL TAMBAH PRODUK (PREMIUM OVERHAUL)
       ========================================= */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4">
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[90vh]">
+          <div className="relative bg-white rounded-2xl sm:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[92vh]">
             
             {/* Header Modern */}
-            <div className="p-8 pb-4 flex justify-between items-center bg-white shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
-                   <Plus size={24} />
+            <div className="p-5 sm:p-8 pb-3 sm:pb-4 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100 shrink-0">
+                   <Plus size={22} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 leading-none">Tambah Produk</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Katalog Baru Glowear</p>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-none">Tambah Produk</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest mt-1.5 sm:mt-2">Katalog Baru Glowear</p>
                 </div>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
-                <X size={20} />
+              <button onClick={() => setIsModalOpen(false)} aria-label="Tutup Modal" className="p-2 sm:p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
+                <X size={18} className="sm:w-5 sm:h-5" />
               </button>
             </div>
             
             {/* Form Content (Scrollable) */}
-            <div className="overflow-y-auto custom-scrollbar flex-1 px-8 py-4">
-              <form id="addForm" onSubmit={handleAddSubmit} className="space-y-8">
+            <div className="overflow-y-auto custom-scrollbar flex-1 px-5 sm:px-8 py-4">
+              <form id="addForm" onSubmit={handleAddSubmit} className="space-y-6 sm:space-y-8">
                 
                 {/* Modern Image Upload */}
                 <div className="space-y-3">
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Galeri Produk (Maks. 5)</label>
-                  <div className="relative border-2 border-dashed border-slate-200 rounded-[2rem] p-10 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
+                  <div className="relative border-2 border-dashed border-slate-200 rounded-2xl sm:rounded-[2rem] p-6 sm:p-10 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
                     <input 
                       type="file" 
                       accept="image/*"
@@ -394,18 +401,18 @@ export default function ProductsPage() {
                     {selectedFiles.length > 0 ? (
                       <div className="flex flex-wrap gap-3 justify-center z-0 relative">
                         {selectedFiles.map((file, i) => (
-                          <div key={i} className="relative w-20 h-20 bg-white rounded-2xl overflow-hidden border-2 border-white shadow-lg rotate-2 even:-rotate-2 hover:rotate-0 transition-transform">
+                          <div key={i} className="relative w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl sm:rounded-2xl overflow-hidden border-2 border-white shadow-lg rotate-2 even:-rotate-2 hover:rotate-0 transition-transform">
                              <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
                           </div>
                         ))}
-                        <div className="w-full text-center mt-6">
+                        <div className="w-full text-center mt-4 sm:mt-6">
                            <p className="text-[13px] font-black text-slate-800 tracking-tight">{selectedFiles.length} Gambar Terpilih</p>
                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 py-1.5 px-4 rounded-full inline-block mt-2 border border-blue-100">Klik untuk ganti semua</p>
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
-                        <div className="w-20 h-20 bg-white text-slate-300 group-hover:text-blue-500 group-hover:scale-110 rounded-[1.5rem] flex items-center justify-center mb-4 transition-all shadow-sm border border-slate-100"><Upload size={32} /></div>
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white text-slate-300 group-hover:text-blue-500 group-hover:scale-110 rounded-2xl sm:rounded-[1.5rem] flex items-center justify-center mb-3 sm:mb-4 transition-all shadow-sm border border-slate-100"><Upload size={28} /></div>
                         <p className="text-sm font-black text-slate-700">Tarik gambar ke sini</p>
                         <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Atau klik untuk browse</p>
                       </div>
@@ -413,40 +420,40 @@ export default function ProductsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Nama Produk</label>
-                    <input type="text" required value={formData.namaProduk} placeholder="Contoh: Heavy Cotton T-Shirt 24s" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, namaProduk: e.target.value})} />
+                    <input type="text" required value={formData.namaProduk} placeholder="Contoh: Heavy Cotton T-Shirt 24s" className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, namaProduk: e.target.value})} />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Pilih Kategori</label>
-                    <select required value={formData.categoryId} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all appearance-none" onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
+                    <select required value={formData.categoryId} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all appearance-none" onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
                       <option value="">-- Pilih Kategori --</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.namaKategori}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Harga Satuan (Rp)</label>
-                    <input type="number" required value={formData.harga || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-blue-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, harga: Number(e.target.value)})} />
+                    <input type="number" required value={formData.harga || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-black text-blue-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, harga: Number(e.target.value)})} />
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Persediaan Stok</label>
-                    <input type="number" required value={formData.stok || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
+                    <input type="number" required value={formData.stok || ""} placeholder="0" className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all" onChange={(e) => setFormData({...formData, stok: Number(e.target.value)})} />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Deskripsi Lengkap</label>
-                    <textarea required value={formData.deskripsi} placeholder="Spesifikasi bahan, ukuran, dll..." className="w-full border-2 border-slate-100 rounded-[1.5rem] p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}></textarea>
+                    <textarea required value={formData.deskripsi} placeholder="Spesifikasi bahan, ukuran, dll..." className="w-full border-2 border-slate-100 rounded-xl sm:rounded-[1.5rem] p-3.5 sm:p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-blue-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}></textarea>
                   </div>
                 </div>
               </form>
             </div>
 
             {/* Footer Modern */}
-            <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
-              <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-white text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all">
+            <div className="p-4 sm:p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0">
+              <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3.5 sm:py-4 bg-white text-slate-500 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all text-center">
                 Batal
               </button>
-              <button type="submit" form="addForm" className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all active:scale-95">
+              <button type="submit" form="addForm" className="flex-1 py-3.5 sm:py-4 bg-blue-600 text-white rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all active:scale-95 text-center">
                 Simpan Katalog
               </button>
             </div>
@@ -457,35 +464,35 @@ export default function ProductsPage() {
           MODAL EDIT PRODUK (PREMIUM OVERHAUL)
       ========================================= */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4">
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsEditModalOpen(false)}></div>
           
-          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[90vh]">
+          <div className="relative bg-white rounded-2xl sm:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[92vh]">
             
             {/* Header Modern */}
-            <div className="p-8 pb-4 flex justify-between items-center bg-white shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 border border-amber-100">
-                   <Edit size={24} />
+            <div className="p-5 sm:p-8 pb-3 sm:pb-4 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-amber-600 border border-amber-100 shrink-0">
+                   <Edit size={22} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 leading-none">Edit Produk</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Perbarui Katalog Glowear</p>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-none">Edit Produk</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest mt-1.5 sm:mt-2">Perbarui Katalog Glowear</p>
                 </div>
               </div>
-              <button onClick={() => setIsEditModalOpen(false)} className="p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
-                <X size={20} />
+              <button onClick={() => setIsEditModalOpen(false)} aria-label="Tutup Modal" className="p-2 sm:p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
+                <X size={18} className="sm:w-5 sm:h-5" />
               </button>
             </div>
             
             {/* Form Content (Scrollable) */}
-            <div className="overflow-y-auto custom-scrollbar flex-1 px-8 py-4">
-              <form id="editForm" onSubmit={handleEditSubmit} className="space-y-8">
+            <div className="overflow-y-auto custom-scrollbar flex-1 px-5 sm:px-8 py-4">
+              <form id="editForm" onSubmit={handleEditSubmit} className="space-y-6 sm:space-y-8">
                 
                 {/* Modern Image Upload */}
                 <div className="space-y-3">
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Ganti Galeri <span className="normal-case tracking-normal font-medium text-slate-300">(Opsional)</span></label>
-                  <div className="relative border-2 border-dashed border-slate-200 rounded-[2rem] p-6 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-amber-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
+                  <div className="relative border-2 border-dashed border-slate-200 rounded-2xl sm:rounded-[2rem] p-6 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-amber-400 transition-all cursor-pointer group shadow-inner overflow-hidden">
                     <input 
                       type="file" 
                       accept="image/*"
@@ -521,40 +528,40 @@ export default function ProductsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Nama Produk</label>
-                    <input type="text" required value={editFormData.namaProduk} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, namaProduk: e.target.value})} />
+                    <input type="text" required value={editFormData.namaProduk} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, namaProduk: e.target.value})} />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Pilih Kategori</label>
-                    <select required value={editFormData.categoryId} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all appearance-none" onChange={(e) => setEditFormData({...editFormData, categoryId: e.target.value})}>
+                    <select required value={editFormData.categoryId} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-bold text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all appearance-none" onChange={(e) => setEditFormData({...editFormData, categoryId: e.target.value})}>
                       <option value="">-- Pilih Kategori --</option>
                       {categories.map(c => <option key={c.id} value={c.id}>{c.namaKategori}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Harga Satuan (Rp)</label>
-                    <input type="number" required value={editFormData.harga} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-amber-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, harga: Number(e.target.value)})} />
+                    <input type="number" required value={editFormData.harga} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-black text-amber-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, harga: Number(e.target.value)})} />
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Persediaan Stok</label>
-                    <input type="number" required value={editFormData.stok} className="w-full border-2 border-slate-100 rounded-2xl p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, stok: Number(e.target.value)})} />
+                    <input type="number" required value={editFormData.stok} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-sm font-black text-slate-800 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all" onChange={(e) => setEditFormData({...editFormData, stok: Number(e.target.value)})} />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-1">Deskripsi Lengkap</label>
-                    <textarea required value={editFormData.deskripsi} className="w-full border-2 border-slate-100 rounded-[1.5rem] p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setEditFormData({...editFormData, deskripsi: e.target.value})}></textarea>
+                    <textarea required value={editFormData.deskripsi} className="w-full border-2 border-slate-100 rounded-xl sm:rounded-[1.5rem] p-3.5 sm:p-4 text-sm font-medium text-slate-600 bg-slate-50/50 outline-none focus:border-amber-500 focus:bg-white transition-all custom-scrollbar" rows={3} onChange={(e) => setEditFormData({...editFormData, deskripsi: e.target.value})}></textarea>
                   </div>
                 </div>
               </form>
             </div>
 
             {/* Footer Modern */}
-            <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
-              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFiles([]); }} className="flex-1 py-4 bg-white text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all">
+            <div className="p-4 sm:p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0">
+              <button type="button" onClick={() => { setIsEditModalOpen(false); setEditSelectedFiles([]); }} className="flex-1 py-3.5 sm:py-4 bg-white text-slate-500 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all text-center">
                 Batal
               </button>
-              <button type="submit" form="editForm" className="flex-1 py-4 bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-700 shadow-xl shadow-amber-600/30 transition-all active:scale-95">
+              <button type="submit" form="editForm" className="flex-1 py-3.5 sm:py-4 bg-amber-600 text-white rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-700 shadow-xl shadow-amber-600/30 transition-all active:scale-95 text-center">
                 Update Produk
               </button>
             </div>

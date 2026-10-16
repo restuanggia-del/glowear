@@ -129,53 +129,53 @@ export default function BannersPage() {
   };
 
   return (
-    <div className="space-y-6 pb-10 relative">
+    <div className="space-y-6 pb-10">
       
       {/* Header Halaman */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Banner Promo Mobile</h1>
-        <p className="text-sm text-slate-500 mt-1 font-medium">Gambar yang Anda unggah di sini akan tampil sebagai slider informasi/promo di halaman utama aplikasi pelanggan.</p>
+      <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Banner Promo Mobile</h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Gambar yang Anda unggah di sini akan tampil sebagai slider informasi/promo di halaman utama aplikasi pelanggan.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
         {/* =========================================
             KOLOM KIRI: FORM UPLOAD BANNER
         ========================================= */}
         <div className="lg:col-span-1">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-28">
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 lg:sticky lg:top-28">
+            <div className="flex items-center gap-3 mb-5 border-b border-slate-100 pb-4">
               <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-                <Plus size={20} className="stroke-[3px]" />
+                <Plus size={18} className="stroke-[3px]" />
               </div>
-              <h2 className="text-lg font-black text-slate-800 tracking-tight">Tambah Banner</h2>
+              <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight">Tambah Banner</h2>
             </div>
             
-            <form onSubmit={handleAddSubmit} className="space-y-5">
+            <form onSubmit={handleAddSubmit} className="space-y-4 sm:space-y-5">
               
               {/* Input Judul */}
               <div>
-                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Judul Promo</label>
+                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Judul Promo</label>
                 <input 
                   type="text" 
                   value={judul} 
                   onChange={(e) => setJudul(e.target.value)} 
                   required 
-                  className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium" 
+                  className="w-full border border-slate-200 rounded-xl p-3 text-xs sm:text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium" 
                   placeholder="Contoh: Diskon Kemerdekaan" 
                 />
               </div>
 
               {/* Input Link */}
               <div>
-                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Link Tujuan <span className="normal-case tracking-normal font-medium text-slate-400">(Opsional)</span></label>
+                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Link Tujuan <span className="normal-case tracking-normal font-medium text-slate-400">(Opsional)</span></label>
                 <div className="relative group">
-                  <LinkIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                  <LinkIcon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                   <input 
                     type="text" 
                     value={link} 
                     onChange={(e) => setLink(e.target.value)} 
-                    className="w-full border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium" 
+                    className="w-full border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs sm:text-sm font-bold text-slate-800 bg-slate-50 outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400 placeholder:font-medium" 
                     placeholder="https://..." 
                   />
                 </div>
@@ -183,8 +183,8 @@ export default function BannersPage() {
 
               {/* Input File */}
               <div>
-                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">File Gambar (Rasio 16:9)</label>
-                <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
+                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">File Gambar (Rasio 16:9)</label>
+                <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
                   <input 
                     type="file" 
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
@@ -193,21 +193,21 @@ export default function BannersPage() {
                   />
                   {file ? (
                     <div className="text-center z-0">
-                      <div className="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-2"><ImageIcon size={24}/></div>
-                      <p className="text-sm font-bold text-slate-800 truncate max-w-xs">{file.name}</p>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-2"><ImageIcon size={22}/></div>
+                      <p className="text-xs sm:text-sm font-bold text-slate-800 truncate max-w-xs">{file.name}</p>
                       <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mt-1 bg-blue-50 py-1 px-3 rounded-full inline-block">Siap Diunggah</p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center text-center z-0">
-                      <div className="w-12 h-12 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-2 transition-colors"><Upload size={24} /></div>
-                      <p className="text-sm font-bold text-slate-700">Pilih gambar dari perangkat</p>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-2 transition-colors"><Upload size={22} /></div>
+                      <p className="text-xs sm:text-sm font-bold text-slate-700">Pilih gambar dari perangkat</p>
                       <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-wider">Format: PNG, JPG</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/20 mt-2">
+              <button type="submit" className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/20 mt-2">
                 Unggah Banner
               </button>
             </form>
@@ -218,10 +218,10 @@ export default function BannersPage() {
             KOLOM KANAN: DAFTAR BANNER AKTIF
         ========================================= */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-              <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <ImageIcon size={18}/> Banner Aktif di Aplikasi
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-5 sm:p-6">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-100">
+              <h2 className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <ImageIcon size={16}/> Banner Aktif di Aplikasi
               </h2>
               <span className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-full">{banners.length} Banner</span>
             </div>
@@ -232,13 +232,13 @@ export default function BannersPage() {
                 <span className="text-slate-500 font-medium text-sm">Memuat data banner...</span>
               </div>
             ) : banners.length === 0 ? (
-              <div className="py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center flex flex-col items-center justify-center">
-                <ImageIcon size={48} className="text-slate-300 mb-4" />
-                <h3 className="text-lg font-bold text-slate-700 mb-1">Belum Ada Banner</h3>
-                <p className="text-sm text-slate-500 font-medium max-w-sm">Aplikasi mobile Anda belum memiliki slider promo. Silakan unggah banner pertama Anda di menu sebelah kiri.</p>
+              <div className="py-16 sm:py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center flex flex-col items-center justify-center p-6">
+                <ImageIcon size={40} className="text-slate-300 mb-3" />
+                <h3 className="text-base sm:text-lg font-bold text-slate-700 mb-1">Belum Ada Banner</h3>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-sm">Aplikasi mobile Anda belum memiliki slider promo. Silakan unggah banner pertama Anda di menu sebelah kiri.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 {banners.map((b) => (
                   <div key={b.id} className="group relative bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all">
                     {/* Gambar Banner */}
@@ -254,32 +254,32 @@ export default function BannersPage() {
                       <ImageIcon size={32} className="text-slate-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10" />
                       
                       {/* Gradient Overlay bawah agar teks terbaca */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                     
                     {/* Info Banner */}
-                    <div className="p-4 bg-white border-t border-slate-100 relative z-10">
-                      <h3 className="font-black text-slate-800 text-sm mb-1 truncate">{b.judul}</h3>
+                    <div className="p-3.5 sm:p-4 bg-white border-t border-slate-100 relative z-10">
+                      <h3 className="font-black text-slate-800 text-xs sm:text-sm mb-1 truncate">{b.judul}</h3>
                       <p className="text-[11px] font-medium text-slate-400 truncate flex items-center gap-1">
                         <LinkIcon size={10} /> {b.link || "Tidak ada link tautan"}
                       </p>
                     </div>
 
-                    {/* Action Buttons (Muncul saat Hover) */}
-                    <div className="absolute top-3 right-3 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                    {/* Action Buttons */}
+                    <div className="absolute top-2.5 right-2.5 flex gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-20">
                       <button 
                         onClick={() => openEditModal(b)}
-                        className="p-2.5 bg-blue-500/90 backdrop-blur-md hover:bg-blue-600 text-white rounded-xl shadow-lg scale-95 group-hover:scale-100 transition-all"
+                        className="p-2 sm:p-2.5 bg-blue-600/90 hover:bg-blue-600 text-white rounded-xl shadow-md backdrop-blur-sm transition-all"
                         title="Edit Banner"
                       >
-                        <Edit size={16} />
+                        <Edit size={14} className="sm:w-4 sm:h-4" />
                       </button>
                       <button 
                         onClick={() => handleDelete(b.id, b.judul)}
-                        className="p-2.5 bg-rose-500/90 backdrop-blur-md hover:bg-rose-600 text-white rounded-xl shadow-lg scale-95 group-hover:scale-100 transition-all"
+                        className="p-2 sm:p-2.5 bg-rose-600/90 hover:bg-rose-600 text-white rounded-xl shadow-md backdrop-blur-sm transition-all"
                         title="Hapus Banner"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} className="sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </div>
@@ -291,52 +291,52 @@ export default function BannersPage() {
       </div>
 
       {/* =========================================
-          MODAL EDIT BANNER (Tengah Sempurna)
+          MODAL EDIT BANNER
       ========================================= */}
       {isEditModalOpen && editingBanner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-5">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setIsEditModalOpen(false)}></div>
           
-          <div className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-md text-left overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
+          <div className="relative bg-white rounded-3xl sm:rounded-[2rem] shadow-2xl w-full max-w-md text-left overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
             
-            <div className="p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
-              <h3 className="text-xl font-black text-slate-800">Edit Banner Promo</h3>
-              <button onClick={() => setIsEditModalOpen(false)} className="p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
-                <X size={18} />
+            <div className="p-5 sm:p-6 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
+              <h3 className="text-lg sm:text-xl font-black text-slate-800">Edit Banner Promo</h3>
+              <button onClick={() => setIsEditModalOpen(false)} className="p-2 sm:p-2.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors bg-slate-50 border border-slate-200">
+                <X size={16} />
               </button>
             </div>
             
             <div className="overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
-              <form id="editBannerForm" onSubmit={handleEditSubmit} className="p-6 space-y-5">
+              <form id="editBannerForm" onSubmit={handleEditSubmit} className="p-5 sm:p-6 space-y-4 sm:space-y-5">
                 
                 <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Judul Promo</label>
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Judul Promo</label>
                   <input 
                     type="text" 
                     value={editJudul} 
                     onChange={(e) => setEditJudul(e.target.value)} 
                     required 
-                    className="w-full border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" 
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Link Tujuan <span className="normal-case tracking-normal font-medium text-slate-400">(Opsional)</span></label>
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Link Tujuan <span className="normal-case tracking-normal font-medium text-slate-400">(Opsional)</span></label>
                   <div className="relative group">
-                    <LinkIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                    <LinkIcon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <input 
                       type="text" 
                       value={editLink} 
                       onChange={(e) => setEditLink(e.target.value)} 
-                      className="w-full border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" 
+                      className="w-full border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs sm:text-sm font-bold text-slate-800 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" 
                       placeholder="https://..." 
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Ganti Gambar <span className="normal-case tracking-normal font-medium text-slate-400">(Biarkan kosong jika tidak ganti)</span></label>
-                  <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Ganti Gambar <span className="normal-case tracking-normal font-medium text-slate-400">(Biarkan kosong jika tidak ganti)</span></label>
+                  <div className="relative border-2 border-dashed border-slate-300 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center bg-white hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group shadow-sm overflow-hidden">
                     <input 
                       type="file" 
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
@@ -345,14 +345,14 @@ export default function BannersPage() {
                     />
                     {editFile ? (
                       <div className="text-center z-0">
-                        <div className="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-2"><ImageIcon size={24}/></div>
-                        <p className="text-sm font-bold text-slate-800 truncate max-w-xs">{editFile.name}</p>
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-2"><ImageIcon size={22}/></div>
+                        <p className="text-xs sm:text-sm font-bold text-slate-800 truncate max-w-xs">{editFile.name}</p>
                         <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mt-1 bg-blue-50 py-1 px-3 rounded-full inline-block">Siap Diunggah</p>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center text-center z-0">
-                        <div className="w-12 h-12 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-2 transition-colors"><Upload size={24} /></div>
-                        <p className="text-sm font-bold text-slate-700">Pilih gambar baru</p>
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 text-slate-400 group-hover:text-blue-500 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-2 transition-colors"><Upload size={22} /></div>
+                        <p className="text-xs sm:text-sm font-bold text-slate-700">Pilih gambar baru</p>
                       </div>
                     )}
                   </div>
@@ -361,9 +361,9 @@ export default function BannersPage() {
               </form>
             </div>
 
-            <div className="p-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row gap-3 shrink-0">
-              <button type="button" onClick={() => setIsEditModalOpen(false)} className="w-full sm:w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-full font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
-              <button type="submit" form="editBannerForm" className="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Perubahan</button>
+            <div className="p-4 sm:p-5 border-t border-slate-100 bg-white flex gap-2.5 shrink-0">
+              <button type="button" onClick={() => setIsEditModalOpen(false)} className="w-1/2 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Batal</button>
+              <button type="submit" form="editBannerForm" className="w-1/2 bg-blue-600 text-white py-3 rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-600/20">Simpan Perubahan</button>
             </div>
           </div>
         </div>

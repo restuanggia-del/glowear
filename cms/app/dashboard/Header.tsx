@@ -174,16 +174,16 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <>
       {/* ===== HEADER ===== */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 h-20 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm gap-4 transition-all duration-300">
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 h-16 md:h-20 px-3 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm gap-2 sm:gap-4 transition-all duration-300">
 
         {/* LEFT: Burger + Breadcrumb */}
-        <div className="flex items-center gap-3 md:gap-5 min-w-0 flex-shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
           <button
             onClick={onMenuClick}
             aria-label="Toggle Sidebar"
-            className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden shadow-sm transition-all flex-shrink-0 active:scale-95"
+            className="p-2 sm:p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden shadow-sm transition-all flex-shrink-0 active:scale-95"
           >
-            <Menu size={20} />
+            <Menu size={18} className="sm:w-5 sm:h-5" />
           </button>
 
           <div className="hidden md:flex items-center gap-3 text-sm min-w-0 bg-slate-50/50 px-4 py-2 rounded-2xl border border-slate-100">
@@ -200,7 +200,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           </div>
 
           {/* Mobile: Page title only */}
-          <span className="md:hidden text-slate-900 font-black text-sm truncate max-w-[140px]">
+          <span className="md:hidden text-slate-900 font-black text-xs sm:text-sm truncate max-w-[130px] sm:max-w-[200px]">
             {getPageTitle()}
           </span>
         </div>
@@ -272,10 +272,10 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             {isNotifOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsNotifOpen(false)} />
-                <div className="absolute right-0 top-full mt-3 w-80 sm:w-[400px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                  <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+                <div className="absolute -right-12 sm:right-0 top-full mt-2 w-[calc(100vw-1.5rem)] sm:w-[400px] max-w-[390px] bg-white rounded-2xl sm:rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                  <div className="px-5 sm:px-6 py-4 sm:py-5 border-b border-slate-100 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
                         <Bell size={18} className="text-blue-500" />
                       </div>
                       <div>
@@ -284,7 +284,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                       </div>
                     </div>
                     {unreadCount > 0 && (
-                      <button onClick={handleMarkAllRead} className="text-[11px] bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                      <button onClick={handleMarkAllRead} className="text-[11px] bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20 shrink-0">
                         Baca Semua
                       </button>
                     )}
@@ -375,12 +375,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             {isProfileOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                <div className="absolute right-0 top-full mt-3 w-64 bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-64 max-w-[280px] bg-white rounded-2xl sm:rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
                   {/* User Profile Header in Dropdown */}
-                  <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                  <div className="p-5 sm:p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                     <div className="flex items-center gap-4 relative z-10">
-                      <div className="w-12 h-12 bg-white/10 rounded-2xl border border-white/20 flex items-center justify-center shadow-inner">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 bg-white/10 rounded-2xl border border-white/20 flex items-center justify-center shadow-inner shrink-0">
                         <span className="text-xl font-black text-white">
                           {user?.nama?.charAt(0)?.toUpperCase() || "A"}
                         </span>

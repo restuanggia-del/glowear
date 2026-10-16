@@ -108,7 +108,7 @@ export default function LupaPasswordPage() {
         </Link>
 
         {/* Form Card */}
-        <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-2xl">
+        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-3xl sm:rounded-[2rem] shadow-2xl">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-800">
               {step === 1 ? <Mail size={32} /> : step === 2 ? <ShieldCheck size={32} /> : <Lock size={32} />}

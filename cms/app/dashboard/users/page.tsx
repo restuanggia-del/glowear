@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { Search, ShieldAlert, ShieldCheck, User, Loader2, Users, AlertCircle, CheckCircle2, X, Info, ChevronDown, ChevronUp, Edit, Trash2, Mail, Phone, MapPin, Lock } from "lucide-react";
@@ -175,13 +175,13 @@ export default function UsersPage() {
     <div className="space-y-6 pb-10 relative">
       
       {/* Header Halaman */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Manajemen Pengguna</h1>
-        <p className="text-sm text-slate-500 mt-1 font-medium">Kelola daftar pelanggan, edit data profil, dan atur siapa saja yang memiliki hak akses Admin Glowear.</p>
+      <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Manajemen Pengguna</h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Kelola daftar pelanggan, edit data profil, dan atur siapa saja yang memiliki hak akses Admin Glowear.</p>
       </div>
 
       {/* Global Search Bar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-3">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-2.5 sm:p-3">
         <div className="relative w-full group">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           <input
@@ -189,7 +189,7 @@ export default function UsersPage() {
             placeholder="Cari nama, email, atau nomor telepon pengguna di semua sesi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 pr-4 py-3 w-full border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-800 transition-all placeholder:text-slate-400 bg-slate-50 focus:bg-white shadow-inner"
+            className="pl-12 pr-4 py-2.5 sm:py-3 w-full border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-800 transition-all placeholder:text-slate-400 bg-slate-50 focus:bg-white shadow-inner"
           />
         </div>
       </div>
@@ -232,8 +232,8 @@ export default function UsersPage() {
               SECTION 1: ADMINISTRATOR SISTEM
           ========================================= */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 bg-indigo-50/30 flex justify-between items-center">
-              <h2 className="text-lg font-black text-slate-800 flex items-center gap-3 tracking-tight">
+            <div className="p-4 sm:p-5 border-b border-slate-100 bg-indigo-50/30 flex justify-between items-center">
+              <h2 className="text-base sm:text-lg font-black text-slate-800 flex items-center gap-2.5 sm:gap-3 tracking-tight">
                 <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
                   <ShieldCheck size={20} />
                 </div>
@@ -242,8 +242,8 @@ export default function UsersPage() {
               </h2>
             </div>
             
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[650px]">
                 <thead>
                   <tr className="bg-white text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-100">
                     <th className="py-4 px-6 font-bold">Profil Admin</th>
@@ -331,8 +331,8 @@ export default function UsersPage() {
             
             {/* Tabel Konten (Bisa Disembunyikan) */}
             {isPelangganExpanded && (
-              <div className="overflow-x-auto animate-in slide-in-from-top-2 duration-300">
-                <table className="w-full text-left border-collapse">
+              <div className="overflow-x-auto custom-scrollbar animate-in slide-in-from-top-2 duration-300">
+                <table className="w-full text-left border-collapse min-w-[650px]">
                   <thead>
                     <tr className="bg-white text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-100">
                       <th className="py-4 px-6 font-bold">Profil Pelanggan</th>
@@ -342,7 +342,14 @@ export default function UsersPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     {pelangganUsers.length === 0 ? (
-                      <tr><td colSpan={3} className="py-16 text-center flex flex-col items-center justify-center text-slate-500"><Users size={40} className="text-slate-300 mb-3" /><span className="font-medium">Tidak ada data pelanggan ditemukan.</span></td></tr>
+                      <tr>
+                        <td colSpan={3} className="py-16 text-center text-slate-500">
+                          <div className="flex flex-col items-center justify-center">
+                            <Users size={40} className="text-slate-300 mb-3" />
+                            <span className="font-medium text-sm">Tidak ada data pelanggan ditemukan.</span>
+                          </div>
+                        </td>
+                      </tr>
                     ) : (
                       pelangganUsers.map((user) => (
                         <tr key={user.id} className="hover:bg-slate-50/80 transition-colors group">
@@ -365,7 +372,7 @@ export default function UsersPage() {
                             </div>
                           </td>
                           <td className="py-4 px-6 text-center">
-                            <div className="flex items-center justify-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center justify-center gap-2">
                               <button 
                                 onClick={() => openEditUserModal(user)}
                                 className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 rounded-xl transition-all bg-blue-50 border border-blue-100 shadow-sm"
@@ -401,39 +408,36 @@ export default function UsersPage() {
       )}
 
       {/* =========================================
-          MODAL EDIT PENGGUNA LENGKAP
-      ========================================= */}
-            {/* =========================================
           MODAL EDIT PENGGUNA (PREMIUM CENTERED)
       ========================================= */}
       {isEditUserModalOpen && selectedUser && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4">
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsEditUserModalOpen(false)}></div>
           
-          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[90vh]">
+          <div className="relative bg-white rounded-2xl sm:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/20 flex flex-col max-h-[92vh]">
             
             {/* Header Modal */}
-            <div className="p-8 pb-4 flex justify-between items-center bg-white shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
-                   <Edit size={24} />
+            <div className="p-5 sm:p-8 pb-3 sm:pb-4 flex justify-between items-center bg-white shrink-0">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100 shrink-0">
+                   <Edit size={22} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 leading-none">Edit Pengguna</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-none">Edit Pengguna</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest mt-1.5 sm:mt-2 flex items-center gap-2">
                     {userForm.role === 'ADMIN' ? <ShieldCheck size={14} className="text-indigo-500"/> : <User size={14} className="text-blue-500"/>} 
                     ROLE: {userForm.role}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setIsEditUserModalOpen(false)} className="p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
-                <X size={20} />
+              <button onClick={() => setIsEditUserModalOpen(false)} aria-label="Tutup Modal" className="p-2 sm:p-3 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all border border-slate-100">
+                <X size={18} className="sm:w-5 sm:h-5" />
               </button>
             </div>
             
             {/* Form Tengah (Bisa di-scroll) */}
-            <div className="overflow-y-auto custom-scrollbar flex-1 px-8 py-4">
-              <form id="editUserForm" onSubmit={handleEditUserSubmit} className="space-y-8">
+            <div className="overflow-y-auto custom-scrollbar flex-1 px-5 sm:px-8 py-4">
+              <form id="editUserForm" onSubmit={handleEditUserSubmit} className="space-y-6 sm:space-y-8">
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Nama Lengkap */}
@@ -522,11 +526,11 @@ export default function UsersPage() {
             </div>
 
             {/* Footer Modal */}
-            <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
-              <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="flex-1 py-4 bg-white text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all">
+            <div className="p-4 sm:p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0">
+              <button type="button" onClick={() => setIsEditUserModalOpen(false)} className="flex-1 py-3.5 sm:py-4 bg-white text-slate-500 rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-100 transition-all text-center">
                 Batal
               </button>
-              <button type="submit" form="editUserForm" className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all active:scale-95">
+              <button type="submit" form="editUserForm" className="flex-1 py-3.5 sm:py-4 bg-blue-600 text-white rounded-xl sm:rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all active:scale-95 text-center">
                 Simpan Profil
               </button>
             </div>

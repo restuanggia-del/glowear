@@ -177,16 +177,16 @@ export default function OrdersPage() {
     <div className="space-y-6 pb-10 relative">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Pesanan Masuk</h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">Kelola produksi & cek detail desain custom pelanggan Glowear.</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Pesanan Masuk</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Kelola produksi & cek detail desain custom pelanggan Glowear.</p>
         </div>
       </div>
 
       {/* Tabel Data */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
           <div className="relative w-full max-w-md group">
             <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input
@@ -199,8 +199,8 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[720px]">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider border-b border-slate-200">
                 <th className="py-4 px-6 font-bold">ID & Waktu</th>
@@ -278,37 +278,37 @@ export default function OrdersPage() {
           MODAL DETAIL PESANAN (PREMIUM OVERHAUL)
       ========================================= */}
       {isDetailModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 md:p-6">
           <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailModalOpen(false)}></div>
 
-          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[90vh]">
+          <div className="relative bg-white rounded-2xl sm:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.25)] w-full max-w-5xl text-left overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[92vh]">
 
               {/* Modern Header dengan Gradients */}
-              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-8 text-white relative overflow-hidden flex-shrink-0">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 bg-white/10 rounded-3xl border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner">
-                      <ShoppingBag size={32} className="text-blue-400" />
+              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-5 py-6 sm:px-8 sm:py-7 text-white relative overflow-hidden flex-shrink-0">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-3 sm:gap-5">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/10 rounded-2xl sm:rounded-3xl border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner shrink-0">
+                      <ShoppingBag size={24} className="sm:w-8 sm:h-8 text-blue-400" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-3xl font-black tracking-tight">Detail Pesanan</h2>
-                        <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-blue-400/50 shadow-lg shadow-blue-900/40">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight">Detail Pesanan</h2>
+                        <span className="bg-blue-600 text-[10px] font-black px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest border border-blue-400/50 shadow-lg shadow-blue-900/40">
                           #{selectedOrder.id.substring(0, 8).toUpperCase()}
                         </span>
                       </div>
-                      <p className="text-slate-400 font-medium mt-1 flex items-center gap-2">
-                        <CalendarDays size={14} className="text-slate-500" /> Terdaftar pada {formatDate(selectedOrder.waktuDibuat)}
+                      <p className="text-slate-400 text-xs sm:text-sm font-medium mt-1 flex items-center gap-2">
+                        <CalendarDays size={14} className="text-slate-500 shrink-0" /> Terdaftar {formatDate(selectedOrder.waktuDibuat)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-3">
-                    <div className={`px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 border shadow-lg ${getStatusStyle(selectedOrder.status)}`}>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-widest flex items-center gap-2 border shadow-lg ${getStatusStyle(selectedOrder.status)}`}>
                       {selectedOrder.status}
                     </div>
-                    <div className={`px-4 py-1.5 rounded-xl font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 bg-white/10 border border-white/10 text-white`}>
+                    <div className={`px-3 sm:px-4 py-1.5 rounded-xl font-bold text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center gap-2 bg-white/10 border border-white/10 text-white`}>
                       Status Bayar: <span className="text-blue-400">{selectedOrder.statusPembayaran}</span>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ export default function OrdersPage() {
               </div>
 
               {/* Body Content */}
-              <div className="p-8 space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar bg-slate-50/50">
+              <div className="p-4 sm:p-8 space-y-6 sm:space-y-10 max-h-[70vh] overflow-y-auto custom-scrollbar bg-slate-50/50">
 
                 {/* Section 1: Customer & Logistics Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -447,23 +447,24 @@ export default function OrdersPage() {
               </div>
 
               {/* Modern Action Bar */}
-              <div className="p-8 bg-white border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0 relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+              {/* Modern Action Bar */}
+              <div className="p-4 sm:p-6 md:p-8 bg-white border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 flex-shrink-0 relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
                 <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
-                  <button onClick={() => setIsDetailModalOpen(false)} className="px-6 py-3 bg-white text-slate-600 rounded-xl font-black text-xs hover:bg-slate-50 transition-all shadow-sm border border-slate-200 uppercase tracking-widest">
+                  <button onClick={() => setIsDetailModalOpen(false)} className="w-full sm:w-auto px-6 py-3 bg-white text-slate-600 rounded-xl font-black text-xs hover:bg-slate-50 transition-all shadow-sm border border-slate-200 uppercase tracking-widest text-center">
                     Tutup
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                   <button
                     onClick={() => { setIsDetailModalOpen(false); openUpdateModal(selectedOrder); }}
-                    className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest border border-slate-700"
+                    className="w-full sm:w-auto px-5 sm:px-8 py-3.5 sm:py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/20 flex items-center justify-center gap-2 sm:gap-3 uppercase tracking-widest border border-slate-700"
                   >
                     <Edit size={16} /> Update Status
                   </button>
                   <button
                     onClick={() => openInvoice(selectedOrder)}
-                    className="px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-600/20 flex items-center gap-3 uppercase tracking-widest border border-emerald-500"
+                    className="w-full sm:w-auto px-5 sm:px-8 py-3.5 sm:py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-2 sm:gap-3 uppercase tracking-widest border border-emerald-500"
                   >
                     <Printer size={18} /> Cetak Struk
                   </button>
@@ -502,25 +503,22 @@ export default function OrdersPage() {
       {/* =========================================
           MODAL UPDATE STATUS (Icon Dropdown & Centered)
       ========================================= */}
-      {/* =========================================
-          MODAL UPDATE STATUS (PREMIUM CENTERED)
-      ========================================= */}
       {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
           <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setIsModalOpen(false)}></div>
 
-          <div className="relative bg-white rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
+          <div className="relative bg-white rounded-2xl sm:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.4)] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100 max-h-[92vh] flex flex-col">
 
             {/* Header dengan Icon Visual */}
-            <div className="p-8 pb-4 text-center">
-              <div className="w-20 h-20 bg-blue-50 rounded-[2rem] flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-inner">
-                <Edit size={32} className="text-blue-600" />
+            <div className="p-6 sm:p-8 pb-3 sm:pb-4 text-center shrink-0">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 rounded-2xl sm:rounded-[2rem] flex items-center justify-center mx-auto mb-3 sm:mb-4 border border-blue-100 shadow-inner">
+                <Edit size={28} className="sm:w-8 sm:h-8 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900">Perbarui Pesanan</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900">Perbarui Pesanan</h3>
               <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">ID: #{selectedOrder.id.substring(0, 8).toUpperCase()}</p>
             </div>
 
-            <form onSubmit={handleUpdateSubmit} className="p-8 pt-4 space-y-6">
+            <form onSubmit={handleUpdateSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-8 pt-2 sm:pt-4 space-y-5 sm:space-y-6">
 
               {/* Dropdown Produksi */}
               <div className="relative">

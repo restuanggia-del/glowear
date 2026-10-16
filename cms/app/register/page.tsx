@@ -80,17 +80,17 @@ export default function RegisterPage() {
       {/* =============================================================== */}
 
       {/* Kontainer Utama Form */}
-      <div className="relative z-20 w-full max-w-lg px-6">
+      <div className="relative z-20 w-full max-w-lg px-4 sm:px-6">
         
         {/* Logo Atas */}
         <div className="flex justify-center mb-2">
-          <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
+          <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 flex items-center justify-center">
             <Image src="/logoglomed.png" alt="Glomed Logo" fill sizes="100px" className="object-contain" priority />
           </div>
         </div>
 
         {/* Kartu Register Putih */}
-        <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-2xl">
+        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-3xl sm:rounded-[2rem] shadow-2xl">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">Buat Akun Baru</h1>
             <p className="text-sm text-slate-500 mt-1 font-medium">Bergabunglah dengan Glowear sekarang</p>
